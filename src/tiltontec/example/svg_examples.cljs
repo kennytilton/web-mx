@@ -9,7 +9,7 @@
             [tiltontec.web-mx.gen :refer [evt-mx target-value]]
             [tiltontec.web-mx.gen-macro
              :refer [jso-map]
-             :refer-macros [svg circle p span div text radialGradient defs stop
+             :refer-macros [svg g circle p span div text radialGradient defs stop
                             rect ellipse line polyline path polygon script use]]
             [tiltontec.web-mx.html :refer [tag-dom-create]]))
 
@@ -127,6 +127,19 @@
                  :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}
           {:name :used-circle})))))
 
+(defn dyno-kids []
+  (div
+    (svg {:viewBox "0 0 40 10"}
+      {:include-other? (cI true)}
+      (circle {:id "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1 :fill :black :stroke :red})
+      (use {:id      "use-2"
+            :href    "#myCircle" :x 10 :fill :blue})
+      (use {:id      "use-3"
+            :href    "#myCircle" :x 20 :fill :white})
+      (when (mget me :include-other?)
+        (circle {:id "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
+                 :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))})))))
+
 (defn matrix-build! []
   (reset! matrix
     (md/make
@@ -138,7 +151,8 @@
                             #_(three-circles)
                             #_(radial-gradient)
                             ;(basic-shapes)
-                            (use-blue)
+                            ;(use-blue)
+                            (dyno-kids)
                             )))))))
 
 #_(defn main []

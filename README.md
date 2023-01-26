@@ -2,9 +2,9 @@
 
 Web/MX: Web programming powered by the [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager.
 
-An [mxWeb Training Guide](https://github.com/kennytilton/mxweb-trainer/wiki) is under construction. It contains a series of graded exercises, each with its own tutorial doc and coding exercise(s).
+An [mxWeb Training Guide](https://github.com/kennytilton/mxweb-trainer/wiki). It contains a series of graded exercises, each with its own tutorial doc and coding exercise(s).
 
-MatrixRN is under construction, but more energy is going into [Flutter/MX](https://github.com/kennytilton/flutter-mx/blob/main/README.md).
+Work on React/MX and RN/MX has reached POC, but we have shifted focus to [Flutter/MX](https://github.com/kennytilton/flutter-mx/blob/main/README.md).
 
 ### Just Run It
 
@@ -16,6 +16,7 @@ git clone https://github.com/kennytilton/web-mx.git
 cd web-mx
 lein fig -- --build example --repl
 ```
+Edit `tiltontec.example.core.cljs` to have the app run different examples.
 
 ### Overview
 

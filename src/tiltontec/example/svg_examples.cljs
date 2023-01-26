@@ -5,8 +5,8 @@
             [goog.object :as gobj]
             [tiltontec.cell.core :refer-macros [cF cF+ cI cFn cFonce] :refer [cI]]
             [tiltontec.model.core
-             :refer [fmu matrix mx-par mget mget mset! mset! mxi-find mxu-find-name] :as md]
-            [tiltontec.web-mx.gen :refer [evt-mx target-value]]
+             :refer [cFkids fmu matrix mx-par mget mget mset! mset! mxi-find mxu-find-name] :as md]
+            [tiltontec.web-mx.gen :refer [evt-mx target-value make-svg]]
             [tiltontec.web-mx.gen-macro
              :refer [jso-map]
              :refer-macros [svg g circle p span div text radialGradient defs stop
@@ -129,16 +129,23 @@
 
 (defn dyno-kids []
   (div
-    (svg {:viewBox "0 0 40 10"}
-      {:include-other? (cI true)}
-      (circle {:id "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1 :fill :black :stroke :red})
-      (use {:id      "use-2"
-            :href    "#myCircle" :x 10 :fill :blue})
-      (use {:id      "use-3"
-            :href    "#myCircle" :x 20 :fill :white})
-      (when (mget me :include-other?)
-        (circle {:id "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
-                 :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))})))))
+    (make-svg "svg" (merge {:height 100}{:viewBox "0 0 40 10"})
+      (assoc {} :include-other? (cI true))
+      (cFkids
+        (circle {:id "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1  :stroke :red
+                 :fill (cI :black)
+                 :onclick      (cF (fn [evt]
+                                     (prn :bam!! (.-shiftKey evt))
+                                     (if (.-shiftKey evt)
+                                       (mset! (mx-par me) :include-other? false)
+                                       (mset! me :fill :yellow))))})
+        (use {:id      "use-2"
+              :href    "#myCircle" :x 10 :fill :blue})
+        (use {:id      "use-3"
+              :href    "#myCircle" :x 20 :fill :white})
+        (when (mget me :include-other?)
+          (circle {:id "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
+                   :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}))))))
 
 (defn matrix-build! []
   (reset! matrix

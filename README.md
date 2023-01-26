@@ -2,7 +2,7 @@
 
 Web/MX: Web programming powered by the [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager.
 
-An [mxWeb Training Guide](https://github.com/kennytilton/mxweb-trainer/wiki). It contains a series of graded exercises, each with its own tutorial doc and coding exercise(s).
+An [mxWeb Training Guide](https://github.com/kennytilton/mxweb-trainer/wiki) was started. It contains a series of graded exercises, each with its own tutorial doc and coding exercise(s). Give it a look, but we plan a different approach to doc.
 
 Work on React/MX and RN/MX has reached POC, but we have shifted focus to [Flutter/MX](https://github.com/kennytilton/flutter-mx/blob/main/README.md).
 
@@ -24,7 +24,7 @@ Optimally efficient, fine grained, truly reactive DOM programming in CLJS, witho
 
 ### Working Example
 
-The [AskHN Who's Hiring Browser](https://github.com/kennytilton/matrix/tree/main/cljc/whoshiring) is the CLJS port of the JS version of mxWeb, which you can find [live here](https://kennytilton.github.io/whoishiring/)
+The [AskHN Who's Hiring Browser](https://github.com/kennytilton/matrix/tree/main/cljc/whoshiring) is the CLJS port of the JS version of Web/MX, which you can find [live here](https://kennytilton.github.io/whoishiring/)
 
 ### Other Working Examples
 The classic, [TodoMVC](https://github.com/kennytilton/mxtodomvc) with some tutorial doc.

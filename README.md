@@ -2,6 +2,8 @@
 
 Web/MX: Web programming powered by the [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager.
 
+[![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/web-mx.svg)](https://clojars.org/com.tiltontec/web-mx)
+
 An [mxWeb Training Guide](https://github.com/kennytilton/mxweb-trainer/wiki) was started. It contains a series of graded exercises, each with its own tutorial doc and coding exercise(s). Give it a look, but we plan a different approach to doc.
 
 Work on React/MX and RN/MX has reached POC, but we have shifted focus to [Flutter/MX](https://github.com/kennytilton/flutter-mx/blob/main/README.md).

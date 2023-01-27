@@ -5,7 +5,7 @@
     #?(:cljs
        [goog.dom.forms :as form]
        )
-    #?(:clj [clojure.pprint :refer :all]
+    #?(:clj  [clojure.pprint :refer :all]
        :cljs [cljs.pprint :refer [pprint cl-format]])
     [tiltontec.cell.base :refer [md-ref? ia-type unbound]]
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
@@ -24,8 +24,8 @@
 
 (defn dom-tag [dom]
   (cond
-    (nil? dom) (do ;; (println :outthetop!!!)
-                   nil)
+    (nil? dom) (do                                          ;; (println :outthetop!!!)
+                 nil)
     ;; where we specify string content to eg button we get an
     ;; automatic span for the string that has no ID. Hopefully where
     ;; dom-tiltontec.web-mx is requested they will be OK with us tracking the nearest ascendant.
@@ -54,13 +54,13 @@
                  (attr-val$ id)
                  (str tag "-" (swap! +tag-sid+ inc)))
         mx-tag (apply make
-                      :type :web-mx.base/tag
-                      :tag tag
-                      :id tag-id
-                      :attr-keys (distinct (conj (keys attrs) :id))
-                      :kids cFkids
-                      (concat (vec (apply concat (seq (dissoc attrs :id))))
-                              (vec (apply concat (seq aux)))))]
+                 :type :web-mx.base/tag
+                 :tag tag
+                 :id tag-id
+                 :attr-keys (distinct (conj (keys attrs) :id))
+                 :kids cFkids
+                 (concat (vec (apply concat (seq (dissoc attrs :id))))
+                   (vec (apply concat (seq aux)))))]
     ;;(println :made-tiltontec.web-mx!! tiltontec.web-mx-id (keys @mx-tiltontec.web-mx))
     (swap! tag-by-id assoc tag-id mx-tag)
     mx-tag))
@@ -82,23 +82,34 @@
 
 ;;; --- SVG --------------------------------------------------
 
-(defn make-svg [svg attrs aux cFkids]
-  ;; (prn :make-svg svg :attrs (keys attrs) :aux (keys aux))
-  (let [svg-id (if-let [id (:id attrs)]
-                 (attr-val$ id)
-                 ;; we'll piggyback some of the tag infrastructure
-                 (str svg "-" (swap! +tag-sid+ inc)))
-        mx-svg (apply make
-                 :type :web-mx.base/svg
-                 :tag (name svg)
-                 :id svg-id
-                 :attr-keys (distinct (conj (keys attrs) :id))
-                 :kids cFkids
-                 (concat (vec (apply concat (seq (dissoc attrs :id))))
-                   (vec (apply concat (seq aux)))))]
-    ;;(println :made-tiltontec.web-mx!! tiltontec.web-mx-id (keys @mx-tiltontec.web-mx))
-    (swap! tag-by-id assoc svg-id mx-svg)
-    mx-svg))
+(defn make-svg
+  ([svg]
+   (make-svg svg {}))
+  ([svg attrs]
+   (make-svg svg attrs {}))
+  ([svg attrs custom-props]
+   (make-svg svg attrs custom-props nil))
+  ([svg attrs aux cFkids]
+   ;; (prn :make-svg svg :attrs (keys attrs) :aux (keys aux))
+   (let [svg-id (if-let [id (:id attrs)]
+                  (attr-val$ id)
+                  ;; we'll piggyback some of the tag infrastructure
+                  (str svg "-" (swap! +tag-sid+ inc)))
+         mx-svg (apply make
+                  :type :web-mx.base/svg
+                  :tag (cond
+                         (keyword? svg) (name svg)
+                         (string? svg) (if (= \: (first svg))
+                                         (subs svg 1) svg)
+                         :else (str svg))
+                  :id svg-id
+                  :attr-keys (distinct (conj (keys attrs) :id))
+                  :kids cFkids
+                  (concat (vec (apply concat (seq (dissoc attrs :id))))
+                    (vec (apply concat (seq aux)))))]
+     ;;(println :made-tiltontec.web-mx!! tiltontec.web-mx-id (keys @mx-tiltontec.web-mx))
+     (swap! tag-by-id assoc svg-id mx-svg)
+     mx-svg)))
 
 (defmethod not-to-be [:web-mx.base/svg] [me]
   ;; todo: worry about leaks

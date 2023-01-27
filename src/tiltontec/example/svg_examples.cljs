@@ -24,10 +24,11 @@
     {:name   :clock
      :tick   (cI (.getSeconds (js/Date.)))
      :ticker (cF+ [:obs (fn [_ _ nv ov c]
-                          (prn :ticker-int nv ov))]
+                          (when (not= ov unbound)
+                            (js/clearInterval ov)))]
                (wbase/js-interval-register
                  ;; needed during development so hot reload does not pile up intervals
-                 (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 5000)))}))
+                 (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 1000)))}))
 
 (defn three-circles []
   (svg {:viewBox "0 0 300 100"
@@ -179,6 +180,24 @@
                (circle {:id     "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
                         :stroke :green #_(cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}))))))))
 
+(defn make-svg-test []
+  (div
+    (make-svg :svg (merge {:height 100} {:viewBox "0 0 40 10"})
+      (assoc {:name :includer}
+        :include-other? (cI true))
+      [(make-svg :circle
+          {:id   "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1
+           :fill :black :stroke :yellow}
+          {} nil)
+       (make-svg "circle"
+         {:id   "myCircle" :cx 15 :cy 5 :r 4 :stroke-width 1
+          :fill :black :stroke :yellow}
+         {})
+       (make-svg ":circle"
+         {:id   "myCircle" :cx 25 :cy 5 :r 4 :stroke-width 1
+          :fill :black :stroke :yellow})
+       (make-svg :circle)])))
+
 (defn matrix-build! []
   (reset! matrix
     (md/make
@@ -191,5 +210,6 @@
                             #_(radial-gradient)
                             ;(basic-shapes)
                             ;(use-blue)
-                            (dyno-kids)
+                            ;(dyno-kids-hack)
+                            (make-svg-test)
                             )))))))

@@ -1,4 +1,4 @@
-(ns tiltontec.web-mx.base
+(ns ^:figwheel-hooks tiltontec.web-mx.base
   (:require
     [clojure.string :as str]
     [goog.dom :as dom]
@@ -6,6 +6,20 @@
     [tiltontec.model.core
      :refer [mget fasc fm! make mset! backdoor-reset!]
      :as md]))
+
+(defonce js-intervals (atom nil))
+
+(defn js-interval-register [interval]
+  (prn :registering!! interval)
+  (swap! js-intervals conj interval)
+  interval)
+
+(defn ^:before-load teardown []
+  (prn :bef-teardown!!!!!!!)
+  (doseq [i @js-intervals]
+    (prn :clearing!!!!!!!! i)
+    (js/clearInterval i))
+  (reset! js-intervals nil))
 
 (def ^:dynamic *web-mx-trace* false)
 

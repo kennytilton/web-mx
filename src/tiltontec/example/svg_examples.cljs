@@ -3,9 +3,11 @@
             [clojure.walk :as walk]
             [goog.dom :as gdom]
             [goog.object :as gobj]
+            [tiltontec.cell.base :refer [unbound] :as cbase]
             [tiltontec.cell.core :refer-macros [cF cF+ cI cFn cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer [cFkids fmu matrix mx-par mget mget mset! mset! mswap! mxi-find mxu-find-name] :as md]
+            [tiltontec.web-mx.base :as wbase]
             [tiltontec.web-mx.gen :refer [evt-mx target-value make-svg]]
             [tiltontec.web-mx.gen-macro
              :refer [jso-map]
@@ -15,13 +17,17 @@
 
 (defn wall-clock []
   (div {:class   "example-clock"
-        :style   "color:red"
+        :style   "color:cyan"
         :content (cF (if (mget me :tick)
                        (-> (js/Date.) .toTimeString (str/split " ") first)
                        "*checks watch*"))}
     {:name   :clock
      :tick   (cI (.getSeconds (js/Date.)))
-     :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 3000))}))
+     :ticker (cF+ [:obs (fn [_ _ nv ov c]
+                          (prn :ticker-int nv ov))]
+               (wbase/js-interval-register
+                 ;; needed during development so hot reload does not pile up intervals
+                 (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 5000)))}))
 
 (defn three-circles []
   (svg {:viewBox "0 0 300 100"

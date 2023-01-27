@@ -6,7 +6,7 @@
     [tiltontec.util.core
      :refer [any-ref? rmap-setf err rmap-meta-setf set-ify pln]]
     [tiltontec.util.base :refer [type-cljc]]
-    [tiltontec.cell.base :refer [md-ref? ia-type unbound]]
+    [tiltontec.cell.base :refer [md-ref? ia-type unbound minfo]]
     [tiltontec.cell.observer :refer [observe observe-by-type]]
     [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
     [tiltontec.model.core
@@ -275,6 +275,14 @@
 
 (def +inline-css+ (set [:display]))
 
+(defn mixo [me]
+  (cond
+    (nil? me) :NIL-MD
+    (not (any-ref? me)) :NOT-ANY-REF
+    (not (md-ref? me)) :NOT-MD
+    :else [(or (:name @me) :anon)
+           (:state (meta me))]))
+
 (defmethod observe-by-type [:web-mx.base/tag] [slot me newv oldv _]
   (when (not= oldv unbound)
     (when-let [dom (tag-dom me)]
@@ -285,7 +293,8 @@
       (cond
         (= slot :content)
         (do
-          ;;(pln :setting-html-content newv dom)
+          (pln :setting-html-content slot newv oldv  (mixo me))
+          ;;(set! (.-innerHTML dom) newv) #_
           (.requestAnimationFrame js/window
             #(do                                            ;;(prn :ani-frame! newv)
                (set! (.-innerHTML dom) newv))))

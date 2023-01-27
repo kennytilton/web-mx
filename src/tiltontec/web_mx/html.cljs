@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as str]
     [clojure.walk :refer [stringify-keys]]
+    [clojure.set :as set]
     [cljs.pprint :as pp]
     [tiltontec.util.core
      :refer [any-ref? rmap-setf err rmap-meta-setf set-ify pln]]
@@ -217,11 +218,15 @@
 
 (defmethod observe [:kids :web-mx.base/svg] [_ me newv oldv _]
   (when (not= oldv unbound)
-    ;; (prn :svkids-change!!!!!! (count newv) (count oldv))
+    (prn :svkids-change!!!!!! (count newv) (count oldv))
     (let [pdom (svg-dom me)
-          lost (clojure.set/difference (set oldv) (set newv))
-          gained (clojure.set/difference (set newv) (set oldv))]
+          lost (set/difference (set oldv) (set newv))
+          gained (set/difference (set newv) (set oldv))
+          kept (set/intersection (set newv) (set oldv))]
       (assert pdom)
+      (prn :kept!!! kept)
+      (prn :gained!!!!! gained)
+      (prn :lost!!!!!!! lost)
       (cond
         (and (= (set newv) (set oldv))
           (not (= oldv newv)))
@@ -243,8 +248,18 @@
             ; (println :obs-tag-kids-dropping (tagfo oldk))
             (not-to-be oldk)))
 
+        (empty? lost)
+        (do (prn :just-gained!!!!!!!!!)
+            (doseq [newk gained]
+              (let [new-dom (or (svg-dom newk)
+                              (svg-dom-create newk false))]
+                (.appendChild pdom new-dom))))
+
+
         :default (let [frag (.createDocumentFragment js/document)]
-                   (prn :gained!!!!! gained :lost lost)
+                   (prn :mix-kept!!! kept)
+                   (prn :mix-gained!!!!! gained)
+                   (prn :mix-lost!!!!!!! lost)
                    ;; GC lost from matrix;
                    ;; move retained kids from pdom into fragment,
                    ;; add all new kids to fragment, and do so preserving
@@ -252,25 +267,23 @@
                    (doseq [oldk lost]
                      (when-not (string? oldk)
                        ;; no need to remove dom, all children replaced below.
+                       (prn :not-to-be!!!!! oldk)
                        (not-to-be oldk)))
 
                    (doseq [newk newv]
-                       (prn :adding-newk newk)
-                       (dom/appendChild frag
-                         (if (some #{newk} oldv)
-                           (.removeChild pdom (svg-dom newk))
-                           (do
-                             (println :obs-tag-kids-building-new-dom (tagfo newk))
-                             (svg-dom-create newk false)))))
+                     (prn :adding-newk newk)
+                     (let [new-dom (if (some #{newk} oldv)
+                                     (.removeChild pdom (svg-dom newk))
+                                     (do
+                                       (println :obs-tag-kids-building-new-dom (tagfo newk))
+                                       (svg-dom-create newk false)))]
+                       (dom/appendChild frag new-dom)))
 
-                   #_ (.requestAnimationFrame js/window
-                     #(do
-                        (prn :BAM-ani-frame)
-                        (dom/removeChildren pdom)
-                        (dom/appendChild pdom frag)))
-
-                   ;;(prn :kids-diff-rmechild pdom (dom/getFirstElementChild pdom))
-
+                   #_(.requestAnimationFrame js/window
+                       #(do
+                          (prn :BAM-ani-frame)
+                          (dom/removeChildren pdom)
+                          (dom/appendChild pdom frag)))
                    )))))
 
 (def +inline-css+ (set [:display]))
@@ -293,7 +306,7 @@
       (cond
         (= slot :content)
         (do
-          (pln :setting-html-content slot newv oldv  (mixo me))
+          ; (pln :setting-html-content slot newv oldv  (mixo me))
           ;;(set! (.-innerHTML dom) newv) #_
           (.requestAnimationFrame js/window
             #(do                                            ;;(prn :ani-frame! newv)

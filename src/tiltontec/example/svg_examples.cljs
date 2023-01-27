@@ -81,6 +81,23 @@
 (defn domx [me]
   (:dom-x (meta me)))
 
+(defn make-svg-test []
+  (div
+    (make-svg :svg (merge {:height 100} {:viewBox "0 0 40 10"})
+      (assoc {:name :includer}
+        :include-other? (cI true))
+      [(make-svg :circle
+         {:id   "myCircle-0" :cx 5 :cy 5 :r 4 :stroke-width 1
+          :fill :black :stroke :yellow})
+       (make-svg "circle"
+         {:id   "myCircle-1" :cx 15 :cy 5 :r 4 :stroke-width 1
+          :fill :black :stroke (cF (if (even? (mget me :my-tick)) :orange :yellow))}
+         {:my-tick (cF (mget (fmu :clock) :tick))})
+       (make-svg ":circle"
+         {:id   "myCircle-2" :cx 25 :cy 5 :r 4 :stroke-width 1
+          :fill :black :stroke :blue})
+       (make-svg :circle)])))
+
 (defn use-blue []
   ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
   ;;
@@ -168,35 +185,16 @@
                                 (if (not (.-shiftKey evt))
                                   (mswap! (mx-par me) :include-other? not)
                                   (mset! me :fill :yellow))))})
-        (use {:id   "use-2"
-              :href "#myCircle" :x 10 :fill :blue})
-        (use {:id   "use-3"
-              :href "#myCircle" :x 20 :fill :white})
-        (g (let [inker (fmu :includer)]
-             (prn :inker inker)
+        (g
+          #_ (circle {:id     "fixedCircle" :cx 15 :cy 5 :r 2 :stroke-width 2 :fill :cyan
+                   :stroke :red})
+          (let [inker (fmu :includer)]
+            (when (mget inker :include-other?)
+              (prn :making-optcircle!!!!!!)
+              (circle {:id     "optCircle" :cx 25 :cy 5 :r 2 :stroke-width 2 :fill :cyan
+                       :stroke :green}))))))))
 
-             ;; todo removing kid works but not adding
-             (when (mget inker :include-other?)
-               (circle {:id     "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
-                        :stroke :green #_(cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}))))))))
 
-(defn make-svg-test []
-  (div
-    (make-svg :svg (merge {:height 100} {:viewBox "0 0 40 10"})
-      (assoc {:name :includer}
-        :include-other? (cI true))
-      [(make-svg :circle
-          {:id   "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1
-           :fill :black :stroke :yellow}
-          {} nil)
-       (make-svg "circle"
-         {:id   "myCircle" :cx 15 :cy 5 :r 4 :stroke-width 1
-          :fill :black :stroke :yellow}
-         {})
-       (make-svg ":circle"
-         {:id   "myCircle" :cx 25 :cy 5 :r 4 :stroke-width 1
-          :fill :black :stroke :yellow})
-       (make-svg :circle)])))
 
 (defn matrix-build! []
   (reset! matrix
@@ -205,11 +203,12 @@
                         (div
                           (wall-clock)
                           (div {:style {:background-color "cyan"}}
-                            (span "Hi, Mom!")
+                            (span (str "Hi, Mom! " (rand-int 9999)))
+                            ;(make-svg-test)
                             #_(three-circles)
                             #_(radial-gradient)
                             ;(basic-shapes)
                             ;(use-blue)
-                            ;(dyno-kids-hack)
-                            (make-svg-test)
+                            (dyno-kids-hack)
+
                             )))))))

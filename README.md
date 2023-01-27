@@ -22,7 +22,7 @@ Edit `tiltontec.example.core.cljs` to have the app run different examples.
 
 ### Overview
 
-Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_.
+Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_, without a separate store.
 
 ### Working Example
 

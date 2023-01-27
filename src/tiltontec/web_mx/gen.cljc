@@ -90,7 +90,7 @@
                  (str svg "-" (swap! +tag-sid+ inc)))
         mx-svg (apply make
                  :type :web-mx.base/svg
-                 :tag svg
+                 :tag (name svg)
                  :id svg-id
                  :attr-keys (distinct (conj (keys attrs) :id))
                  :kids cFkids

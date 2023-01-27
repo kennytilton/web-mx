@@ -101,11 +101,11 @@
             :let [ak$ (name ak)
                   av (ak @me)]]
       (if (fn? av)
-          (.addEventListener svg
-            (if (= "on" (subs ak$ 0 2))
-              (subs ak$ 2) ak$)
-            ;; todo add warning
-            av)
+        (.addEventListener svg
+          (if (= "on" (subs ak$ 0 2))
+            (subs ak$ 2) ak$)
+          ;; todo add warning
+          av)
         (.setAttributeNS svg nil ak$ (attr-val$ av))))
     (doseq [kid (mget me :kids)]
       (.appendChild svg (svg-dom-create kid dbg)))
@@ -162,8 +162,8 @@
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
     ;; is needed only when kids change post initial creation
-    #_ (println :obstagkids!!!!! (tagfo me)
-      :counts-new-old (count newv) (count oldv)
+    #_(println :obstagkids!!!!! (tagfo me)
+        :counts-new-old (count newv) (count oldv)
         :same-kids (= oldv newv)
         :same-kid-set (= (set newv) (set oldv)))
     (do                                                     ;; p ::observe-kids
@@ -244,6 +244,7 @@
             (not-to-be oldk)))
 
         :default (let [frag (.createDocumentFragment js/document)]
+                   (prn :gained!!!!! gained :lost lost)
                    ;; GC lost from matrix;
                    ;; move retained kids from pdom into fragment,
                    ;; add all new kids to fragment, and do so preserving
@@ -254,15 +255,23 @@
                        (not-to-be oldk)))
 
                    (doseq [newk newv]
-                     (dom/appendChild frag
-                       (if (some #{newk} oldv)
-                         (.removeChild pdom (svg-dom newk))
-                         (do                              ; (println :obs-tag-kids-building-new-dom (tagfo newk))
-                           (svg-dom-create newk false)))))
+                       (prn :adding-newk newk)
+                       (dom/appendChild frag
+                         (if (some #{newk} oldv)
+                           (.removeChild pdom (svg-dom newk))
+                           (do
+                             (println :obs-tag-kids-building-new-dom (tagfo newk))
+                             (svg-dom-create newk false)))))
+
+                   #_ (.requestAnimationFrame js/window
+                     #(do
+                        (prn :BAM-ani-frame)
+                        (dom/removeChildren pdom)
+                        (dom/appendChild pdom frag)))
 
                    ;;(prn :kids-diff-rmechild pdom (dom/getFirstElementChild pdom))
-                   (dom/removeChildren pdom)
-                   (dom/appendChild pdom frag))))))
+
+                   )))))
 
 (def +inline-css+ (set [:display]))
 
@@ -275,7 +284,8 @@
 
       (cond
         (= slot :content)
-        (do                                                 ;;(pln :setting-html-content newv dom)
+        (do
+          ;;(pln :setting-html-content newv dom)
           (.requestAnimationFrame js/window
             #(do                                            ;;(prn :ani-frame! newv)
                (set! (.-innerHTML dom) newv))))
@@ -311,8 +321,8 @@
       (if-let [svg (:dom-x (meta me))]
         (.setAttributeNS svg nil (name slot)
           (attr-val$ newv))
-        (do #_ (prn :no-svg-but (keys (meta me)) me)))
-      :else (do #_ (prn :ignoring-svg-prop-change slot)))))
+        (do #_(prn :no-svg-but (keys (meta me)) me)))
+      :else (do #_(prn :ignoring-svg-prop-change slot)))))
 
 ;;; --- local storage ------------------------
 

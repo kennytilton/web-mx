@@ -5,7 +5,7 @@
             [goog.object :as gobj]
             [tiltontec.cell.core :refer-macros [cF cF+ cI cFn cFonce] :refer [cI]]
             [tiltontec.model.core
-             :refer [cFkids fmu matrix mx-par mget mget mset! mset! mxi-find mxu-find-name] :as md]
+             :refer [cFkids fmu matrix mx-par mget mget mset! mset! mswap! mxi-find mxu-find-name] :as md]
             [tiltontec.web-mx.gen :refer [evt-mx target-value make-svg]]
             [tiltontec.web-mx.gen-macro
              :refer [jso-map]
@@ -21,7 +21,7 @@
                        "*checks watch*"))}
     {:name   :clock
      :tick   (cI (.getSeconds (js/Date.)))
-     :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 5000))}))
+     :ticker (cF (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 3000))}))
 
 (defn three-circles []
   (svg {:viewBox "0 0 300 100"
@@ -129,23 +129,49 @@
 
 (defn dyno-kids []
   (div
-    (make-svg "svg" (merge {:height 100}{:viewBox "0 0 40 10"})
+    (make-svg "svg" (merge {:height 100} {:viewBox "0 0 40 10"})
       (assoc {} :include-other? (cI true))
       (cFkids
-        (circle {:id "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1  :stroke :red
-                 :fill (cI :black)
-                 :onclick      (cF (fn [evt]
-                                     (prn :bam!! (.-shiftKey evt))
-                                     (if (.-shiftKey evt)
-                                       (mset! (mx-par me) :include-other? false)
-                                       (mset! me :fill :yellow))))})
-        (use {:id      "use-2"
-              :href    "#myCircle" :x 10 :fill :blue})
-        (use {:id      "use-3"
-              :href    "#myCircle" :x 20 :fill :white})
-        (when (mget me :include-other?)
-          (circle {:id "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
-                   :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}))))))
+        (circle {:id      "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1 :stroke :red
+                 :fill    (cI :black)
+                 :onclick (cF (fn [evt]
+                                (prn :bam!! (.-shiftKey evt))
+                                (if (.-shiftKey evt)
+                                  (mset! (mx-par me) :include-other? false)
+                                  (mset! me :fill :yellow))))})
+        (use {:id   "use-2"
+              :href "#myCircle" :x 10 :fill :blue})
+        (use {:id   "use-3"
+              :href "#myCircle" :x 20 :fill :white})
+        (g (when (mget (mx-par me) :include-other?)
+             (circle {:id     "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
+                      :stroke (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))})))))))
+
+(defn dyno-kids-hack []
+  (div
+    (make-svg :svg (merge {:height 100} {:viewBox "0 0 40 10"})
+      (assoc {:name :includer}
+        :include-other? (cI true))
+      (cFkids
+        (circle {:id      "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1
+                 :fill    (cI :black)
+                 :stroke  (cF (if (mget (mx-par me) :include-other?) :orange :yellow))
+                 :onclick (cF (fn [evt]
+                                (prn :bam!! (.-shiftKey evt))
+                                (if (not (.-shiftKey evt))
+                                  (mswap! (mx-par me) :include-other? not)
+                                  (mset! me :fill :yellow))))})
+        (use {:id   "use-2"
+              :href "#myCircle" :x 10 :fill :blue})
+        (use {:id   "use-3"
+              :href "#myCircle" :x 20 :fill :white})
+        (g (let [inker (fmu :includer)]
+             (prn :inker inker)
+
+             ;; todo removing kid works but not adding
+             (when (mget inker :include-other?)
+               (circle {:id     "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
+                        :stroke :green #_(cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}))))))))
 
 (defn matrix-build! []
   (reset! matrix
@@ -161,25 +187,3 @@
                             ;(use-blue)
                             (dyno-kids)
                             )))))))
-
-#_(defn main []
-    (println "[main]: loading")
-    (let [root (gdom/getElement "app")                      ;; "app" must be ID of DIV defined in index.html
-          app-matrix
-          (md/make :mx-dom
-            (cFonce (md/with-par me
-                      (div
-                        (wall-clock)
-                        (div {:style {:background-color "cyan"}}
-                          (span "Hi, Mom!")
-                          #_(three-circles)
-                          #_(radial-gradient)
-                          ;(basic-shapes)
-                          (use-blue)
-                          )))))
-          app-dom (tag-dom-create
-                    (mget app-matrix :mx-dom))]
-      (set! (.-innerHTML root) nil)
-      (gdom/appendChild root app-dom)))
-
-;(main)

@@ -43,8 +43,7 @@
 
 (defn radial-gradient []
   ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Gradients
-  (svg {:width   120 :height 240
-        :onclick (fn [e] (prn :Bam! e))}
+  (svg {:width   120 :height 240}
     (defs
       (radialGradient {:id :RG1}
         (stop {:offset "0%" :stop-color :red})
@@ -102,7 +101,8 @@
   ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
   ;;
   ;; Interesting if we watch the console: click either clone and the listeners for
-  ;; both the original and clone fire.
+  ;; both the original and clone fire. A feature, I think. Differentiate in original by
+  ;; checking if event target is its dom.
   ;;
   (div
     (p "Try clicking and shift-clicking each circle. Re-load page to reset; undo is undone.")
@@ -153,48 +153,27 @@
 
 (defn dyno-kids []
   (div
-    (make-svg "svg" (merge {:height 100} {:viewBox "0 0 40 10"})
-      (assoc {} :include-other? (cI true))
-      (cFkids
-        (circle {:id      "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1 :stroke :red
-                 :fill    (cI :black)
-                 :onclick (cF (fn [evt]
-                                (prn :bam!! (.-shiftKey evt))
-                                (if (.-shiftKey evt)
-                                  (mset! (mx-par me) :include-other? false)
-                                  (mset! me :fill :yellow))))})
-        (use {:id   "use-2"
-              :href "#myCircle" :x 10 :fill :blue})
-        (use {:id   "use-3"
-              :href "#myCircle" :x 20 :fill :white})
-        (g (when (mget (mx-par me) :include-other?)
-             (circle {:id     "myOtherCircle" :cx 35 :cy 5 :r 2 :stroke-width 3 :fill :cyan
-                      :stroke (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))})))))))
-
-(defn dyno-kids-hack []
-  (div
-    (make-svg :svg (merge {:height 100} {:viewBox "0 0 40 10"})
-      (assoc {:name :includer}
-        :include-other? (cI true))
+    (make-svg :svg {:version "1.1" ;; hhack added version
+                    :height 100
+                    :viewBox "0 0 40 10"}
+      {:name :includer
+      :include-other? (cI false)}
       (cFkids
         (circle {:id      "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1
                  :fill    (cI :black)
                  :stroke  (cF (if (mget (mx-par me) :include-other?) :orange :yellow))
                  :onclick (cF (fn [evt]
-                                (prn :bam!! (.-shiftKey evt))
                                 (if (not (.-shiftKey evt))
                                   (mswap! (mx-par me) :include-other? not)
                                   (mset! me :fill :yellow))))})
-        (g
-          #_ (circle {:id     "fixedCircle" :cx 15 :cy 5 :r 2 :stroke-width 2 :fill :cyan
+        (g {:id "the-G"}
+          (circle {:id     "fixedCircle" :cx 15 :cy 5 :r 2 :stroke-width 2 :fill :cyan
                    :stroke :red})
           (let [inker (fmu :includer)]
             (when (mget inker :include-other?)
-              (prn :making-optcircle!!!!!!)
+              ;; (prn :making-optcircle!!!!!!)
               (circle {:id     "optCircle" :cx 25 :cy 5 :r 2 :stroke-width 2 :fill :cyan
                        :stroke :green}))))))))
-
-
 
 (defn matrix-build! []
   (reset! matrix
@@ -209,6 +188,4 @@
                             #_(radial-gradient)
                             ;(basic-shapes)
                             ;(use-blue)
-                            (dyno-kids-hack)
-
-                            )))))))
+                            (dyno-kids))))))))

@@ -92,9 +92,11 @@
 (defn svg-dom-create [me dbg]
   (let [svg (.createElementNS js/document "http://www.w3.org/2000/svg"
               (mget me :tag))]
+    ;; todo sort these next two out
     (rmap-meta-setf [:dom-x me] svg)
     (rmap-meta-setf [:svg-x me] svg)
     (.setAttributeNS svg
+      ;; hhack - should this just be "xmlns"?
       "http://www.w3.org/2000/xmlns/"
       "xmlns:xlink"
       "http://www.w3.org/1999/xlink")
@@ -218,38 +220,39 @@
 
 (defmethod observe [:kids :web-mx.base/svg] [_ me newv oldv _]
   (when (not= oldv unbound)
-    (prn :svkids-change!!!!!! (count newv) (count oldv))
+    ;; (prn :svkids-change!!!!!! (count newv) (count oldv))
     (let [pdom (svg-dom me)
           lost (set/difference (set oldv) (set newv))
           gained (set/difference (set newv) (set oldv))
           kept (set/intersection (set newv) (set oldv))]
       (assert pdom)
-      (prn :kept!!! kept)
-      (prn :gained!!!!! gained)
-      (prn :lost!!!!!!! lost)
+      #_ (do (prn :kept!!! kept)
+             (prn :gained!!!!! gained)
+             (prn :lost!!!!!!! lost))
       (cond
         (and (= (set newv) (set oldv))
           (not (= oldv newv)))
         ;; simply reordered children
         (let [frag (.createDocumentFragment js/document)]
+          ;; (prn :svg-reorder!!)
           (doseq [newk newv]
             (dom/appendChild frag
               (.removeChild pdom (svg-dom newk))))
           ;; should not be necessary...
-          ;;(prn :reorder-rmechild pdom (dom/getFirstElementChild pdom))
-          (dom/removeChildren pdom)
+          ;; (dom/removeChildren pdom)
           (dom/appendChild pdom frag))
 
         (empty? gained)
         ;; just lose the lost
-        (doseq [oldk lost]
-          (.removeChild pdom (svg-dom oldk))
-          (when-not (string? oldk)
-            ; (println :obs-tag-kids-dropping (tagfo oldk))
-            (not-to-be oldk)))
+        (do ;; (prn :no-gained-losing-lost (count lost))
+            (doseq [oldk lost]
+              (.removeChild pdom (svg-dom oldk))
+              (when-not (string? oldk)
+                ; (println :obs-tag-kids-dropping (tagfo oldk))
+                (not-to-be oldk))))
 
         (empty? lost)
-        (do (prn :just-gained!!!!!!!!!)
+        (do ;; (prn :no-lost-adding-gained!!! (count gained))
             (doseq [newk gained]
               (let [new-dom (or (svg-dom newk)
                               (svg-dom-create newk false))]
@@ -257,9 +260,9 @@
 
 
         :default (let [frag (.createDocumentFragment js/document)]
-                   (prn :mix-kept!!! kept)
-                   (prn :mix-gained!!!!! gained)
-                   (prn :mix-lost!!!!!!! lost)
+                   #_ (do (prn :mix-kept!!! kept)
+                          (prn :mix-gained!!!!! gained)
+                          (prn :mix-lost!!!!!!! lost))
                    ;; GC lost from matrix;
                    ;; move retained kids from pdom into fragment,
                    ;; add all new kids to fragment, and do so preserving
@@ -267,23 +270,23 @@
                    (doseq [oldk lost]
                      (when-not (string? oldk)
                        ;; no need to remove dom, all children replaced below.
-                       (prn :not-to-be!!!!! oldk)
+                       ;;(prn :not-to-be!!!!! oldk)
                        (not-to-be oldk)))
 
                    (doseq [newk newv]
-                     (prn :adding-newk newk)
+                     ;;(prn :adding-newk newk)
                      (let [new-dom (if (some #{newk} oldv)
                                      (.removeChild pdom (svg-dom newk))
                                      (do
-                                       (println :obs-tag-kids-building-new-dom (tagfo newk))
+                                       ;; (println :obs-tag-kids-building-new-dom (tagfo newk))
                                        (svg-dom-create newk false)))]
                        (dom/appendChild frag new-dom)))
 
-                   #_(.requestAnimationFrame js/window
-                       #(do
-                          (prn :BAM-ani-frame)
-                          (dom/removeChildren pdom)
-                          (dom/appendChild pdom frag)))
+                   (do
+                     ;; (prn :BAM-remove-append)
+                     (dom/removeChildren pdom)
+                     (dom/appendChild pdom frag))
+
                    )))))
 
 (def +inline-css+ (set [:display]))

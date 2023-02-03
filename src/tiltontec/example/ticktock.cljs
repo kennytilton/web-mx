@@ -25,20 +25,21 @@
                          .toTimeString
                          (str/split " ")
                          first)
-                       "*checks watch*"))}
+                       "*checking*"))}
     {:tick   (cI nil)
      :ticker (cF (js/setInterval #(mset! me :tick (js/Date.)) 1000))}))
 
 (defn color-input []
-  (div {:class "color-input"}
-    "Hex Time Color #"
+  (div {:class "color-input"
+        :style {:display :flex
+                :align-items :left
+                :justify-content :center
+                :background "linen"}}
+    "Hex Time Color #&nbsp"
     (input {:value    (cI "0FF")
             :tag/type "text"
             :style    {:width           "100%"
-                       :display         :flex
-                       :align-items     :top
-                       :justify-content :center
-                       :padding         "3px 6px"
+                       :padding         "0px 6px"
                        :max-width       "48px"}
             :onchange #(mset! (evt-mx %)
                          :value (target-value %))}
@@ -49,12 +50,14 @@
     (md/make ::ticktock
       :mx-dom (cFonce (md/with-par me
                         [(div {:style {:margin  "24px"
+                                       :display         :flex
+                                       :flex-direction :column
+                                       :align-items     :center
+                                       ;:justify-content :center
                                        :padding "1em"}}
                            (h1 {} "Hello, world. 'Tis now....")
                            (clock)
                            (color-input))])))))
-
-
 
 (defn main []
   (ex-util/main matrix-build!))

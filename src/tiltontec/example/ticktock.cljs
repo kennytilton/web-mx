@@ -34,18 +34,21 @@
     "Hex Time Color #"
     (input {:value    (cI "0FF")
             :tag/type "text"
-            :style    {:width     "100%"
-                       :padding   "3px 6px"
-                       :max-width "48px"}
+            :style    {:width           "100%"
+                       :display         :flex
+                       :align-items     :top
+                       :justify-content :center
+                       :padding         "3px 6px"
+                       :max-width       "48px"}
             :onchange #(mset! (evt-mx %)
                          :value (target-value %))}
-      {:name     :timecolor})))
+      {:name :timecolor})))
 
 (defn matrix-build! []
   (reset! matrix
     (md/make ::ticktock
       :mx-dom (cFonce (md/with-par me
-                        [(div {:style {:margin "24px"
+                        [(div {:style {:margin  "24px"
                                        :padding "1em"}}
                            (h1 {} "Hello, world. 'Tis now....")
                            (clock)

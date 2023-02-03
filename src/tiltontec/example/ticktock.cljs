@@ -17,33 +17,35 @@
 
 (defn clock []
   (div {:class   "example-clock"
-        :style   (cF (str "color:#" (mget (mxu-find-name me :timecolor) :value)))
-        :content (cF (if (mget me :tick)
-                       (-> (js/Date.)
+        :style   (cF (str "color:#"
+                       (mget (mxu-find-name me :timecolor) :value)))
+        :content (cF (if-let [tick (mget me :tick)]
+                       (-> tick
                          .toTimeString
                          (str/split " ")
                          first)
                        "*checks watch*"))}
-    {:tick   (cI false :ephemeral? true)
-     :ticker (cF (js/setInterval #(mset! me :tick true) 1000))}))
+    {:tick   (cI nil)
+     :ticker (cF (js/setInterval #(mset! me :tick (js/Date.)) 1000))}))
 
 (defn color-input []
   (div {:class "color-input"}
     "Hex Time Color #"
-    (input {:style    {:width     "100%"
+    (input {:value    (cI "0FF")
+            :tag/type "text"
+            :style    {:width     "100%"
                        :padding   "3px 6px"
                        :max-width "48px"}
-            :value    (cI "0FF")
             :onchange #(mset! (evt-mx %)
                          :value (target-value %))}
-      {:name     :timecolor
-       :tag/type "text"})))
+      {:name     :timecolor})))
 
 (defn matrix-build! []
   (reset! matrix
     (md/make ::ticktock
       :mx-dom (cFonce (md/with-par me
-                        [(div {}
+                        [(div {:style {:margin "24px"
+                                       :padding "1em"}}
                            (h1 {} "Hello, world. 'Tis now....")
                            (clock)
                            (color-input))])))))

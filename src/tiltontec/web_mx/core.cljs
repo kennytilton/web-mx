@@ -26,13 +26,10 @@
   (:import [goog.date UtcDateTime]))
 
 (enable-console-print!)
-
 (tufte/add-basic-println-handler! {})
 
 (let [root (dom/getElement "tagroot")
-
       app-matrix (app/matrix-build!)
-
       app-dom (binding [*web-mx-trace* nil]                  ;; <-- set to nil if console too noisy
                 (tag-dom-create
                   (md/mget app-matrix :mx-dom)))

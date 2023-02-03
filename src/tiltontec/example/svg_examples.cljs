@@ -13,7 +13,7 @@
              :refer [jso-map]
              :refer-macros [svg g circle p span div text radialGradient defs stop
                             rect ellipse line polyline path polygon script use]]
-            [tiltontec.web-mx.html :refer [tag-dom-create]]))
+            [tiltontec.example.util :as ex-util]))
 
 (defn wall-clock []
   (div {:class   "example-clock"
@@ -189,3 +189,8 @@
                             ;(basic-shapes)
                             ;(use-blue)
                             (dyno-kids))))))))
+
+(defn main []
+  (ex-util/main matrix-build!))
+
+(main)

@@ -11,7 +11,8 @@
                             svg g circle p span div text radialGradient defs stop
                             rect ellipse line polyline path polygon script use]]
 
-            [tiltontec.web-mx.html :refer [tag-dom-create]]))
+            [tiltontec.web-mx.html :refer [tag-dom-create]]
+            [tiltontec.example.util :as ex-util]))
 
 ;;; -------------------------------------------------------
 
@@ -53,12 +54,6 @@
 
 
 (defn main []
-  (println "[main]: loading")
-  (let [root (gdom/getElement "app")                        ;; must be defined in index.html
-        app-matrix (matrix-build!)
-        app-dom (tag-dom-create
-                  (mget app-matrix :mx-dom))]
-    (set! (.-innerHTML root) nil)
-    (gdom/appendChild root app-dom)))
+  (ex-util/main matrix-build!))
 
 (main)

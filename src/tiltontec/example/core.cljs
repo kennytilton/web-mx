@@ -3,8 +3,8 @@
             [tiltontec.model.core :refer [mget]]
             [tiltontec.web-mx.html :refer [tag-dom-create]]
             ;; --- un-comment only one below to run that example ---------------------
-            [tiltontec.example.svg-examples :as example]
-            ;[tiltontec.example.ticktock :as example]
+            ;[tiltontec.example.svg-examples :as example]
+            [tiltontec.example.ticktock :as example]
             ))
 
 (defn main []

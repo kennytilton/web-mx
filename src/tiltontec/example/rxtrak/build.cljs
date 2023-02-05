@@ -211,26 +211,32 @@
 
 ;; --- miscellaneous components -----------------
 
+(defonce ticker-cache (atom nil))
+
 (defn std-clock []
-  (let [steps (atom 60)]
-    (div {:class   "std-clock"
-          :content (cF (subs (.toDateString
-                               (js/Date.
-                                 (mget me :clock)))
-                         4))
-          :onclick #(do (reset! steps 60)
-                        (mset! (evt-mx %) :clock (now)))
-          }
-      {:clock  (cI (now))
-       :ticker (cFonce (js/setInterval
-                         #(when (pos? (swap! steps dec))
-                            (let [time-step (* 6 3600 1000)
-                                  w (mget me :clock)]
-                              (mset! me :clock (+ w time-step))))
-                         1000))})))
+  (div {:class   "std-clock"
+        :content (cF (subs (.toDateString
+                             (js/Date.
+                               (mget me :clock)))
+                       4))
+        :onclick #(do (mset! (evt-mx %) :clock (now)))
+        :title "Click to reset to now."}
+    {:clock  (cI (now))
+     :ticker (cF+ [:obs (fn [_ _ newv oldv c]
+                          ;; todo enhance finalization/hot-reload
+                          (when-let [xticker @ticker-cache]
+                            (js/clearInterval xticker))
+                          (reset! ticker-cache newv))]
+               (without-c-dependency
+                 (js/setInterval
+                   #(let [time-step (* 6 3600 1000)
+                          w (mget me :clock)]
+                      (mswap! me :clock + time-step))
+                   1000)))}))
 
 ;; --- AE autocheck -----------------------
 
+;;; this next is effectively disabled as excessive
 (defn ae-autocheck? [me]
   (tag-checkbox me "ae-autocheck"
     "Auto-check AEs" true
@@ -246,7 +252,8 @@
                                              (assert ul)
                                              (if (> (count (mget ul :selections)) 1)
                                                "block" "none")))
-                              :display "block"))
+                              ;;:display "block"
+                              ))
            :onclick #(js/alert "Feature not yet implemented.")}
 
     {:rxs nil}

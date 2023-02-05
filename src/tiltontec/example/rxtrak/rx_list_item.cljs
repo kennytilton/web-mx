@@ -41,11 +41,11 @@
             [clojure.string :as $]))
 
 (declare rx-edit
-  ae-explorer
   adverse-event-checker
   due-by-input)
 
 (defn rx-list-item [me rx matrix]
+  (assert rx "no rx entering rx-list-item")
   (let [ul-tag me]
     (li {:class   (cF [(when (mget me :selected?) "chosen")
                        (when (mget me :editing?) "editing")
@@ -79,9 +79,8 @@
                                     (dom/getElementByClass "edit" (tag-dom rx-li))
                                     (rx-title rx)))}
              (rx-title rx))
-           (due-by-input rx)
-           ;;(ae-explorer rx)
            (adverse-event-checker rx)
+           (due-by-input rx)
            (button {:class   "destroy"
                     :onclick #(rx-delete! rx)}))
          (letfn [(rx-edt [event]
@@ -155,18 +154,20 @@
 
 (def ae-by-brand "https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:~(~a~)&limit=3")
 
-(defn ae-brand-uri [todo]
+(defn ae-brand-uri [rx]
   (pp/cl-format nil ae-by-brand
-    (js/encodeURIComponent (rx-title todo))))
+    (js/encodeURIComponent (rx-title rx))))
 
 (defn xhr-scavenge [xhr]
   (when-not (or (= xhr unbound) (nil? xhr))
     (not-to-be xhr)))
 
-(defn adverse-event-checker [todo]
+(defn adverse-event-checker [rx]
+  (assert rx "no rx entering adverse-eent-checker")
+  (prn :rx-title (rx-title rx))
   (i
     {:class   "aes material-icons"
-     :title "Click to see some AE counts"
+     :title "Nothing to take seriously; the AE DB almost always has something. Try 'dog', tho."
      :onclick #(js/alert "Feature to display AEs not yet implemented")
      :style   (cF (str "font-size:36px"
                     ";display:" (case (mget me :aes?)
@@ -174,14 +175,14 @@
                                   "block")
                     ";color:" (case (mget me :aes?)
                                 :undecided "gray"
-                                :yes "red"
+                                :yes "orange"
                                 ;; should not get here
                                 "white")))}
 
     {:lookup   (cF+ [:obs (fn-obs (xhr-scavenge old))]
                  (make-xhr (pp/cl-format nil ae-by-brand
                              (js/encodeURIComponent
-                               (de-whitespace (rx-title todo))))
+                               (de-whitespace (rx-title rx))))
                    {:name       name :send? true
                     :fake-delay (+ 500 (rand-int 2000))}))
      :response (cF (when-let [xhr (mget me :lookup)]

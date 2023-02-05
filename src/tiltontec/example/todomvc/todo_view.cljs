@@ -28,51 +28,6 @@
     [cljs.pprint :as pp]
     [clojure.string :as str]))
 
-;;; -----------------------------------------------------------
-;;; --- adverse events ----------------------------------------
-
-
-(def ae-by-brand "https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:~(~a~)&limit=3")
-
-(defn ae-brand-uri [todo]
-  (pp/cl-format nil ae-by-brand
-    (js/encodeURIComponent (td-title todo))))
-
-(defn xhr-scavenge [xhr]
-  (when-not (or (= xhr unbound) (nil? xhr))
-    (not-to-be xhr)))
-
-(defn de-whitespace [s]
-  (str/replace s #"\s" ""))
-
-(defn adverse-event-checker [todo]
-  (i
-    {:class   "aes material-icons"
-     :title "Click to see some AE counts"
-     :onclick #(js/alert "Feature to display AEs not yet implemented")
-     :style   (cF (str "font-size:36px"
-                    ";display:" "block" #_ (case (mget me :aes?)
-                                  :no "none"
-                                  "block")
-                    ";color:" (case (mget me :aes?)
-                                :undecided "gray"
-                                :yes "red"
-                                ;; should not get here
-                                "green" #_ "white")))}
-
-    {:lookup   (cF+ [:obs (fn-obs (xhr-scavenge old))]
-                 (make-xhr (pp/cl-format nil ae-by-brand
-                             (js/encodeURIComponent
-                               (de-whitespace (td-title todo))))
-                   {:name       name :send? true
-                    :fake-delay (+ 500 (rand-int 2000))}))
-     :response (cF (when-let [xhr (mget me :lookup)]
-                     (xhr-response xhr)))
-     :aes?     (cF (if-let [r (mget me :response)]
-                     (if (= 200 (:status r)) :yes :no)
-                     :undecided))}
-    "warning"))
-
 (defn todo-edit [e todo edit-commited?]
   (let [edt-dom (.-target e)
         li-dom (dom/getAncestorByTagNameAndClass edt-dom "li")]
@@ -101,9 +56,7 @@
   (li
     {:class (cF (when (td-completed todo)
                   "completed"))}
-
     {:todo todo}
-
     (div {:class "view"}
       (input {:class       "toggle"
               ;; namespaced :type is for HTML attribute
@@ -124,10 +77,8 @@
                              (web-mx/input-editing-start edt-dom (td-title todo)))}
         (td-title todo))
 
-      (adverse-event-checker todo)
-
       (button {:class   "destroy"
-               ;; we actually have an td-delete! to hide the action, but
+               ;; we actually have a td-delete! to hide the action, but
                ;; this is a tutorial so let's show the action and use mset!.
                ;; btw, yes, we extend here the spec to support logical deletion
                :onclick #(md/mset! todo :deleted (util/now))}))

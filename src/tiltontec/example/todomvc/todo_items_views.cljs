@@ -114,20 +114,16 @@
       ;; _cache is prior value for this implicit 'kids' slot; k-v-k uses it for diffing
       (kid-values-kids me _cache))))
 
-
-
 (defn todo-items-dashboard []
   (footer {:class  "footer"
            :hidden (cF (mget (mx-todos me) :empty?))}
 
-    ;; Items remaing
-
+    ;; Items remaining
     (span {:class   "todo-count"
            :content (cF (pp/cl-format nil "<strong>~a</strong>  item~:P remaining"
                           (count (mget (mx-todos me) :items-active))))})
 
     ;; Item filters
-
     (ul {:class "filters"}
       (for [[label route] [["All", "#/"]
                            ["Active", "#/active"]

@@ -1,8 +1,6 @@
 (ns tiltontec.example.rxtrak.rx-list-item
   (:require [cljs.pprint :as pp]
             [clojure.string :as str]
-            [bide.core :as r]
-            [taoensso.tufte :as tufte :refer-macros (defnp profiled profile)]
 
             [tiltontec.util.core :refer [pln xor now]]
             [tiltontec.cell.base :refer [unbound ia-type *within-integrity* *defer-changes*]]
@@ -13,7 +11,6 @@
              :refer-macros [with-synapse]
              :refer []]
 
-
             [tiltontec.model.core :refer [matrix mx-par mget mset! mswap!
                                           fget mxi-find mxu-find-type
                                           kid-values-kids] :as md]
@@ -21,29 +18,19 @@
             [tiltontec.web-mx.html
              :refer [io-read io-upsert io-clear-storage
                      tag-dom-create
-                     mxu-find-tag mxu-find-class
-                     dom-tag tagfo
+                     mxu-find-tag mxu-find-class tagfo
                      dom-has-class dom-ancestor-by-tag]
              :as tag]
-
             [tiltontec.mxxhr.core
              :refer [make-xhr send-xhr send-unparsed-xhr xhr-send xhr-await xhr-status
                      xhr-status-key xhr-resolved xhr-error xhr-error? xhrfo synaptic-xhr synaptic-xhr-unparsed
                      xhr-selection xhr-to-map xhr-name-to-map xhr-response]]
-
             [tiltontec.web-mx.gen-macro
-             :refer-macros [section header h1 input footer p a span label ul li div button br]]
-
-            [tiltontec.web-mx.gen
-             :refer [dom-tag evt-mx]]
-
+             :refer-macros [section header h1 input footer p a span label ul li div button br i]]
             [tiltontec.web-mx.style :refer [make-css-inline]]
 
             [goog.dom :as dom]
             [goog.dom.classlist :as classlist]
-            [goog.editor.focus :as focus]
-            [goog.dom.selection :as selection]
-            [goog.events.Event :as event]
             [goog.dom.forms :as form]
 
             [tiltontec.example.rxtrak.rx
@@ -55,6 +42,7 @@
 
 (declare rx-edit
   ae-explorer
+  adverse-event-checker
   due-by-input)
 
 (defn rx-list-item [me rx matrix]
@@ -62,7 +50,6 @@
     (li {:class   (cF [(when (mget me :selected?) "chosen")
                        (when (mget me :editing?) "editing")
                        (when (rx-completed rx) "completed")])
-
          :display (cF (if-let [route (mget matrix :route)]
                         (cond
                           (or (= route "All")
@@ -70,12 +57,10 @@
                               (rx-completed rx))) "block"
                           :default "none")
                         "block"))}
-      ;;; custom slots..
+      ;;; custom slots
       {:rx        rx
        ;; above is also key to identify lost/gained LIs, in turn to optimize list maintenance
-
        :selected? (cF (some #{rx} (mget ul-tag :selections)))
-
        :editing?  (cI false)}
 
       (let [rx-li me]
@@ -83,27 +68,22 @@
            (input {:class   "toggle" ::tag/type "checkbox"
                    :checked (cF (not (nil? (rx-completed rx))))
                    :onclick #(rx-toggle-completed! rx)})
-
            (label {:onclick    (fn [evt]
                                  (mswap! ul-tag :selections
                                    #(if (some #{rx} %)
                                       (remove #{rx} %)
                                       (conj % rx))))
-
                    :ondblclick #(do
                                   (mset! rx-li :editing? true)
                                   (tag/input-editing-start
                                     (dom/getElementByClass "edit" (tag-dom rx-li))
                                     (rx-title rx)))}
              (rx-title rx))
-
            (due-by-input rx)
-
-           (ae-explorer rx)
-
+           ;;(ae-explorer rx)
+           (adverse-event-checker rx)
            (button {:class   "destroy"
                     :onclick #(rx-delete! rx)}))
-
          (letfn [(rx-edt [event]
                    (rx-edit event rx-li))]
            (input {:class     "edit"
@@ -174,6 +154,42 @@
   ($/replace s #"\s" ""))
 
 (def ae-by-brand "https://api.fda.gov/drug/event.json?search=patient.drug.openfda.brand_name:~(~a~)&limit=3")
+
+(defn ae-brand-uri [todo]
+  (pp/cl-format nil ae-by-brand
+    (js/encodeURIComponent (rx-title todo))))
+
+(defn xhr-scavenge [xhr]
+  (when-not (or (= xhr unbound) (nil? xhr))
+    (not-to-be xhr)))
+
+(defn adverse-event-checker [todo]
+  (i
+    {:class   "aes material-icons"
+     :title "Click to see some AE counts"
+     :onclick #(js/alert "Feature to display AEs not yet implemented")
+     :style   (cF (str "font-size:36px"
+                    ";display:" (case (mget me :aes?)
+                                  :no "none"
+                                  "block")
+                    ";color:" (case (mget me :aes?)
+                                :undecided "gray"
+                                :yes "red"
+                                ;; should not get here
+                                "white")))}
+
+    {:lookup   (cF+ [:obs (fn-obs (xhr-scavenge old))]
+                 (make-xhr (pp/cl-format nil ae-by-brand
+                             (js/encodeURIComponent
+                               (de-whitespace (rx-title todo))))
+                   {:name       name :send? true
+                    :fake-delay (+ 500 (rand-int 2000))}))
+     :response (cF (when-let [xhr (mget me :lookup)]
+                     (xhr-response xhr)))
+     :aes?     (cF (if-let [r (mget me :response)]
+                     (if (= 200 (:status r)) :yes :no)
+                     :undecided))}
+    "warning"))
 
 (defn ae-explorer [rx]
   (button {:class   "li-show"

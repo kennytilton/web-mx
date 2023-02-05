@@ -100,25 +100,23 @@
 (defn landing-page []
   [(section {:class "todoapp"}
      (std-clock)
-
      (header {:class "header"}
        (h1 "&#x211e;Trak")
        (rx-entry-field))
-
      (rx-list-items)
-
      (div {:style {:display          "flex"
                    :flex-direction   "row"
                    :justify-content  "space-between"}}
        (ae-autocheck? me)
        (check-interactions me))
-
      (dashboard-footer))
 
    (footer {:class "info"}
-     (p "Double-click a to-do list item to edit it.")
-     (p "Created by <a href=\"https://github.com/kennytilton/kennytilton.github.io/blob/master/README.md\">Kenneth Tilton</a>.")
-     (p "Inspired by <a href=\"http://todomvc.com/\">TodoMVC</a>."))])
+     (mapv #(p %)
+       ["Double-click a to-do list item to edit it."
+        "Created by <a href=\"https://github.com/kennytilton/kennytilton.github.io/blob/master/README.md\">Kenneth Tilton</a>."
+        "Inspired by <a href=\"http://todomvc.com/\">TodoMVC</a>."]))
+   ])
 
 ;; --- to-do Entry -----------------------------------
 
@@ -235,9 +233,9 @@
 
 (defn ae-autocheck? [me]
   (tag-checkbox me "ae-autocheck"
-    "Auto-check AEs?" true
+    "Auto-check AEs" true
     {:class "ae-autocheck"
-     :style "font-size:1.2em;margin:24px"}))
+     :style "display:none;font-size:1.2em;margin:24px"}))
 
 (defn check-interactions [me]
   (button {:class   "li-show"

@@ -154,6 +154,18 @@ body {
 	border-bottom: 1px solid #ededed;
 }
 
+.todo-list li .aes {
+    position: absolute;
+    top: 6px;
+    right: 300px;
+    bottom: 0;
+    width: 20px;
+    /*color: #00f;*/
+    height: 40px;
+    margin: auto 0;
+    font-size: 10px;
+}
+
 .todo-list li:last-child {
 	border-bottom: none;
 }
@@ -162,8 +174,6 @@ body {
 	border-bottom: none;
 	padding: 0;
 }
-
-
 
 .todo-list li.editing .edit {
 	display: block;

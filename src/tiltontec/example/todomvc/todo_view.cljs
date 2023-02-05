@@ -51,14 +51,14 @@
      :title "Click to see some AE counts"
      :onclick #(js/alert "Feature to display AEs not yet implemented")
      :style   (cF (str "font-size:36px"
-                    ";display:" (case (mget me :aes?)
+                    ";display:" "block" #_ (case (mget me :aes?)
                                   :no "none"
                                   "block")
                     ";color:" (case (mget me :aes?)
                                 :undecided "gray"
                                 :yes "red"
                                 ;; should not get here
-                                "white")))}
+                                "green" #_ "white")))}
 
     {:lookup   (cF+ [:obs (fn-obs (xhr-scavenge old))]
                  (make-xhr (pp/cl-format nil ae-by-brand

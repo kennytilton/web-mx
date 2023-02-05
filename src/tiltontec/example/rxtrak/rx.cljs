@@ -125,9 +125,7 @@
   ;; unbound as the prior value means this is the initial observation fired off
   ;; on instance initialization (to get them into the game, if you will), so skip upsert
   ;; since we store explicitly after making a new rx.
-  (prn :obytype!!!!!! slot new-val old-val)
   (when-not (= old-val unbound)
-    (prn :upserting!!!!)
     (rx-upsert me)))
 
 ;;; --- loading from localStorage ----------------
@@ -143,7 +141,6 @@
          (io-find RX_LS_PREFIX))))
 
 (defn- remake-rx [islots]
-  (prn :remake-sees islots)
   (apply md/make
          (flatten
            (into []

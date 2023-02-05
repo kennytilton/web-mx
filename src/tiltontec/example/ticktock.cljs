@@ -1,25 +1,20 @@
 (ns tiltontec.example.ticktock
   (:require [clojure.pprint :as pp]
             [clojure.string :as str]
-            [tiltontec.cell.base :refer [md-ref? ia-type unbound minfo]]
             [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
             [tiltontec.web-mx.gen :refer [evt-mx target-value]]
-            [tiltontec.web-mx.html
-             :refer [mxu-find-tag mxu-find-class]]
             [tiltontec.web-mx.gen-macro
              :refer [img section h1 h2 h3 input footer p a
-                     pre code span i label ul li div button br
-                     svg g circle p span div text radialGradient defs stop
-                     rect ellipse line polyline path polygon script use]]
+                     span i label ul li div button br
+                     svg g circle p span div]]
             [tiltontec.web-mx.style :refer [make-css-inline]]
             [tiltontec.example.util :as ex-util]))
 
 ;;; -------------------------------------------------------
 
 (defn lawrence-welk [beats]
-  ;; todo put on one line
   (div {:style {:display :flex}}
     (mapv #(p (str "ah, " % "..."))
       (mapv (fn [bn] (pp/cl-format nil "~r" (inc bn)))
@@ -45,32 +40,32 @@
      :ticker (cF (js/setInterval #(mset! me :tick (js/Date.)) 1000))}))
 
 (defn color-input [initial-color]
-  (div {:class "color-input"}{:name :color-inpt}
+  (div {:class "color-input"} {:name :color-inpt}
     "Hex Time Color #&nbsp"
-    (input {:value    (cI initial-color)
-            :tag/type "text"
-            :title    "RGB color in hex format, either XXX or XXXXXX"
+    (input {:tag/type "text"
+            :value    (cI initial-color)
+            :onchange (fn [e]
+                        (mset! (evt-mx e) :value
+                          (target-value e)))
+            :title    "RGB color in hex format, either XXX or XXXXXX, without the octothorpe."
             :style    (cF (make-css-inline me
-                        :width "100%"
-                        :padding "0px 6px"
-                        :max-width "96px"
-                        :font-size "24px"
-                        :border :solid
-                        :border-color (cF
-                                        (prn :bcolor-sees (minfo me))
-                                        (prn :bcolor-tag (minfo (mget me :tag)))
-                                        (if (mget (:tag @me) :value-error)
-                                            "red" "green"))
-                        :display :block))
-            #_{:background "white"
-               :width      "100%"
-               :padding    "0px 6px"
-               :max-width  "96px"}
-            :onchange #(mset! (evt-mx %) :value
-                         (target-value %))}
-      ;; todo add validation
-      {:name        :timecolor
-       :value-error true})))
+                            :width "100%"
+                            :max-width "96px"
+                            :border :solid :border-width :thin
+                            :background-color (cF (let [rgb-status (mget (mget me :tag) :value-status)]
+                                                    (case rgb-status
+                                                      :invalid "#fcc"
+                                                      ;:valid "#0f0"
+                                                      ;:blank "cyan"
+                                                      "white")))))
+            }
+      {:name         :timecolor
+       :value-status (cF (let [rgb (mget me :value)]
+                           (cond
+                             (str/blank? rgb) :blank
+                             (not-any? #{(count rgb)} [3 6]) :invalid
+                             (re-matches #"[0-9a-fA-F]+" rgb) :valid
+                             :else :invalid)))})))
 
 (defn matrix-build! []
   (md/make ::ticktock
@@ -94,7 +89,3 @@
 
 (ex-util/main matrix-build!)
 
-#_#_(defn main []
-      (ex-util/main matrix-build!))
-
-        (main)

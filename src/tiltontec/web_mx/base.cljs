@@ -10,14 +10,14 @@
 (defonce js-intervals (atom nil))
 
 (defn js-interval-register [interval]
-  (prn :registering!! interval)
+  ;(prn :registering!! interval)
   (swap! js-intervals conj interval)
   interval)
 
 (defn ^:before-load teardown []
-  (prn :bef-teardown!!!!!!!)
+  ;(prn :bef-teardown!!!!!!!)
   (doseq [i @js-intervals]
-    (prn :clearing!!!!!!!! i)
+    ;(prn :clearing!!!!!!!! i)
     (js/clearInterval i))
   (reset! js-intervals nil))
 

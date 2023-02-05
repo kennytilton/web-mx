@@ -1,0 +1,13 @@
+.wall-clock {
+    font-size: 24px;
+    color: blue;
+    line-height: 1.2em;
+    font-family: HelveticaNeue-UltraLight, Helvetica;
+}
+
+@media (max-width: 768px) {
+    .example-clock {
+        font-size: 64px;
+    }
+}
+

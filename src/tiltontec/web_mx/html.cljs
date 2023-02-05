@@ -401,6 +401,7 @@
 
 (defn io-truncate [key-prefix]
   (doseq [key (io-find key-prefix)]
+    (prn :io-trunc-nails key)
     (io-delete key)))
 
 ;;; ---- tiltontec.web-mx-specific utilities ----------------------------------------------

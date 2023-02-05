@@ -11,7 +11,7 @@
 (enable-console-print!)
 (tufte/add-basic-println-handler! {})
 
-(let [root (dom/getElement "tagroot")
+(let [root (dom/getElement "app")
       app-matrix (rxtrak/matrix-build!)
       app-dom (tag-dom-create
                 (mget app-matrix :mx-dom))]

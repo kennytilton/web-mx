@@ -21,6 +21,7 @@
   #_ (prn :mkcss-sees tag (for [[k _] (partition 2 stylings)] k)
     stylings)
   (apply make
+    :name :inline-css
     :type :web-mx.css/css
     :tag tag
     :css-keys (for [[k _] (partition 2 stylings)] k)

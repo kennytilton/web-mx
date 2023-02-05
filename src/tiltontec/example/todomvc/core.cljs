@@ -61,8 +61,8 @@
       :mx-dom (cFonce
                 (with-par me
                   (section {:class "todoapp" :style "padding:24px"}
-                    (webco/wall-clock :date 60000 0 15)
-                    (webco/wall-clock :time 1000 0 8)
+                    ;(webco/wall-clock :date 60000 0 15)
+                    ;(webco/wall-clock :time 1000 0 8)
                     (header {:class "header"}
                       (h1 "todos")
                       (todo-entry-field))

@@ -16,9 +16,11 @@ To run the current example, just:
 ```bash
 git clone https://github.com/kennytilton/web-mx.git
 cd web-mx
-lein fig -- --build example --repl
+clojure -M -m figwheel.main --build ticktock --repl
 ```
-Edit `tiltontec.example.core.cljs` to have the app run different examples.
+After a minute or so the `ticktock` example shoult appear in your browser at `http://localhost:9500/ticktock.html`, leaving a CLJS REPL in the original terminal.
+
+Other examples, besides `ticktock`, are `todomvc` and `rxtrak`.
 
 ### Overview
 

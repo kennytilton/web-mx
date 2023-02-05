@@ -47,24 +47,8 @@
                ""))]
     ;; (pln :mxw-gens-ss ss)
     ss))
-; When possible, use native APIs: elem.style.propertyKey = 'value' or
-; (if obliterating old styles is fine) elem.style.cssText = 'property1: value1; property2: value2'.
 
 (defmethod observe-by-type [:web-mx.css/css] [slot me newv oldv _]
   (when (not= oldv unbound)
-    (prn :css-obs-type!!!! newv slot )
-
     (let [dom (tag-dom (mget me :tag))]
-      (prn :css-obs-type!!!! newv slot (minfo (mget me :tag)))
-      #_#_
-      (prn :old-dom-border-color!!  (.-borderColor (.-style dom))
-        (gstyle/getStyle dom "border-color"))
-
-      (prn :old-dom-border-color!!  (.-border-color (.-style dom))
-        (gstyle/getStyle dom "borderColor"))
-
-      #_ (when (some #{slot} [:animation])
-        (prn :CSS-obs-by-type slot newv oldv (kw$ newv)))
-      (gstyle/setStyle dom (name slot) (kw$ newv))
-     ;; (set! (.-borderColor (.-style dom)) (kw$ newv))
-      )))
+      (gstyle/setStyle dom (name slot) (kw$ newv)))))

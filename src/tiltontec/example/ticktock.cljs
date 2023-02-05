@@ -73,6 +73,11 @@
               (div {:class "ticktock"}
                 {:name    :app
                  :ticking (cI true)}
+                ; the theme below is that the DIV (and every HTML element that takes children)
+                ; does not need to be given a flat list of children. The macrology hides
+                ; the flattening and removal of nils done for us, which we need when
+                ; generating children with collections and conditionals. And we can get children
+                ; by calling functions such as 'lawerence-welk' and 'color-input'.
                 (h1 "Hello, world.")
                 (when false (h2 "Hi, Mom!"))
                 (when (mget me :ticking)

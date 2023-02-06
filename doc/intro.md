@@ -41,3 +41,13 @@ figo () {
     clojure -M -m figwheel.main --build $1 --repl
 }
 ```
+### Baby Steps: The Intro Example
+We will be modifying one of the examples, `intro.cljs`. Let us fire that up. In a terminal:
+```bash
+cd web-mx
+clojure -M -m figwheel.main --build intro --repl
+```
+In a minute we should see a blank (kinda) landing page at `localhost:9500/intro.html`.
+
+Now we need to open the `web-mx` project in our favorite ClojureScript IDE, and open `example/intro.cljs`.
+

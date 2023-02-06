@@ -79,18 +79,14 @@
            ;; input HTML checked attribute and will also guide the label onclick handler.
            :action (cF (if (every? td-completed (mx-todo-items me))
                          :uncomplete :complete))}
-
     (input {:id        "toggle-all"
             :class     "toggle-all"
             ::web-mx/type "checkbox"
             :checked   (cF (= (mget (mx-par me) :action) :uncomplete))})
-
     (label {:for     "toggle-all"
             :onclick #(let [action (mget me :action)]
-
-                        ;; else browser messes with checked, which we handle
+                        ;; preventDefault else browser messes with checked, which _we_ handle
                         (event/preventDefault %)
-
                         (doseq [td (mx-todo-items)]
                           (mset! td :completed (when (= action :complete) (util/now)))))}
       "Mark all as complete")))

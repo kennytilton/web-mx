@@ -36,7 +36,7 @@
                          first)
                        "*checking*"))}
     {:tick   (cI nil)
-     ;; todo not-to-be handling
+     ;; todo finalize handling
      :ticker (cF (js/setInterval #(mset! me :tick (js/Date.)) 1000))}))
 
 (defn color-input [initial-color]

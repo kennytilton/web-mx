@@ -5,7 +5,7 @@
             [tiltontec.util.core :refer [pln xor now]]
             [tiltontec.cell.base :refer [unbound ia-type *within-integrity* *defer-changes*]]
             [tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce] :refer [cI]]
-            [tiltontec.cell.evaluate :refer [not-to-be]]
+            [tiltontec.cell.evaluate :refer [finalize]]
             [tiltontec.cell.observer :refer-macros [fn-obs]]
             [tiltontec.cell.synapse
              :refer-macros [with-synapse]
@@ -160,7 +160,7 @@
 
 (defn xhr-scavenge [xhr]
   (when-not (or (= xhr unbound) (nil? xhr))
-    (not-to-be xhr)))
+    (finalize xhr)))
 
 (defn adverse-event-checker [rx]
   (assert rx "no rx entering adverse-eent-checker")
@@ -204,7 +204,7 @@
 
     {:ae         (cF+ [:obs (fn-obs
                               (when-not (or (= old unbound) (nil? old))
-                                (not-to-be old)))]
+                                (finalize old)))]
                    (when (mget (mxu-find-class me "ae-autocheck") :on?)
                      #_(prn :sending (pp/cl-format nil ae-by-brand
                                        (js/encodeURIComponent (rx-title rx))))

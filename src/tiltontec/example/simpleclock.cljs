@@ -1,7 +1,7 @@
 (ns tiltontec.example.simpleclock
   (:require [clojure.pprint :as pp]
             [clojure.string :as str]
-            [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
+            [tiltontec.cell.core :refer [cF cF+ cFonce cI]]
             [tiltontec.model.core
              :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
@@ -28,8 +28,22 @@
                          (str/split " ")
                          first)
                        "*checking*"))}
-    {:tick   (cI nil)
-     :ticker (cF (js/setInterval #(mset! me :tick (js/Date.)) 1000))}))
+    {:tick
+     ;; we /could/ initialize the tick to (js/Date.), but this lets us demonstrate
+     ;; how to MX handles async naturally. Note the clock 'content' above. It simply needs
+     ;; to be aware that 'tick' may be pending an async arrival of data.
+     (cI nil)
+
+     :ticker (cF+ [:watch (fn [_ _ new prior-value _]
+                          (prn :obs!!!!!! new)
+                          (when (integer? prior-value)
+                            (js/clearInterval prior-value)))]
+               (js/setInterval
+                 ;; nice unexpected benefit of a system that manages state change
+                 ;; automatically is that asynch is no problem; just have a normal
+                 ;; input variable where the asynch result can be mset!
+                 #(mset! me :tick (js/Date.))
+                 1000))}))
 
 (defn color-input [initial-color]
   (div {:class "color-input"} {:name :color-inpt}

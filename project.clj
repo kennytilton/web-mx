@@ -13,7 +13,7 @@
                  [cljs-http "0.1.46"]
                  [cheshire "5.10.0"]
                  [com.taoensso/tufte "2.4.5"]
-                 [com.tiltontec/matrix "4.2.1-SNAPSHOT"]
+                 [com.tiltontec/matrix "4.3.1-SNAPSHOT"]
                  [com.tiltontec/mxxhr "1.0.1-SNAPSHOT"]]
   :profiles
   {:dev

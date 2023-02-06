@@ -8,7 +8,7 @@
     [tiltontec.cell.base :refer [unbound]]
     [tiltontec.cell.observer :refer-macros [fn-obs]]
     [tiltontec.cell.core :refer-macros [cF cF+]]
-    [tiltontec.cell.evaluate :refer [not-to-be]]
+    [tiltontec.cell.evaluate :refer [finalize]]
 
     [tiltontec.model.core :refer [matrix mx-par mget mset! ;; mswap!
                                   ;;fget mxi-find mxu-find-type

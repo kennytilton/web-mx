@@ -9,7 +9,7 @@
     [tiltontec.util.base :refer [type-cljc]]
     [tiltontec.cell.base :refer [md-ref? ia-type unbound minfo]]
     [tiltontec.cell.observer :refer [observe observe-by-type]]
-    [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
+    [tiltontec.cell.evaluate :refer [finalize finalize-self]]
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
      :refer [fget mget fasc fm! make mset! backdoor-reset!]
@@ -196,9 +196,9 @@
               (when-not (string? oldk)
                 ;; (println :obs-tag-kids-dropping (tagfo oldk))
                 (try
-                  (not-to-be oldk)
+                  (finalize oldk)
                   (catch js/Error e
-                    (println "An not-to-be-error occurred:" e)
+                    (println "An finalize-error occurred:" e)
                     false))
                 )))
 
@@ -206,7 +206,7 @@
                      (doseq [oldk lost]
                        (when-not (string? oldk)
                          ;; no need to remove dom, all children replaced below.
-                         (not-to-be oldk)))
+                         (finalize oldk)))
                      (doseq [newk newv]
                        (dom/appendChild frag
                          (if (some #{newk} oldv)
@@ -249,7 +249,7 @@
               (.removeChild pdom (svg-dom oldk))
               (when-not (string? oldk)
                 ; (println :obs-tag-kids-dropping (tagfo oldk))
-                (not-to-be oldk))))
+                (finalize oldk))))
 
         (empty? lost)
         (do ;; (prn :no-lost-adding-gained!!! (count gained))
@@ -270,8 +270,8 @@
                    (doseq [oldk lost]
                      (when-not (string? oldk)
                        ;; no need to remove dom, all children replaced below.
-                       ;;(prn :not-to-be!!!!! oldk)
-                       (not-to-be oldk)))
+                       ;;(prn :finalize!!!!! oldk)
+                       (finalize oldk)))
 
                    (doseq [newk newv]
                      ;;(prn :adding-newk newk)

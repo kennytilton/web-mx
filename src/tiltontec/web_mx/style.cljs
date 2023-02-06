@@ -4,7 +4,7 @@
     [tiltontec.util.core :refer [pln]]
     [tiltontec.cell.base :refer [md-ref? ia-type unbound minfo]]
     [tiltontec.cell.observer :refer [observe observe-by-type]]
-    [tiltontec.cell.evaluate :refer [not-to-be not-to-be-self]]
+    [tiltontec.cell.evaluate :refer [finalize finalize-self]]
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
      :refer [mget fasc fm! make mset! backdoor-reset!]

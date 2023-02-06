@@ -28,7 +28,7 @@
              :refer-macros [section header h1 input footer p a span label ul li div button br]]
 
             [tiltontec.web-mx.gen
-             :refer [make-tag dom-tag evt-mx]]
+             :refer [make-tag dom-tag evt-md]]
 
             [tiltontec.web-mx.style :refer [make-css-inline]]
             [tiltontec.web-mx.widget :refer [tag-checkbox]]
@@ -219,7 +219,7 @@
                              (js/Date.
                                (mget me :clock)))
                        4))
-        :onclick #(do (mset! (evt-mx %) :clock (now)))
+        :onclick #(do (mset! (evt-md %) :clock (now)))
         :title "Click to reset to now."}
     {:clock  (cI (now))
      :ticker (cF+ [:obs (fn [_ _ newv oldv c]

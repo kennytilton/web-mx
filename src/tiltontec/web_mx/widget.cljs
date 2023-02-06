@@ -13,7 +13,7 @@
     [tiltontec.web-mx.gen-macro
      :refer-macros [section header h1 input footer p a span label ul li div button br]]
     [tiltontec.web-mx.gen
-     :refer [make-tag evt-mx]]))
+     :refer [make-tag evt-md]]))
 
 (defn tag-checkbox
   ;; todo: test variants

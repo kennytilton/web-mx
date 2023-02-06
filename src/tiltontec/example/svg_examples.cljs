@@ -8,7 +8,7 @@
             [tiltontec.model.core
              :refer [cFkids fmu matrix mx-par mget mget mset! mset! mswap! mxi-find mxu-find-name] :as md]
             [tiltontec.web-mx.base :as wbase]
-            [tiltontec.web-mx.gen :refer [evt-mx target-value make-svg]]
+            [tiltontec.web-mx.gen :refer [evt-md target-value make-svg]]
             [tiltontec.web-mx.gen-macro
              :refer [jso-map]
              :refer-macros [svg g circle p span div text radialGradient defs stop

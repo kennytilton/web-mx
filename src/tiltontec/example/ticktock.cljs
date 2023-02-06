@@ -4,7 +4,7 @@
             [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
-            [tiltontec.web-mx.gen :refer [evt-mx target-value]]
+            [tiltontec.web-mx.gen :refer [evt-md target-value]]
             [tiltontec.web-mx.gen-macro
              :refer [img section h1 h2 h3 input footer p a
                      span i label ul li div button br
@@ -45,7 +45,7 @@
     (input {:tag/type "text"
             :value    (cI initial-color)
             :onchange (fn [e]
-                        (mset! (evt-mx e) :value
+                        (mset! (evt-md e) :value
                           (target-value e)))
             :title    "RGB color in hex format, either XXX or XXXXXX, without the octothorpe."
             :style    (cF (make-css-inline me
@@ -88,7 +88,7 @@
                 (button
                   {:class   "button-2"
                    :style   {:margin-top "16px"}
-                   :onclick #(mswap! (fmu :app (evt-mx %)) :ticking not)}
+                   :onclick #(mswap! (fmu :app (evt-md %)) :ticking not)}
                   (if (mget (fmu :app) :ticking)
                     "Stop" "Start"))))))
 

@@ -127,6 +127,10 @@
 ;;; --- event conveniences -------------------
 
 (defn evt-mx [e]
+  ;; deprecated. "md" for "model" is better
+  (dom-tag (.-target e)))
+
+(defn evt-md [e]
   (dom-tag (.-target e)))
 
 #?(:cljs

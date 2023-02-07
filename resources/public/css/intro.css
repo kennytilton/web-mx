@@ -2,13 +2,13 @@ div, h1, input {
     font-family: HelveticaNeue, Helvetica;
     color: #777;
 }
-.ticktock {
-    margin:  24px;
+.intro {
+    margin: 6px;
     display:         flex;
     flex-direction: column;
     align-items:     center;
     justify-content: center;
-    padding: 1em;
+    gap: 1em;
 }
 .example-clock {
     font-size: 128px;
@@ -27,7 +27,6 @@ div, h1, input {
   font-weight: 500;
   line-height: 20px;
   list-style: none;
-  margin: 0;
   padding: 10px 12px;
   text-align: center;
   transition: all 200ms;

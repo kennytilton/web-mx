@@ -25,14 +25,14 @@ git clone https://github.com/kennytilton/web-mx.git
 cd web-mx
 clojure -M -m figwheel.main --build simpleclock --repl
 ```
-In a minute, look for this to appear in a browser near you at [localhost:9500/simpleclock](http://localhost:9500/simpleclock.html):
+In a minute, look for this to appear in your browser at [localhost:9500/simpleclock](http://localhost:9500/simpleclock.html):
 
 ![Web MX](../images/simpleclock.png)
 
-The reader should be able to edit the hex color and, when it is valid, see the clock digits change to that color. Invalid values will make the field background turn pink and the digits revert to black. The curious reader will find the somewhat heavily documented [code here](https://github.com/kennytilton/web-mx/blob/main/src/tiltontec/example/simpleclock.cljs). 
+We can edit the hex color and, when the value is valid 3 or 6 hex digits, see the clock digits change to that color. Invalid values will make the field background turn pink and the digits revert to black. The somewhat heavily documented code is [here](https://github.com/kennytilton/web-mx/blob/main/src/tiltontec/example/simpleclock.cljs). 
 
 Now we can return to the terminal:
-> Enter ^C ^D to return to the shell prompt.
+> Return to the terminal and hit ^C ^D to return to the shell prompt.
 
 Before continuing, for convenience we can add this function to our shell startup:
 ```

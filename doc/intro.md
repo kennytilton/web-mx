@@ -2,24 +2,22 @@
 
 Web/MX delivers a radically more powerful yet simpler GUI developer experience, through two unconventional choices:
 * "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) fine-grained, transparent reactivity sits at the heart of Web/MX. It drives everything; and
-* we just let HTML be HTML; [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML) will be your only Web/MX reference after a week.
+* let HTML be HTML; [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML) will be your only Web/MX reference after a week.
 
 ### Why another Web framework?
-Why yet another Web framework? 
+Why yet another Web framework? Because [Mr. Hickey was right](https://youtu.be/2V1FtfBDsLU?t=1261): the effort of UI coding dwarfs the functionality delivered.
 
-> Speaking at ClojureConj 2017, [Mr. Hickey was right](https://youtu.be/2V1FtfBDsLU?t=1261): the effort of UI coding dwarfs the functionality delivered.
+> "I don't do that part." -- Rich Hickey on UI coding, ClojureConj 2017
 
-We meant well, but we have made a mess of UI programming. Every effort to improve things ended up adding another layer of cruft, and usually another preprocessor, and a bundler to control it all. 
+We meant well, but we have made a mess of UI programming. Every effort to improve things ended up adding another layer of cruft, and usually another preprocessor, and a bundler to control it all. Web/MX took another tack, simply adding programmer-friendly state management to HTML/CSS. A powerful, minimalist, fun framework emerged. 
 
-Web/MX took another tack, simply adding programmer-friendly state management to HTML/CSS, and a powerful, minimalist framework emerged. Let us support that claim with some code.
+Rich Hickey, call your office.
 
 ### The Developer Experience
-The only way to grok the Web/MX Difference&trade; is to code with it. We begin.
-
-Our reader can follow the instructions below to actually experience the coding difference, or just read along.
+At pain of stating the obvious, the only way to grok the Web/MX Difference&trade; is to code with it. From here on we guide the reader through actual coding of a trivial web app, trivial but sufficient to cover the special qualities of Web/MX.
 
 #### Hello Clock
-Begin by cloning Web/MX itself and running one of the examples. 
+Start by cloning Web/MX itself and running one of the examples. 
 
 > In a terminal:
 ```bash

@@ -21,8 +21,9 @@
               (p "But feel free to hang out.")
               (button
                 {:class   "button-2"
-                 :onclick #(mset! (fmu :climber (evt-md %)) :src  "image/chain-dag.jpeg")}
-                "Next")
+                 :onclick #(prn :hi-mom!) ;;#(mset! (fmu :climber (evt-md %)) :src  "image/chain-dag.jpeg")
+                 }
+                "Speak")
               (img {:alt "Female professional rock climber hanging under climbing wall overhang."
                     :src (cI "image/Boulder_Worldcup_Vienna_29-05-2010b_final10_Chloé_Graftiaux.jpg")
                     :max-width "100%" :max-height "100%" :height :auto}

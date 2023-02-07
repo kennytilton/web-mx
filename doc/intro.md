@@ -67,17 +67,24 @@ _Takeaway:_ `Web/MX` wraps HTML/CSS thinly. The syntax is nearly the same, modif
 (tag {attributes*} children*)
 ```
 
-*Exercise:* Change the button code to this:
+*Exercise:* Change the button code as shown, and add a function call:
 ```bash
 (button
-  {:class   "button-2"
+  {:class   :button-2
    :disabled false
-   :onclick (fn [e] (prn :MX-widget-clicked-s (minfo (evt-mx e))))}
+   :onclick (fn [e] (prn :MX-widget-clicked> (evt-md e))))}
    {:name :speak-button}
   "Speak")
+  (demo-svg)
 ```
-One exception to the similarity. HTML boolean attributes such as `disabled` do not take a value; their presence decides the setting. CLJS maps do not work that way, so if we will be dynamically toggling `disabled`, we must start it at `false`.
+_First takeaway:_ It does SVG, too.
+
+Now we note one exception to the similarity. HTML boolean attributes such as `disabled` do not take a value; their presence decides the setting. CLJS maps do not work that way, so, if we will be dynamically toggling `disabled`, we must start it at `false`. As with HTML, omitting the `:disabled` attribute altogether enables the button.
+
+_Second takeaway:_ Some HTML-ese needs to be expressed differently in CLJS.
 
 A bigger exception is the second map, `{:name :speak-button}`. The first map is for HTML attributes, the second map is for any other state we might want to track for this widget, or for implementation state such as the model `:name`.
 
-> *Exercise:* Confirm that the "Speak" responds to clicks, and displays debug ingo describing the MX proxy model for the button.
+_Third takeaway:_ in Web/mx, HTML proxy models can be extended with custom state.
+
+> *Exercise:* Confirm that the "Speak" responds to clicks, and displays the proxy button MX model with :name :speak-button.

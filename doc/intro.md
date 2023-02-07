@@ -31,62 +31,53 @@ In a minute, look for this to appear in your browser at [localhost:9500/simplecl
 
 We can edit the hex color and, when the value is valid 3 or 6 hex digits, see the clock digits change to that color. Invalid values will make the field background turn pink and the digits revert to black. The somewhat heavily documented code is [here](https://github.com/kennytilton/web-mx/blob/main/src/tiltontec/example/simpleclock.cljs). 
 
-Now we can return to the terminal:
 > Return to the terminal and hit ^C ^D to return to the shell prompt.
 
-Before continuing, for convenience we can add this function to our shell startup:
-```
-figo () {
-    echo "figwheel building and running $1"
-    clojure -M -m figwheel.main --build $1 --repl
-}
-```
-With that in hand, `figo simpleclock` in a terminal will suffice. Just make sure no other terminal has `localhost:9500` tied up.
-
 ### Baby Steps: The Intro Example
-We will be modifying one of the examples, `intro.cljs`.
+Moving forward, we will be modifying one of the examples, `intro.cljs`.
 
-> In a terminal:
+Continue in the same terminal
 ```bash
-cd web-mx
-# --EITHER--
+cd web-mx # if necessary
 clojure -M -m figwheel.main --build intro --repl
-# --OR-- 
-figo intro
 ```
-In a minute we should see a blank (kinda) landing page at `localhost:9500/intro.html`.
+In a minute we should see a nonsense landing page at `localhost:9500/intro.html` in a new tab our browser.
 
-> Now we need to open the `web-mx` project in our favorite ClojureScript IDE, and open `example/intro.cljs`.
+> Now open the `web-mx` project in our favorite ClojureScript IDE, and open `example/intro.cljs`.
 
-Your task: Just modify some displayed text, save, and confirm you see the change in the app. 
+*Exercise*: Modify some displayed text, save, and confirm you see the change in the app. 
 
 All good? Now let us add some DOM.
-##### Web/MX Syntax
-Web/MX functions for generating DOM mirror the syntax of HTML. For example, where HTML has:
-```html
-<tag attributes*> children* </tag>
-```
-...Web/MX has:
-```clojure
-(tag [{attributes*}] children*)
-```
-##### Your task
-* add a button just above the image;
-* specify `class` as "button-2"
-* the button text should be "Speak";
-* when clicked it should print "Hi, mom!" in the browser console.
 
-##### Spoiler alert!
-We can complete this task by placing this code above the `(img...)`.
+*Exercise:* Add this code just before the `(img ...)` widget:
+
 ```bash
 (button
   {:class   "button-2"
    :onclick (fn [_] (prn :hi-mom!))}
   "Speak")
 ```
-Once you have that working, we can come back here and draw a lesson.
+_Takeaway:_ `Web/MX` wraps HTML/CSS thinly. The syntax is nearly the same, modified to accommodate ClojureScript. Where HTML has:
 
-#### Baby Step 1 Summary
-`Web/MX` wraps HTML/CSS thinly. The syntax is nearly the same, modified to accommodate Clojurescript syntax instead of Javascript. MDN is your main reference requirement. And if you already know HTML/CSS, you know most of Web/MX.
+```<tag attributes*> children* </tag>```
 
-###
+...Web/MX has:
+
+```
+(tag {attributes*} children*)
+```
+
+*Exercise:* Change the button code to this:
+```bash
+(button
+  {:class   "button-2"
+   :disabled false
+   :onclick (fn [e] (prn :MX-widget-clicked-s (minfo (evt-mx e))))}
+   {:name :speak-button}
+  "Speak")
+```
+One exception to the similarity. HTML boolean attributes such as `disabled` do not take a value; their presence decides the setting. CLJS maps do not work that way, so if we will be dynamically toggling `disabled`, we must start it at `false`.
+
+A bigger exception is the second map, `{:name :speak-button}`. The first map is for HTML attributes, the second map is for any other state we might want to track for this widget, or for implementation state such as the model `:name`.
+
+> *Exercise:* Confirm that the "Speak" responds to clicks, and displays debug ingo describing the MX proxy model for the button.

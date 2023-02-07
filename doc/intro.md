@@ -79,6 +79,8 @@ _Takeaway:_ `Web/MX` wraps HTML/CSS thinly. The syntax is nearly the same, modif
 ```
 _First takeaway:_ It does SVG, too.
 
+![SVG example](https://github.com/kennytilton/web-mx/blob/main/resources/public/image/svg-climber.png)
+
 Now we note one exception to the similarity. HTML boolean attributes such as `disabled` do not take a value; their presence decides the setting. CLJS maps do not work that way, so, if we will be dynamically toggling `disabled`, we must start it at `false`. As with HTML, omitting the `:disabled` attribute altogether enables the button.
 
 _Second takeaway:_ Some HTML-ese needs to be expressed differently in CLJS.

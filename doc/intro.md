@@ -19,7 +19,7 @@ clojure -M -m figwheel.main --build intro-clock --repl
 ```
 In a minute, look for this to appear in your browser at [localhost:9500/simpleclock](http://localhost:9500/intro-clock.html):
 
-![Web MX](../image/intro-clock-checking.png)
+![Web MX](https://github.com/kennytilton/web-mx/blob/main/resources/public/image/intro-clock-checking.png)
 
 We can edit the hex color and, when the value is valid 3 or 6 hex digits, see the clock digits change to that color. Invalid values will make the field background turn pink and the digits revert to black. The somewhat heavily documented code is [here](https://github.com/kennytilton/web-mx/blob/main/src/tiltontec/example/simpleclock.cljs). 
 

@@ -37,8 +37,8 @@
     {:class   :pushbutton
      :onclick #(let [me (evt-md %)
                      the-clock (fmu :the-clock me)]
-                 (mswap! the-clock :ticking not))}
-    (if (mget (fmu :the-clock me) :ticking)
+                 (mswap! the-clock :ticking? not))}
+    (if (mget (fmu :the-clock me) :ticking?)
       "Stop" "Start")))
 
 (defn running-clock []
@@ -50,11 +50,11 @@
                          "---"))}
       {:name :the-clock
        :now  (cI nil)
-       :ticking (cI true)
+       :ticking? (cI true)
        :ticker (cF+ [:watch (fn [_ _ _ prior-value _]
                               (when (integer? prior-value)
                                 (js/clearInterval prior-value)))]
-                 (when (mget me :ticking)
+                 (when (mget me :ticking?)
                    (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
 

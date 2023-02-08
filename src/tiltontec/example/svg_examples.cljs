@@ -41,6 +41,22 @@
           :width   100}
       (circle {:cx 5 :cy 5 :r 4}))))
 
+(defn basic-shapes-fewer []
+  (svg {:width 100 :height 180}
+    (rect {:x            10 :y 10 :width 30 :height 30
+           :stroke       :red
+           :stroke-width 5 :fill :transparent})
+    (rect {:x       60 :y 10 :rx 10 :ry 10 :width 30 :height 30
+           :stroke  :black :stroke-width 5 :fill (cI :transparent)
+           :onclick (cF (fn foo [e]
+                          (mset! me :fill :red)))})
+    (path {:d    ["M20,60" "Q40,35" "50,60" "T90,60"]
+           :fill :none :stroke :blue :stroke-width 5})
+
+    (polygon {:points [50 80 55 100 70 100 60 110 65 125 50 115 35 125 40 110 30 100 45 100]
+              :stroke :green :stroke-width 5 :fill :transparent})
+    ))
+
 (defn radial-gradient []
   ;; https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Gradients
   (svg {:width   120 :height 240}

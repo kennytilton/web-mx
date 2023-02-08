@@ -1,33 +1,25 @@
 # Introduction to Web/MX
 
-Web/MX delivers a radically more powerful yet simpler GUI developer experience, thanks to two unconventional choices:
-* "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) fine-grained, transparent reactivity sits at the heart of Web/MX. It drives _everything_; and
-* let HTML be HTML; [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML) will be your only Web/MX reference after a week.
+Web/MX delivers a simple, surprisingly powerful GUI developer experience through several unconventional choices:
+* "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) property-to-property, transparent reactivity drives _everything_;
+* state DAG is globally searchable and mutable. Any property can read any other property, any event handler can mutate any property; 
+* state is managed "in place", gathered by app components as they require; and
+* Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
 
-### Why another Web framework?
-Why yet another Web framework? Because [Mr. Hickey was right](https://youtu.be/2V1FtfBDsLU?t=1261): the effort of UI coding dwarfs the functionality delivered, even after decades of work producing dozens of GUI frameworks.
-
-> "I don't do that part." -- Rich Hickey on UI coding, ClojureConj 2017
-
-We meant well, but we have made a mess of UI programming. Every effort to improve things ended up adding another layer of cruft, another preprocessor, and a bundler to control it all. 
-
-Web/MX took another tack, simply wrapping HTML/CSS with programmer-friendly state management. A powerful, minimalist, fun framework emerged. Rich Hickey, call your office.
-
-### The Developer Experience
-At pain of stating the obvious, the only way to grok the Web/MX Difference&trade; is to code with it. From here on we guide the reader through actual coding of a trivial web app, trivial but sufficient to cover the special qualities of Web/MX.
+We next look at a simple example that touches on all that, a simple clock app.
 
 #### Hello Clock
-Start by cloning Web/MX itself and running one of the examples. 
+Follow these steps to clone Web/MX itself and run an example. 
 
 > In a terminal:
 ```bash
 git clone https://github.com/kennytilton/web-mx.git
 cd web-mx
-clojure -M -m figwheel.main --build simpleclock --repl
+clojure -M -m figwheel.main --build intro-clock --repl
 ```
-In a minute, look for this to appear in your browser at [localhost:9500/simpleclock](http://localhost:9500/simpleclock.html):
+In a minute, look for this to appear in your browser at [localhost:9500/simpleclock](http://localhost:9500/intro-clock.html):
 
-![Web MX](../images/simpleclock.png)
+![Web MX](../image/intro-clock-checking.png)
 
 We can edit the hex color and, when the value is valid 3 or 6 hex digits, see the clock digits change to that color. Invalid values will make the field background turn pink and the digits revert to black. The somewhat heavily documented code is [here](https://github.com/kennytilton/web-mx/blob/main/src/tiltontec/example/simpleclock.cljs). 
 

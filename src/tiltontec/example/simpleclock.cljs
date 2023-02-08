@@ -12,7 +12,7 @@
             [tiltontec.web-mx.style :refer [make-css-inline]]
             [tiltontec.example.util :as ex-util]))
 
-;;; -------------------------------------------------------
+;;; --- Simple Clock ----------------------------------------------------
 
 (defn clock []
   (div {:class   "example-clock"
@@ -20,29 +20,33 @@
                        ;; Next, mget transparently subscribes to the value of
                        ;; the widget named :timecolor.
                        (mget (mxu-find-name me :timecolor) :value)))
-        :content (cF (if-let [tick (mget me :tick)]
-                       ;; Reading :tick via mget also transparently subscribes
-                       ;; so each time the interval mset!'s :tick, this content gets rebuilt.
+        :content (cF (if-let [tick (mget me :now)]
+                       ;; Reading :now via mget also transparently subscribes
+                       ;; so each time the interval mset!'s :now, this content gets rebuilt.
                        (-> tick
                          .toTimeString
                          (str/split " ")
                          first)
                        "*checking*"))}
-    {:tick
-     ;; we /could/ initialize the tick to (js/Date.), but this lets us demonstrate
-     ;; how to MX handles async naturally. Note the clock 'content' above. It simply needs
-     ;; to be aware that 'tick' may be pending an async arrival of data.
+    {:now
+     ;; we /could/ initialize :now to (js/Date.), but this lets us demonstrate
+     ;; how MX code handles async:
+     ;;   -- create a cInput (cI) variable to receive the async response whenever it lands;
+     ;;   -- have formulas that read the input var be prepared for "nothing yet"; and
+     ;;   -- have the asynch handler write to the cInput var.
+     ;;  MX mset! internals then bring the rest of the app current with the new change, before returning.
+     ;;
      (cI nil)
 
-     :ticker (cF+ [:watch (fn [_ _ new prior-value _]
-                          (prn :obs!!!!!! new)
-                          (when (integer? prior-value)
-                            (js/clearInterval prior-value)))]
+     :ticker (cF+ [:watch (fn [prop-name me new-value prior-value cell]
+                            ;; -- any cell can have an "on-change" callback we call "observers" or "watches".
+                            (when (integer? prior-value)
+                              (js/clearInterval prior-value)))]
                (js/setInterval
                  ;; nice unexpected benefit of a system that manages state change
                  ;; automatically is that asynch is no problem; just have a normal
                  ;; input variable where the asynch result can be mset!
-                 #(mset! me :tick (js/Date.))
+                 #(mset! me :now (js/Date.))
                  1000))}))
 
 (defn color-input [initial-color]

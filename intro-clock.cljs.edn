@@ -1,0 +1,3 @@
+^{:css-dirs ["resources/public/css"]
+  :open-url "http://localhost:[[server-port]]/intro-clock.html"}
+{:main tiltontec.example.intro-clock}

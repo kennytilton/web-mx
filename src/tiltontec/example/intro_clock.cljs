@@ -15,26 +15,49 @@
 (defn refresh-button []
   (button
     {:class   :pushbutton
-     :onclick #(let [me (evt-md %)                          ; derive MX model from event; now we can search the whole MX
-                     clock (fmu :the-clock me)]             ; navigate family up from me (fmu) to model named :the-clock
-                 (mset! clock :now (js/Date.)))}            ; change the property :now of the clock and propagate fully
-    "Refresh"))
+     :onclick #(let [me (evt-md %)                          ; evt-md derives the MX model from the event; we then navigate
+                     the-clock (fmu :the-clock me)]             ; the family up from me (fmu) to find the model named :the-clock
+                 (mset! the-clock :now (js/Date.)))}            ; and reset its property :now, propagating fully to the DAG
+    "Refresh"))                                             ; before returning.
 
-(defn simple-clock []
+(defn manual-clock []
   (div {:class [:intro :ticktock]}
     (h2 "The time is now....")
     (div {:class   "intro-clock"
-          :content (cF (if-let [now (mget me :now)]
-                         (-> now .toTimeString
-                           (str/split " ") first)
-                         "*checking*"))}
+          :content (cF (if-let [now (mget me :now)]         ;; mget, the standard MX getter, can be used from any code,
+                         (-> now .toTimeString              ;; but transparently establishes a dependency, or "subscribes",
+                           (str/split " ") first)           ;; if called within a formula.
+                         "---"))}
       {:name :the-clock
        :now  (cI nil)})                                     ;; cI for "cell Input"; procedural code can write to these
     (refresh-button)))
 
-(defn matrix-build! []
-  (md/make ::intro
-    :mx-dom (simple-clock)))
+(defn start-stop-button []
+  (button
+    {:class   :pushbutton
+     :onclick #(let [me (evt-md %)
+                     the-clock (fmu :the-clock me)]
+                 (mswap! the-clock :ticking not))}
+    (if (mget (fmu :the-clock me) :ticking)
+      "Stop" "Start")))
 
-(exu/main matrix-build!)
+(defn running-clock []
+  (div {:class [:intro :ticktock]}
+    (h2 "The time is now....")
+    (div {:class   "intro-clock"
+          :content (cF (if-let [now (mget me :now)]
+                         (-> now .toTimeString (str/split " ") first)
+                         "---"))}
+      {:name :the-clock
+       :now  (cI nil)
+       :ticking (cI true)
+       :ticker (cF+ [:watch (fn [_ _ _ prior-value _]
+                              (when (integer? prior-value)
+                                (js/clearInterval prior-value)))]
+                 (when (mget me :ticking)
+                   (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
+    (start-stop-button)))
+
+(exu/main #(md/make ::intro
+             :mx-dom (running-clock)))
 

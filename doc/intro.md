@@ -21,7 +21,28 @@ In a minute, look for this to appear in your browser at [localhost:9500/simplecl
 
 ![Web MX](https://github.com/kennytilton/web-mx/blob/main/resources/public/image/intro-clock-checking.png)
 
-We can edit the hex color and, when the value is valid 3 or 6 hex digits, see the clock digits change to that color. Invalid values will make the field background turn pink and the digits revert to black. The somewhat heavily documented code is [here](https://github.com/kennytilton/web-mx/blob/main/src/tiltontec/example/simpleclock.cljs). 
+And now the code:
+```agsl
+(defn refresh-button []
+  (button
+    {:class   :pushbutton
+     :onclick #(let [me (evt-md %)                          ; derive MX model from event; now we can search the whole MX
+                     clock (fmu :the-clock me)]             ; navigate family up from me (fmu) to model named :the-clock
+                 (mset! clock :now (js/Date.)))}            ; change the property :now of the clock and propagate fully
+    "Refresh"))
+
+(defn simple-clock []
+  (div {:class [:intro :ticktock]}
+    (h2 "The time is now....")
+    (div {:class   "intro-clock"
+          :content (cF (if-let [now (mget me :now)]
+                         (-> now .toTimeString
+                           (str/split " ") first)
+                         "*checking*"))}
+      {:name :the-clock
+       :now  (cI nil)})                                     ;; cI for "cell Input"; procedural code can write to these
+    (refresh-button)))
+```
 
 > Return to the terminal and hit ^C ^D to return to the shell prompt.
 

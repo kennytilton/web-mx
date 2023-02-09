@@ -61,5 +61,5 @@
     (start-stop-button)))
 
 (exu/main #(md/make ::intro
-             :mx-dom (simple-clock #_ running-cloc
+             :mx-dom (simple-clock #_ running-cloc)))
 

@@ -126,7 +126,7 @@ Things to note:
 That is how we build applications with `Web/MX`:
 * straight HTML/CSS;
 * declarative component definitions, with dynamic properties transparently defined as reactive functions of other MX properties;
-* direct mutation of select "input" MX properties by event or async handlers. transparently updating the DAG;
-* unfettered access to MX properties via navigation from `me`, whether in property derivation or mutation.
+* direct mutation of select "input" MX properties by event or async handlers, transparently refreshing dependent state;
+* in derivations or mutation, unfettered access to other MX properties.
 
 In the next exercise we will build a modestly richer stopwatch app, and see how well those ingredients hold up.

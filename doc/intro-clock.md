@@ -1,12 +1,12 @@
 # Introduction to Web/MX
 
-Web/MX delivers a simple yet powerful developer experience through several unconventional choices:
+Web/MX delivers a simple, powerful developer experience through several unconventional choices:
 * "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) property-to-property, transparent reactivity drives _everything_;
 * state DAG is globally searchable and mutable from anywhere. Any property of any widget can read any other property, and any event handler can mutate any property; 
 * state is managed "in place", gathered by app components as they find necessary; and
 * Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
 
-Accurate but abstract. Let us look at some code that does all that, to produce a simple clock app.
+Accurate but abstract. Let us look at some code that does all that, to make those ideas concrete.
 
 #### Hello Clock
 Follow these steps to clone Web/MX itself and run an example. 

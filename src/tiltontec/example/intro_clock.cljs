@@ -1,6 +1,7 @@
 (ns tiltontec.example.intro-clock
   (:require
     [clojure.string :as str]
+    [clojure.pprint :as pp]
     [tiltontec.cell.core :refer [cF cF+ cFonce cI]]
     [tiltontec.model.core
      :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
@@ -8,6 +9,7 @@
     [tiltontec.web-mx.gen-macro
      :refer [img section h1 h2 h3 input footer p a
              span i label ul li div button br]]
+    [tiltontec.web-mx.style :refer [make-css-inline]]
     [tiltontec.example.util :as exu]))
 
 ;;; --- intro clock starter code -----------------------------------
@@ -44,7 +46,7 @@
   (div {:class [:intro :ticktock]}
     (h2 "The time is now....")
     (div {:class   "intro-clock"
-          :style   (cF (str "color:"
+          :style   (cF (str "background:black; color:"
                          (if (mget me :ticking?) "cyan" "red")))
           :content (cF (if-let [now (mget me :now)]
                          (-> now .toTimeString (str/split " ") first)
@@ -59,6 +61,30 @@
                      (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
 
+(defn nyc-std-clock [interval]
+  (div {:class   "intro-clock"
+        :style   "background:black"
+        :content (cF (let [c (mget me :now)
+                           ts (str (.toTimeString
+                                     (js/Date. c)))]
+                       (if (= interval 1000)
+                         ts
+                         (str (subs ts 0 8)
+                           "."
+                           (pp/cl-format nil "~3'0d" (mod c 1000))
+                           ))))}
+    {:now  (cI (js/Date.))
+     :ticking? (cI true)
+     :ticker (cF+ [:watch (fn [_ _ _ prior-value _]
+                            (when (integer? prior-value)
+                              (js/clearInterval prior-value)))]
+               (when (mget me :ticking?)
+                 (js/setInterval #(mset! me :now (js/Date.)) interval)))}))
+(defn stop-watch []
+  (div {:class [:intro :ticktock]}
+    (h2 "On your mark..get set...")
+    (nyc-std-clock 100)))
+
 (exu/main #(md/make ::intro
-             :mx-dom (#_ manual-clock  running-clock)))
+             :mx-dom (#_ manual-clock  stop-watch)))
 

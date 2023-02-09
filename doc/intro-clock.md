@@ -6,7 +6,7 @@ Web/MX delivers a simple, surprisingly powerful GUI developer experience through
 * state is managed "in place", gathered by app components as they find necessary; and
 * Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
 
-Accurate but abstract. Let us look at actual code that does all that to produce simple clock app.
+Accurate but abstract. Let us look at some code that does all that to produce a simple clock app.
 
 #### Hello Clock
 Follow these steps to clone Web/MX itself and run an example. 

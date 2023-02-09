@@ -54,15 +54,16 @@ And now the code:
              :mx-dom (simple-clock)))
 ```
 
-As promised:
+And now we can connect the "unconventional choices" with concrete code:
 * _"in place" state:_ the clock widget holds its own state, which others can read or mutate reactively;
 * _property-to-property reactivity:_ the clock `content` consumed the clock `now` property, and the button handler altered the same property `now`;
-* _"global" state search and mutate:_ using `fmu` or other navigation utilities, widgets have unfettered access to application state.
+* _"global" state search and mutate:_ using `fmu` or other navigation utilities, widgets have unfettered access to application state; and
+* otherwise, it is just HTML.
 
-So we have a clock we can check manually. Let us make it run automatically.
+So far, so simple. Will it stay that way as we elaborate the app?
 
 #### The Running Clock
-Our clock is accurate, but requires manual intervention to see the latest time. Not fun. Let's set it up run by itself, at the user's option. Look for the crucial `ticking?` property below.
+Our clock is accurate, but requires manual intervention to see the latest time. Not fun. Let's have it run by itself, at the user's option. Look for the crucial `ticking?` property below.
 
 ```clojure
 (declare start-stop-button)
@@ -99,9 +100,9 @@ Our clock is accurate, but requires manual intervention to see the latest time. 
              :mx-dom (running-clock)))
 ```
 Things to note:
-* the `:ticker`'s `:watch` function, which is dispatched when a property changes;
-* the start-stop button adjusts its label to suit the app state (widget children get wrapped transparently in formulas);
-* the interval function closes over `me`, and uses that to mutate the DAG as needed.
+* the `:ticker`'s `:watch` function. `Watche`s fire when a property changes;
+* the start-stop button reactively adjusts its label to suit the app state (widget children get wrapped transparently in formulas);
+* the interval function closes over `me`, and navigates from there to mutate the DAG as needed.
 
 #### Web/MX in a nutshell
 And that is Web/MX:

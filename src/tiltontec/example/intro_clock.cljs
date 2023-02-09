@@ -16,8 +16,8 @@
   (button
     {:class   :pushbutton
      :onclick #(let [me (evt-md %)                          ; evt-md derives the MX model from the event; we then navigate
-                     the-clock (fmu :the-clock me)]             ; the family up from me (fmu) to find the model named :the-clock
-                 (mset! the-clock :now (js/Date.)))}            ; and reset its property :now, propagating fully to the DAG
+                     the-clock (fmu :the-clock me)]         ; the family up from me (fmu) to find the model named :the-clock
+                 (mset! the-clock :now (js/Date.)))}        ; and reset its property :now, propagating fully to the DAG
     "Refresh"))                                             ; before returning.
 
 (defn manual-clock []
@@ -45,17 +45,19 @@
   (div {:class [:intro :ticktock]}
     (h2 "The time is now....")
     (div {:class   "intro-clock"
+          :style   (cF (str "color:" (if (mget me :ticking?)
+                                       "#39ff15" "red")))
           :content (cF (if-let [now (mget me :now)]
                          (-> now .toTimeString (str/split " ") first)
-                         "---"))}
-      {:name :the-clock
-       :now  (cI nil)
-       :ticking? (cI true)
-       :ticker (cF+ [:watch (fn [_ _ _ prior-value _]
-                              (when (integer? prior-value)
-                                (js/clearInterval prior-value)))]
-                 (when (mget me :ticking?)
-                   (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
+                         "__:__:__"))}
+      {:name     :the-clock
+       :now      (cI nil)
+       :ticking? (cI false)
+       :ticker   (cF+ [:watch (fn [_ _ _ prior-value _]
+                                (when (integer? prior-value)
+                                  (js/clearInterval prior-value)))]
+                   (when (mget me :ticking?)
+                     (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
 
 (exu/main #(md/make ::intro

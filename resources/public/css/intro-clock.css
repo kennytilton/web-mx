@@ -10,12 +10,16 @@ div, h1, input {
     justify-content: center;
     gap: 1em;
 }
+@font-face{
+ font-family:'digital-clock-font';
+ src: url('../font/digital-7 (mono italic).ttf');
+}
 .intro-clock {
     font-size: 128px;
     line-height: 1.2em;
-    font-family: HelveticaNeue-UltraLight, Helvetica;
+    font-family: digital-clock-font, HelveticaNeue-UltraLight, Helvetica;
     padding: 8px;
-    color: cyan;
+    color: cyan; /* #39ff15; /* #08ff08; #39ff15;*/
     background: gray;
 }
 

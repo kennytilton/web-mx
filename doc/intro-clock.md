@@ -21,7 +21,7 @@ In a minute, look for this to appear in your browser at [localhost:9500/intro-cl
 
 ![Web MX](https://github.com/kennytilton/web-mx/blob/main/resources/public/image/intro-checking.jpg)
 
-And now the code:
+Click "Refresh" to see the time. The code, with tutorial comments:
 ```clojure
 (declare refresh-button)
 
@@ -55,9 +55,9 @@ And now the code:
 ```
 
 And now we can connect the "unconventional choices" with concrete code:
-* _"in place" state:_ the clock widget holds its own state, which others can read or mutate reactively;
-* _property-to-property reactivity:_ the clock `content` consumed the clock `now` property, and the button handler altered the same property `now`;
-* _"global" state search and mutate:_ using `fmu` or other navigation utilities, widgets have unfettered access to application state; and
+* _"in place" state:_ the clock widget holds its own `now` state, which others can read or mutate reactively;
+* _property-to-property reactivity:_ the clock `content` consumes the clock `now` property, and the button handler alters the same property `now`;
+* _"global" state:_ using `fmu` or other navigation utilities, widgets have unfettered access to application state; and
 * otherwise, it is just HTML.
 
 So far, so simple. Will it stay that way as we elaborate the app?
@@ -77,7 +77,7 @@ Our clock is accurate, but requires manual intervention to see the latest time. 
                          "---"))}
       {:name :the-clock
        :now  (cI nil)
-       :ticking? (cI true)
+       :ticking? (cI false)
        :ticker (cF+ [:watch (fn [slot-name me new-value prior-value cell]
                               (when (integer? prior-value)
                                 (js/clearInterval prior-value)))]

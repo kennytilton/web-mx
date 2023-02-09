@@ -19,7 +19,7 @@ clojure -M -m figwheel.main --build intro-clock --repl
 ```
 In a minute, look for this to appear in your browser at [localhost:9500/intro-clock](http://localhost:9500/intro-clock.html):
 
-![Web MX](https://github.com/kennytilton/web-mx/blob/main/resources/public/image/intro-clock-checking.png)
+![Web MX](https://github.com/kennytilton/web-mx/blob/main/resources/public/image/intro-checking.jpg)
 
 And now the code:
 ```clojure
@@ -42,10 +42,13 @@ And now the code:
     {:class   :pushbutton
      :onclick #(let [me (evt-md %) 
                      ; evt-md ^^ derives the MX model from the event;
-                     ; we then navigate
-                     the-clock (fmu :the-clock me)]             ; the family up from me (fmu) to find the model named :the-clock
-                 (mset! the-clock :now (js/Date.)))}            ; and reset its property :now, propagating fully to the DAG
-    "Refresh"))                                             ; before returning.
+                     ; then search the family up from me (fmu) to find 
+                     ; the model named :the-clock...
+                     clock (fmu :the-clock me)] 
+                 ; ...and reset its property :now, transparently triggering
+                 ; full propagation across the DAG:
+                 (mset! clock :now (js/Date.)))}
+    "Refresh"))
 
 (exu/main #(md/make ::intro
              :mx-dom (simple-clock)))

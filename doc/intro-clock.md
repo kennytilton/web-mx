@@ -1,12 +1,12 @@
 # Introduction to Web/MX
 
-Web/MX delivers a simple, surprisingly powerful GUI developer experience through several unconventional choices:
+Web/MX delivers a simple yet powerful developer experience through several unconventional choices:
 * "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) property-to-property, transparent reactivity drives _everything_;
 * state DAG is globally searchable and mutable from anywhere. Any property of any widget can read any other property, and any event handler can mutate any property; 
 * state is managed "in place", gathered by app components as they find necessary; and
 * Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
 
-Accurate but abstract. Let us look at some code that does all that to produce a simple clock app.
+Accurate but abstract. Let us look at some code that does all that, to produce a simple clock app.
 
 #### Hello Clock
 Follow these steps to clone Web/MX itself and run an example. 
@@ -54,7 +54,7 @@ Click "Refresh" to see the time. The code, with tutorial comments:
              :mx-dom (simple-clock)))
 ```
 
-And now we can connect the "unconventional choices" with concrete code:
+Now we can connect the "unconventional choices" with concrete code:
 * _"in place" state:_ the clock widget holds its own `now` state, which others can read or mutate reactively;
 * _property-to-property reactivity:_ the clock `content` consumes the clock `now` property, and the button handler alters the same property `now`;
 * _"global" state:_ using `fmu` or other navigation utilities, widgets have unfettered access to application state; and

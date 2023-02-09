@@ -73,7 +73,7 @@ In the function `manual-clock`, add this line after the line `:name :the-clock`:
 ```
 Save and the clock should run by itself, driven by async mutation of the `now` property.
 
-That is great, but now let's let the user control things.
+That is great, but now let us allow the user to control things.
 
 > Exercise #2
 

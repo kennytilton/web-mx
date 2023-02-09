@@ -63,52 +63,70 @@ Now we can connect the "unconventional choices" with concrete code:
 So far, so simple. Will it stay that way as we elaborate the app?
 
 #### The Running Clock
-Our clock is accurate, but requires manual intervention to see the latest time. Not fun. Let's have it run by itself, at the user's option. Look for the crucial `ticking?` property below.
+Our clock is accurate, but requires manual intervention to see the latest time. Not fun. Let's have it run by itself.
+
+> Exercise #1: 
+
+In the function `manual-clock`, add this line after the line `:name :the-clock`:
+```
+:ticker (cF (js/setInterval #(mset! me :now (js/Date.)) 1000))
+```
+Save and the clock should run by itself, driven by async mutation of the `now` property.
+
+That is great, but now let's let the user control things.
+
+> Exercise #2
+
+Switch to the next example by modifying the launch code at the bottom of the source thus:
+
+```
+(exu/main #(md/make ::intro
+             :mx-dom (running-clock)))
+```
+Save and, after the rebuild, the browser app should show a blank, stopped clock. Click "Start" to get the clock running. 
+
+> Exercise #3
+
+Examine the source of the `running-clock` function to see how the crucial `ticking?` property is used to give the user control. For your convenience:
 
 ```clojure
-(declare start-stop-button)
+(defn start-stop-button []
+  (button
+    {:class   :pushbutton
+     :onclick #(mswap! (fmu :the-clock (evt-md %)) :ticking? not)}
+    (if (mget (fmu :the-clock me) :ticking?)
+      "Stop" "Start")))
 
 (defn running-clock []
   (div {:class [:intro :ticktock]}
     (h2 "The time is now....")
     (div {:class   "intro-clock"
+          :style   (cF (str "color:"
+                         (if (mget me :ticking?) "cyan" "red")))
           :content (cF (if-let [now (mget me :now)]
                          (-> now .toTimeString (str/split " ") first)
-                         "---"))}
-      {:name :the-clock
-       :now  (cI nil)
+                         "__:__:__"))}
+      {:name     :the-clock
+       :now      (cI nil)
        :ticking? (cI false)
-       :ticker (cF+ [:watch (fn [slot-name me new-value prior-value cell]
-                              (when (integer? prior-value)
-                                (js/clearInterval prior-value)))]
-                 (when (mget me :ticking?)
-                   (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
+       :ticker   (cF+ [:watch (fn [prop-name me new-value prior-value cell]
+                                (when (integer? prior-value)
+                                  (js/clearInterval prior-value)))]
+                   (when (mget me :ticking?)
+                     (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
+```
 
-(defn start-stop-button []
-  (button
-    {:class   :pushbutton
-     :onclick #(let [me (evt-md %)
-                     the-clock (fmu :the-clock me)]
-                 (mswap! the-clock :ticking? not))}
-    (if (mget (fmu :the-clock me) :ticking?)
-      "Stop" "Start")))
-```
-...and change the launch code:
-```clojure
-(exu/main #(md/make ::intro
-             :mx-dom (running-clock)))
-```
 Things to note:
-* the `:ticker`'s `:watch` function. `Watche`s fire when a property changes;
-* the start-stop button reactively adjusts its label to suit the app state (widget children get wrapped transparently in formulas);
-* the interval function closes over `me`, and navigates from there to mutate the DAG as needed.
+* something new, a `:watch` function on the `ticker` property. `Watch` functions fire when a property changes; here we just scavenge intervals;
+* the start-stop button reactively adjusts its label to suit the app state. Same with the `color` property of the clock style;
+* the interval function closes over `me` and navigates the DAG from there to mutate state as needed.
 
 #### Web/MX in a nutshell
-And that is Web/MX:
-* declarative component definitions;
-* reactive properties, connected transparently;
-* unfettered access to application state, whether reading or mutating; and
-* otherwise, it is just HTML.
+That is how we build applications with `Web/MX`:
+* straight HTML/CSS;
+* declarative component definitions, with dynamic properties transparently defined as reactive functions of other MX properties;
+* direct mutation of select "input" MX properties by event or async handlers. transparently updating the DAG;
+* unfettered access to MX properties via navigation from `me`, whether in property derivation or mutation.
 
-In the next exercise we will build a modestly richer stopwatch app, and see whether those ingredients suffice to build efficient, reliable self-documenting applications.
+In the next exercise we will build a modestly richer stopwatch app, and see how well those ingredients hold up.

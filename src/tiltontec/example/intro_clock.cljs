@@ -29,15 +29,14 @@
                            (str/split " ") first)           ;; if called within a formula.
                          "---"))}
       {:name :the-clock
+       ;; :ticker (cF (js/setInterval #(mset! me :now (js/Date.)) 1000))
        :now  (cI nil)})                                     ;; cI for "cell Input"; procedural code can write to these
     (refresh-button)))
 
 (defn start-stop-button []
   (button
     {:class   :pushbutton
-     :onclick #(let [me (evt-md %)
-                     the-clock (fmu :the-clock me)]
-                 (mswap! the-clock :ticking? not))}
+     :onclick #(mswap! (fmu :the-clock (evt-md %)) :ticking? not)}
     (if (mget (fmu :the-clock me) :ticking?)
       "Stop" "Start")))
 
@@ -45,8 +44,8 @@
   (div {:class [:intro :ticktock]}
     (h2 "The time is now....")
     (div {:class   "intro-clock"
-          :style   (cF (str "color:" (if (mget me :ticking?)
-                                       "#39ff15" "red")))
+          :style   (cF (str "color:"
+                         (if (mget me :ticking?) "cyan" "red")))
           :content (cF (if-let [now (mget me :now)]
                          (-> now .toTimeString (str/split " ") first)
                          "__:__:__"))}
@@ -61,5 +60,5 @@
     (start-stop-button)))
 
 (exu/main #(md/make ::intro
-             :mx-dom (manual-clock #_ running-cloc)))
+             :mx-dom (#_ manual-clock  running-clock)))
 

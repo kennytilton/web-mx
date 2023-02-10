@@ -1,6 +1,6 @@
 # Introduction to Web/MX
 
-Web/MX delivers a simple yet powerful developer experience by making several unconventional choices:
+Web/MX delivers a simple yet powerful developer experience via several unconventional choices:
 * _transparent, fine-grained reactivity:_ [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) transparently and automatically records property-to-property dependencies, and uses that information to keep state self-consistent via glitch-free change propagation;
 * _the application is the database:_ state is managed "in place", gathered locally by app components as needed to fulfill their functional specs. No separate store;
 * _omiscience/omnipotence:_ when a widget concerns another widget, the state DAG is available for unrestricted outreach, starting from any node. Any property of any widget can read any other property, and any event handler can mutate any property; and

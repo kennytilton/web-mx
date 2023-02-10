@@ -1,16 +1,15 @@
 # Introduction to Web/MX
 
-Web/MX delivers a simple yet powerful developer experience through several unconventional choices:
-* reactivity first: [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) transparently connects individual object properties;
-* _the application is its own database:_ state is managed "in place", gathered locally by app components as needed to fulfill functional specs;
-* _omiscience/omnipotence:_ when a widget concerns another widget, the state DAG is available for unrestricted outreach, starting from any node. More pragmatically, any property of any widget can read any other property, and any event handler can mutate any property; and
+Web/MX delivers a simple yet powerful developer experience by making several unconventional choices:
+* _transparent, fine-grained reactivity:_ [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) transparently and automatically records property-to-property dependencies, and uses that information to keep state self-consistent via glitch-free change propagation;
+* _the application is the database:_ state is managed "in place", gathered locally by app components as needed to fulfill their functional specs. No separate store;
+* _omiscience/omnipotence:_ when a widget concerns another widget, the state DAG is available for unrestricted outreach, starting from any node. Any property of any widget can read any other property, and any event handler can mutate any property; and
 * Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
 
-Accurate but abstract. Here is what that means to Web/MX developmen:
+Accurate but abstract. Here is what that means to Web/MX development:
 * we start from static HTML/CSS;
-* where a property needs to be dynamic, ie, change when other things change, we express them as a function of the other properties; 
-* where a property needs to be changed in response to events, event handlers can navigate to any widget to change any property; and
-* all other mechanical Web programming tasks remain the same.
+* where a property needs to be dynamic, ie, change when other things change, we express it as a function of the other properties; 
+* widget event handlers can change any "input" property of any other widget.
 
 Let us look at some code that does all that, to make those ideas concrete.
 
@@ -60,13 +59,13 @@ Click "Refresh" to see the time. The code, with tutorial comments:
              :mx-dom (simple-clock)))
 ```
 
-Now we can connect the "unconventional choices" with concrete code:
+Let us pause to highlight specifically where each unconventional choice manifests itself in concrete code:
 * _"in place" state:_ the clock widget holds its own `now` state, which others can read or mutate reactively;
 * _property-to-property reactivity:_ the clock `content` consumes the clock `now` property, and the button handler alters the same property `now`;
 * _"global" state:_ using `fmu` or other navigation utilities, widgets have unfettered access to application state; and
 * otherwise, it is just HTML.
 
-So far, so simple. Will it stay that way as we elaborate the app?
+So far, so simple. Will it stay that way as we elaborate the app? We continue.
 
 #### The Running Clock
 Our clock is accurate, but requires manual intervention to see the latest time. Not fun. Let's have it run by itself.

@@ -87,14 +87,14 @@ Save and, after the rebuild, the browser app should show a blank, stopped clock.
 
 > Exercise #3
 
-Examine the source of the `running-clock` function to see how the crucial `ticking?` property is used to give the user control. For your convenience:
+Examine the source of the `running-clock` function to see how the crucial `TICKING?` property is used to give the user control. For your convenience:
 
 ```clojure
 (defn start-stop-button []
   (button
     {:class   :pushbutton
-     :onclick #(mswap! (fmu :the-clock (evt-md %)) :ticking? not)}
-    (if (mget (fmu :the-clock me) :ticking?)
+     :onclick #(mswap! (fmu :the-clock (evt-md %)) :TICKING? not)}
+    (if (mget (fmu :the-clock me) :TICKING?)
       "Stop" "Start")))
 
 (defn running-clock []
@@ -102,7 +102,7 @@ Examine the source of the `running-clock` function to see how the crucial `ticki
     (h2 "The time is now....")
     (div {:class   "intro-clock"
           :style   (cF (str "color:"
-                         (if (mget me :ticking?) "cyan" "red")))
+                         (if (mget me :TICKING?) "cyan" "red")))
           :content (cF (if-let [now (mget me :now)]
                          (-> now .toTimeString (str/split " ") first)
                          "__:__:__"))}
@@ -112,7 +112,7 @@ Examine the source of the `running-clock` function to see how the crucial `ticki
        :ticker   (cF+ [:watch (fn [prop-name me new-value prior-value cell]
                                 (when (integer? prior-value)
                                   (js/clearInterval prior-value)))]
-                   (when (mget me :ticking?)
+                   (when (mget me :TICKING?)
                      (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
 ```

@@ -1,9 +1,10 @@
 # Introduction to Web/MX
 
 Web/MX delivers a simple, powerful developer experience through several unconventional choices:
-* "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) property-to-property, transparent reactivity drives _everything_, not just the view;
-* state DAG is globally searchable and mutable from anywhere. Any property of any widget can read any other property, and any event handler can mutate any property; 
-* state is managed "in place", gathered by app components to suit their needs; and
+* "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) property-to-property, transparent reactivity connects all interesting, long-lived state;
+* the view exists in a state-graph continuum with the model, or, the view is model;
+* state is managed "in place", gathered by app components as they require to fulill their functional specs; and
+* state DAG is globally searchable and mutable, starting from any node. More pragmatically, any property of any widget can read any other property, and any event handler can mutate any property; 
 * Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
 
 Accurate but abstract. Let us look at some code that does all that, to make those ideas concrete.

@@ -20,7 +20,7 @@ git clone https://github.com/kennytilton/web-mx.git
 cd web-mx
 clojure -M -m figwheel.main --build ticktock --repl
 ```
-After a minute or so the `ticktock` example shoult appear in your browser at `http://localhost:9500/ticktock.html`, leaving a CLJS REPL in the original terminal.
+After a minute or so the `ticktock` example should appear in your browser at `http://localhost:9500/ticktock.html`, leaving a CLJS REPL in the original terminal.
 
 Other examples, besides `ticktock`, are `todomvc` and `rxtrak`.
 

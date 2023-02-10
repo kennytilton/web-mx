@@ -1,13 +1,18 @@
 # Introduction to Web/MX
 
-Web/MX delivers a simple, powerful developer experience through several unconventional choices:
-* "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) property-to-property, transparent reactivity connects all interesting, long-lived state;
-* the view exists in a state-graph continuum with the model, or, the view is model;
-* state is managed "in place", gathered by app components as they require to fulill their functional specs; and
-* state DAG is globally searchable and mutable, starting from any node. More pragmatically, any property of any widget can read any other property, and any event handler can mutate any property; 
+Web/MX delivers a simple yet powerful developer experience through several unconventional choices:
+* reactivity first: [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) transparently connects individual object properties;
+* _the application is its own database:_ state is managed "in place", gathered locally by app components as needed to fulfill functional specs;
+* _omiscience/omnipotence:_ when a widget concerns another widget, the state DAG is available for unrestricted outreach, starting from any node. More pragmatically, any property of any widget can read any other property, and any event handler can mutate any property; and
 * Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
 
-Accurate but abstract. Let us look at some code that does all that, to make those ideas concrete.
+Accurate but abstract. Here is what that means to Web/MX developmen:
+* we start from static HTML/CSS;
+* where a property needs to be dynamic, ie, change when other things change, we express them as a function of the other properties; 
+* where a property needs to be changed in response to events, event handlers can navigate to any widget to change any property; and
+* all other mechanical Web programming tasks remain the same.
+
+Let us look at some code that does all that, to make those ideas concrete.
 
 #### Hello Clock
 Follow these steps to clone Web/MX itself and run an example. 

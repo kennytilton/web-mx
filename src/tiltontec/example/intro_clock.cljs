@@ -61,10 +61,12 @@
                      (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
 
+#_
 (defn nyc-std-clock [interval]
   (div {:class   "intro-clock"
         :style   "background:black"
-        :content (cF (let [c (mget me :now)
+        :content (cF (str (mget me :elapsed))
+                   #_ (let [c (mget me :elapsed)
                            ts (str (.toTimeString
                                      (js/Date. c)))]
                        (if (= interval 1000)
@@ -73,18 +75,32 @@
                            "."
                            (pp/cl-format nil "~3'0d" (mod c 1000))
                            ))))}
-    {:now  (cI (js/Date.))
-     :ticking? (cI true)
+    {:name :the-clock
+     :ticking? (cI false)
      :ticker (cF+ [:watch (fn [_ _ _ prior-value _]
                             (when (integer? prior-value)
                               (js/clearInterval prior-value)))]
                (when (mget me :ticking?)
-                 (js/setInterval #(mset! me :now (js/Date.)) interval)))}))
+                 (js/setInterval #(mset! me :elapsed (js/Date.)) interval)))
+     :now (cI nil)
+     :start (cI nil)
+     :elapsed  (cF (if-let [start (mget me :start)]
+                     (- (.getTime (js/Date.)) (.getTime start))
+                     0))
+     }))
+#_
 (defn stop-watch []
   (div {:class [:intro :ticktock]}
     (h2 "On your mark..get set...")
-    (nyc-std-clock 100)))
+    (nyc-std-clock 100)
+    (button
+      {:class   :pushbutton
+       :onclick #(let [clk (fmu :the-clock (evt-md %))]
+                   (mswap! clk :ticking? not)
+                   (mset! clk :start (js/Date.)))}
+      (if (mget (fmu :the-clock me) :ticking?)
+        "Stop" "Start"))))
 
 (exu/main #(md/make ::intro
-             :mx-dom (#_ manual-clock  stop-watch)))
+             :mx-dom (#_ manual-clock  running-clock)))
 

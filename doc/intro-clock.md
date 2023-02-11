@@ -7,9 +7,11 @@ Web/MX delivers a simple, delightful developer experience through several unconv
 
 * **global reach:** the formula for a derived property of a widget can read any property of any other widget. Any event handler can mutate any property. 
 
-HTML and CSS are left untouched. Here is what all that means to the Web/MX developer:
+HTML and CSS are left untouched. 
+
+Here is what all that means to the Web/MX developer:
 * we think in static HTML/CSS;
-* if property needs to change when other app things change, we express it as a function of those other things; 
+* if a property needs to change when other app things change, we express it as a function of those other things; 
 * event handlers can change any designated "input" property of any other widget.
 
 ### How can this possibly work?
@@ -17,9 +19,9 @@ That is a lot of easy expressiveness, but is "ask anybody anything" or "fire at 
 * a simulation of a [private Algebra tutor](http://tiltonsalgebra.com/#); and
 * a browser for the monthly Hacker News [askHN: Who's Hiring?](https://kennytilton.github.io/whoishiring/) question.
 
-And now why it works, in Q&A form:
+Now _why_ it works, in Q&A form:
 
-Q: So how does unfettered state dependensy work, without a "separate store" as a single source of truth where integrity can be enforced?
+Q: So how does unfettered state dependency work, without a "separate store" as a single source of truth where integrity can be enforced?
 
 A: As formulas for specific widget properties run, and as those formulas read other properties, Matrix quietly weaves a one-way DAG in memory, recording dependencies between computed and read properties. We call this `in-place state management`.
 
@@ -27,6 +29,7 @@ Q: What about changing state, without having pre-defined transactions to control
 
 A: Because a Web/MX app implicitly defines its DAG property-to-property, with full record of specific dependencies, Matrix internals can propagate any change to any affected properties completely, consistently, and non-redendantly; in a sense, the DAG dependency information defines executable transactions as emergent properties.
 
+### Summary
 A state manager, after a change, must know:
 * what other properties must be recomputed;
 * in which order should they be recomputed; and

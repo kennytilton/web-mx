@@ -1,12 +1,17 @@
 # Introduction to Web/MX
 
-Web/MX delivers a simple, powerful developer experience through several unconventional choices:
-* "reactivity first": [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) property-to-property, transparent reactivity drives _everything_;
-* state DAG is globally searchable and mutable from anywhere. Any property of any widget can read any other property, and any event handler can mutate any property; 
-* state is managed "in place", gathered by app components as they find necessary; and
+Web/MX delivers a simple yet powerful developer experience via several unconventional choices:
+* _transparent, fine-grained reactivity:_ [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) transparently and automatically records property-to-property dependencies, and uses that information to keep state self-consistent via glitch-free change propagation;
+* _the application is the database:_ state is managed "in place", gathered locally by app components as needed to fulfill their functional specs. No separate store;
+* _global reach:_ the formula for a derived property of a widget can read any property of any other widget. Any event handler can mutate any property; and
 * Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
 
-Accurate but abstract. Let us look at some code that does all that, to make those ideas concrete.
+Accurate but abstract. Here is what that means to Web/MX development:
+* we start from static HTML/CSS;
+* where a property needs to be dynamic, ie, change when other things change, we express it as a function of the other properties; 
+* widget event handlers can change any "input" property of any other widget.
+
+Let us look at some code that does all that, to make those ideas concrete.
 
 #### Hello Clock
 Follow these steps to clone Web/MX itself and run an example. 
@@ -54,13 +59,13 @@ Click "Refresh" to see the time. The code, with tutorial comments:
              :mx-dom (simple-clock)))
 ```
 
-Now we can connect the "unconventional choices" with concrete code:
+Let us pause to highlight specifically where each unconventional choice manifests itself in concrete code:
 * _"in place" state:_ the clock widget holds its own `now` state, which others can read or mutate reactively;
 * _property-to-property reactivity:_ the clock `content` consumes the clock `now` property, and the button handler alters the same property `now`;
 * _"global" state:_ using `fmu` or other navigation utilities, widgets have unfettered access to application state; and
 * otherwise, it is just HTML.
 
-So far, so simple. Will it stay that way as we elaborate the app?
+So far, so simple. Will it stay that way as we elaborate the app? We continue.
 
 #### The Running Clock
 Our clock is accurate, but requires manual intervention to see the latest time. Not fun. Let's have it run by itself.
@@ -73,7 +78,7 @@ In the function `manual-clock`, add this line after the line `:name :the-clock`:
 ```
 Save and the clock should run by itself, driven by async mutation of the `now` property.
 
-That is great, but now let's let the user control things.
+That is great, but now let us allow the user to control things.
 
 > Exercise #2
 
@@ -87,14 +92,14 @@ Save and, after the rebuild, the browser app should show a blank, stopped clock.
 
 > Exercise #3
 
-Examine the source of the `running-clock` function to see how the crucial `ticking?` property is used to give the user control. For your convenience:
+Examine the source of the `running-clock` function to see how the crucial `TICKING?` property is used to give the user control. For your convenience:
 
 ```clojure
 (defn start-stop-button []
   (button
     {:class   :pushbutton
-     :onclick #(mswap! (fmu :the-clock (evt-md %)) :ticking? not)}
-    (if (mget (fmu :the-clock me) :ticking?)
+     :onclick #(mswap! (fmu :the-clock (evt-md %)) :TICKING? not)}
+    (if (mget (fmu :the-clock me) :TICKING?)
       "Stop" "Start")))
 
 (defn running-clock []
@@ -102,7 +107,7 @@ Examine the source of the `running-clock` function to see how the crucial `ticki
     (h2 "The time is now....")
     (div {:class   "intro-clock"
           :style   (cF (str "color:"
-                         (if (mget me :ticking?) "cyan" "red")))
+                         (if (mget me :TICKING?) "cyan" "red")))
           :content (cF (if-let [now (mget me :now)]
                          (-> now .toTimeString (str/split " ") first)
                          "__:__:__"))}
@@ -112,7 +117,7 @@ Examine the source of the `running-clock` function to see how the crucial `ticki
        :ticker   (cF+ [:watch (fn [prop-name me new-value prior-value cell]
                                 (when (integer? prior-value)
                                   (js/clearInterval prior-value)))]
-                   (when (mget me :ticking?)
+                   (when (mget me :TICKING?)
                      (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
 ```

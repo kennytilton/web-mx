@@ -1,8 +1,18 @@
-A work in progress documenting Web/MX in the context of a simple counter program. Look for NS `tiltontec.example.intro-a-counter` in this repo to run it live.
+# Web/MX&trade; In a Nutshell
+_Or, building a counter app._
 
-And now, Web/MX in a nutshell.
-#### It is just html.
-We still program HTML. 
+This write-up is also a working app, one of the Web/MX examples. . Look for NS `tiltontec.example.intro-a-counter` in this repo if you would like to run it live while reading.
+
+And now, Web/MX in a nutshell. The developer:
+* just writes standard HTML, CSS, and SVG;
+* dynamic HTML comes from property formulas that can access any app state to make its decisions;
+* The "MX" in Web/MX transparently detects formula dependencies, and propagates change automatically; and
+* any event handler can update any state.
+
+Let us look at each of those in the context of a simple counter app.
+
+#### 1. We just write HTML
+We still program with HTML and CSS:
 
 ```clojure
 (defn a-counter []
@@ -12,14 +22,18 @@ We still program HTML.
     (button {:class   :push-button
              :onclick #(js/alert "RSN")} "+")))
 ```
-Where HTML has <tag attributes*> children* </tag>...
+Where HTML has:
 
-...Web/MX has (tag [HTML-attribute-map [custom-attr-map]] children*)
+`<tag attributes*> children* </tag>`
 
-Keywords become strings in HTML. Otherwise, MDN is your guide.
+Web/MX has:
 
-#### Omniscience.
-Any component can pull information it needs from anywhere, using "formulas" that can navigate to any other object to read any property.
+`(tag [HTML-attributes* [custom-state]] children*)`
+
+Also, CLJS keywords become strings in HTML. Otherwise, [MDN](https://developer.mozilla.org/en-US/docs/Web/Guide) is your guide.
+
+#### 2. Omniscience
+Any component can pull information it needs from anywhere, using "formulas" that can (1) navigate to any other object to (2) simply read its properties.
 ```clojure
 (defn a-counter []
   (div {:class [:intro]}
@@ -33,7 +47,7 @@ Any component can pull information it needs from anywhere, using "formulas" that
       (range (mget (fmu :a-counter me) :count)))))).  ;; <======
 ```
 
-#### Omnipotence
+#### 3. Omnipotence
 Any handler can navigate to any property to change it, with all dependencies being updated before the MSET! or MSWAP! call returns.
 ```clojure
 (defn a-counter []
@@ -48,7 +62,7 @@ Any handler can navigate to any property to change it, with all dependencies bei
    :onclick (cF (fn [event]                          ;; 2
                   (let [counter (fm! :a-counter me)] ;; 3
                      (mswap! counter :count inc))))} ;; 4
-   "+"))
+  ; just a random demonstration of dynamic, interdependent state...
   (div (mapv (fn [idx] (span (str idx "...")))
      (range (mget (fmu :a-counter me) :count))))))
 ```
@@ -59,4 +73,8 @@ Any handler can navigate to any property to change it, with all dependencies bei
 4. mutate the property (and dependent state) using MSWAP!
 
 ## Summary:
-Rich Web apps are greatly easier to build when we can write declarative component definitions with critical properties defined as functions of other properties. The resulting dependency graph can be used by a generic engine to handle reliably the error-prone, mind-numbing work of keeping state consistent manually.
+Rich, dynamic Web apps are greatly easier to build when we can write declarative component definitions with critical properties defined as functions of other properties. 
+
+The resulting dependency graph, automatically detected, can be used by a generic engine to handle the tedious, error-prone work of keeping state consistent.
+
+With the state management burden lifted, the developer can concentrate on the application, and is encouraged to make it even more responsive.

@@ -1,15 +1,46 @@
 # Introduction to Web/MX
 
-Web/MX delivers a simple yet powerful developer experience via several unconventional choices:
-* _transparent, fine-grained reactivity:_ [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) transparently and automatically records property-to-property dependencies, and uses that information to keep state self-consistent via glitch-free change propagation;
-* _the application is the database:_ state is managed "in place", gathered locally by app components as needed to fulfill their functional specs. No separate store;
-* _global reach:_ the formula for a derived property of a widget can read any property of any other widget. Any event handler can mutate any property; and
-* Web/MX is just [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML). 
+Web/MX delivers a simple, delightful developer experience through several unconventional design choices:
+* **transparent, fine-grained reactivity:** the underlying [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager transparently detects property-to-property dependencies. It uses that information to keep state self-consistent when any property changes;
 
-Accurate but abstract. Here is what that means to Web/MX development:
-* we start from static HTML/CSS;
-* where a property needs to be dynamic, ie, change when other things change, we express it as a function of the other properties; 
-* widget event handlers can change any "input" property of any other widget.
+* **the application is the database:** state is managed "in place", gathered locally by app components as needed. No defining, updating, or accessing a separate store; and
+
+* **global reach:** the formula for a derived property of a widget can read any property of any other widget. Any event handler can mutate any property. 
+
+* **all reactive all the time:** where we want to use a library such as localStorage, or XHR, or a charting library, we do not have to wrap it in Matrix, but doing so will extend the overall reactive win more than commensurately. 
+
+HTML and CSS remain as is. 
+
+Here is what all that means to the Web/MX developer:
+* we think in static HTML/CSS;
+* if a property needs to change when other app things change, we express it as a function of those other things; 
+* event handlers can change any designated "input" property of any other widget.
+
+### How can this possibly work?
+That is a lot of easy expressiveness, but is "ask anybody anything" or "fire at will" state manageable? Is that not why we need a secondary store, in the Flux pattern? We can explain why this works, but first, here are two live existence proofs you can try now:
+* a simulation of a [private Algebra tutor](http://tiltonsalgebra.com/#); and
+* a browser for the monthly Hacker News [askHN: Who's Hiring?](https://kennytilton.github.io/whoishiring/) question.
+
+Now _why_ it works, in Q&A form:
+
+Q: So how does unfettered state dependency work, without a "separate store" as a single source of truth where integrity can be enforced?
+
+A: As formulas for specific widget properties run, and as those formulas read other properties, Matrix quietly weaves a one-way DAG in memory, recording dependencies between computed and read properties. We call this `in-place state management`.
+
+Q: What about changing state, without having pre-defined transactions to control change?
+
+A: Because a Web/MX app implicitly defines its DAG property-to-property, with full record of specific dependencies, Matrix internals can propagate any change to any affected properties completely, consistently, and non-redendantly; in a sense, the DAG dependency information defines executable transactions as emergent properties.
+
+### Summary
+A state manager, after a change, must know:
+* what other properties must be recomputed;
+* in which order should they be recomputed; and
+* how do we orchestrate any side effects required by given recomputations?
+
+If those questons are not answered well after a state change, we risk:
+* unnecessary recomputation;
+* incomplete recomputation (worse); and
+* duplicate, inconsistent recomputation, aka glitches.
 
 Let us look at some code that does all that, to make those ideas concrete.
 

@@ -3,10 +3,10 @@ _Or, building a counter app._
 
 This write-up is also a working app, one of the Web/MX examples. . Look for NS `tiltontec.example.intro-a-counter` in this repo if you would like to run it live while reading.
 
-And now, Web/MX in a nutshell. The developer:
-* just writes standard HTML, CSS, and SVG;
-* dynamic HTML comes from property formulas that can access any app state to make its decisions;
-* The "MX" in Web/MX transparently detects formula dependencies, and propagates change automatically; and
+And now, Web/MX in a nutshell:
+* the developer just writes standard HTML, CSS, and SVG;
+* responsive behavior comes from property formulas that reactively access any app state to determine behavior and rendering;
+* the Matrix state engine automatically detects formula dependencies, and propagates change automatically; and
 * any event handler can update any state.
 
 Let us look at each of those in the context of a simple counter app.

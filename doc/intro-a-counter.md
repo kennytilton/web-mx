@@ -30,7 +30,7 @@ Any component can pull information it needs from anywhere, using "formulas" that
       (p {:class :intro-a-counter}
         (str "&hellip;" (mget (mx-par me) :count))))  ;; <======
     (div (mapv (fn [idx] (span (str idx "...")))      
-      (range (mget (fmu :a-counter me) :count))))))
+      (range (mget (fmu :a-counter me) :count)))))).  ;; <======
 ```
 
 #### --- omnipotence -----------------------------
@@ -40,12 +40,12 @@ Any handler can navigate to any property to change it, with all dependencies bei
   (div {:class [:intro]}
     (div {:class "intro"}
       {:name  :a-counter
-       :count (cI 3)}                                     ;; 1
+       :count (cI 3)}                                ;; 1
   (h2 "The count is now&hellip;") 
   (p {:class :intro-a-counter}
     (str "&hellip;" (mget (mx-par me) :count)))
   (button {:class   :push-button
-   :onclick (cF (fn [event] ;; 2
+   :onclick (cF (fn [event]                          ;; 2
                   (let [counter (fm! :a-counter me)] ;; 3
                      (mswap! counter :count inc))))} ;; 4
    "+"))
@@ -58,4 +58,5 @@ Any handler can navigate to any property to change it, with all dependencies bei
 3. we use the `FM!` family search utility to navigate to the :a-counter;
 4. mutate the property (and dependent state) using MSWAP!
 
-
+## Summary:
+Rich Web apps are greatly easier to build when we can write declarative component definitions with critical properties defined as functions of other properties. The resulting dependency graph can be used by a generic engine to handle reliably the error-prone, mind-numbing work of keeping state consistent manually.

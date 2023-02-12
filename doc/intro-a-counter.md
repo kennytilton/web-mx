@@ -5,9 +5,8 @@ This write-up is also a working app, one of the Web/MX examples. . Look for NS `
 
 And now, Web/MX in a nutshell. The developer:
 * just writes standard HTML, CSS, and SVG;
-* dynamic HTML comes from property formulas that can access any app state to make its decisions;
-* The "MX" in Web/MX transparently detects formula dependencies, and propagates change automatically; and
-* any event handler can update any state.
+* property formulas can work off any other app properties; and
+* event handlers can update any app property.
 
 Let us look at each of those in the context of a simple counter app.
 

@@ -11,6 +11,14 @@ div, h1, input {
     gap: 1em;
 }
 
+.control-panel {
+    display:         flex;
+    flex-direction:  row;
+    align-items:     center;
+    justify-content: start;
+    gap: 1em;
+}
+
 /* the counter display */
 @font-face{
  font-family:'digital-clock-font';
@@ -21,7 +29,9 @@ div, h1, input {
     font-size: 128px;
     font-family: digital-clock-font, HelveticaNeue-UltraLight, Helvetica;
     padding: 16px 24px;
+    min-width: 325px;
     color: cyan;
+    text-align: center;
     background: black;
 }
 

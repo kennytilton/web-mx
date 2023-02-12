@@ -16,7 +16,8 @@
 
 ;;; --- just html -------------------------------------
 ;;; We still program HTML. Please find detailed notes following the code.
-#_(defn a-counter []
+#_
+(defn a-counter []
     (div {:class :intro}
       (h2 "The count is now....")
       (p {:class :intro-a-counter} "42")
@@ -59,6 +60,7 @@
 ;;; --- omnipotence -----------------------------
 ;;; Any handler can navigate to any property to change it, with all
 ;;; dependencies updated before the MSET! or MSWAP! call returns.
+
 (defn a-counter []
     (div {:class [:intro]}
       (div {:class "intro"}

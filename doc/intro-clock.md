@@ -7,7 +7,9 @@ Web/MX delivers a simple, delightful developer experience through several unconv
 
 * **global reach:** the formula for a derived property of a widget can read any property of any other widget. Any event handler can mutate any property. 
 
-HTML and CSS are left untouched. 
+* **all reactive all the time:** where we want to use a library such as localStorage, or XHR, or a charting library, we do not have to wrap it in Matrix, but doing so will extend the overall reactive win more than commensurately. 
+
+HTML and CSS remain as is. 
 
 Here is what all that means to the Web/MX developer:
 * we think in static HTML/CSS;

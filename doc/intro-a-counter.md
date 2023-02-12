@@ -3,10 +3,11 @@ _Or, building a counter app._
 
 This write-up is also a working app, one of the Web/MX examples. . Look for NS `tiltontec.example.intro-a-counter` in this repo if you would like to run it live while reading.
 
-And now, Web/MX in a nutshell. The developer:
-* just writes standard HTML, CSS, and SVG;
+And now, Web/MX in a nutshell:
+* the developer writes standard HTML, CSS, and SVG;
 * property formulas can work off any other app properties; and
 * event handlers can update any app property.
+
 
 Let us look at each of those in the context of a simple counter app.
 

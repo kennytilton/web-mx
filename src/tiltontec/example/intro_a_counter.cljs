@@ -12,15 +12,19 @@
     [tiltontec.web-mx.style :refer [make-css-inline]]
     [tiltontec.example.util :as exu]))
 
-;;; --- intro counter starter code -----------------------------------
+;;; --- intro counter -----------------------------------
+;;; We look at three core ideas:
+;;; 1. We just do standard HTML/CSS;
+;;; 2. "omniscience": formulas can work off any app state; and
+;;; 3. "omnipotence": event handlers can mutate at will.
 
-;;; --- just html -------------------------------------
+;;; --- 1. It's just html -------------------------------------
 ;;; We still program HTML. Please find detailed notes following the code.
 #_
 (defn a-counter []
     (div {:class :intro}
       (h2 "The count is now....")
-      (p {:class :intro-a-counter} "42")
+      (span {:class :intro-a-counter} "42")
       (button {:class   :push-button
                :onclick #(js/alert "Feature Not Yet Implemented")} "+")))
 ;;; Where HTML has <tag attributes*> children* </tag>...
@@ -33,18 +37,18 @@
 ;;; "formulas" that can navigate to any object for any property.
 #_
 (defn a-counter []
-    (div {:class [:intro]}
+    (div {:class "intro"}
       (div {}
         {:name  :a-counter                                  ;; 1
          :count 3}                                          ;; 2
         (h2 "The count is now&hellip;")
-        (p {:class :intro-a-counter}
+        (span {:class :intro-a-counter}
           (str "&hellip;" (mget (mx-par me) :count))))      ;; 3
-      ;; todo CSS for all this, overall and spans
+      ;; just demoing navigation by name, and dynamic content:
       (div (mapv (fn [idx] (span (str idx "...")))          ;; 4
              (range (mget (fmu :a-counter me)               ;; 5a
                       :count))))))                          ;; 5b
-;;; 1. give the <p> a name, namely, :a-counter.
+;;; 1. give the <span> a name, namely, :a-counter.
 ;;; 2. give :a-counter some custom state. Call it :count.
 ;;; 3. derive the text for the counter display by navigating
 ;;;    to the parent and reading the :count.
@@ -65,9 +69,9 @@
     (div {:class [:intro]}
       (div {:class "intro"}
         {:name  :a-counter
-         :count (cI 3)}                                     ;; 1
+         :count (cI 2)}                                     ;; 1
         (h2 "The count is now&hellip;")
-        (p {:class :intro-a-counter}
+        (span {:class :intro-a-counter}
           (str "&hellip;" (mget (mx-par me) :count)))
         (button {:class   :push-button
                  :onclick (cF (fn [event] ;; 2

@@ -1,7 +1,7 @@
 A work in progress documenting Web/MX in the context of a simple counter program. Look for NS `tiltontec.example.intro-a-counter` in this repo to run it live.
 
 And now, Web/MX in a nutshell.
-#### --- just html -------------------------------------
+#### It is just html.
 We still program HTML. 
 
 ```clojure
@@ -18,7 +18,7 @@ Where HTML has <tag attributes*> children* </tag>...
 
 Keywords become strings in HTML. Otherwise, MDN is your guide.
 
-#### --- omniscience -----------------------------
+#### Omniscience.
 Any component can pull information it needs from anywhere, using "formulas" that can navigate to any other object to read any property.
 ```clojure
 (defn a-counter []
@@ -33,7 +33,7 @@ Any component can pull information it needs from anywhere, using "formulas" that
       (range (mget (fmu :a-counter me) :count)))))).  ;; <======
 ```
 
-#### --- omnipotence -----------------------------
+#### Omnipotence
 Any handler can navigate to any property to change it, with all dependencies being updated before the MSET! or MSWAP! call returns.
 ```clojure
 (defn a-counter []

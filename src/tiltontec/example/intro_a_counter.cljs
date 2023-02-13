@@ -126,34 +126,31 @@
   (div {:class "intro"}
     {:name       :a-counter
      :ticking?   (cI false)
-     :tick-start (cF (prn :tickstart? (nil? _cache)(number? _cache))
-                   #_ (when (not= 0 (mget me :count))
-                     (cf-freeze (.getTime (js/Date.))))
-                   ;; workaround for bug in cf-freeze
-                   (if (number? _cache)
-                     (cf-freeze _cache)
-                     (when (not= 0 (mget me :count))
-                       (cf-freeze (.getTime (js/Date.))))))
+     :tick-start (cF ;; we arbitrarily start a timer when count is first not= 0
+                   ;; this could happen from the manual bumpers or the automatic bumper
+                   ;; so it seemed better wo work off the actual change in value
+                   (when (not= 0 (mget me :count))
+                     (cf-freeze (.getTime (js/Date.)))))
      :tick-rate  (cF (when-let [start (mget me :tick-start)]
                        (let [elapsed (- (.getTime (js/Date.)) start)]
-                         (/ (mget me :count) (/ elapsed 1000.0)))))
+                         (/ (mget me :count) (max 1 (/ elapsed 1000.0))))))
      :ticker     (cF+ [:watch (fn [_ _ _ prior-value _]
                                 (when (integer? prior-value) ;; on initial "echo", prior-value is unbound
-                                  (js/clearInterval prior-value)))] ;; 2
+                                  (js/clearInterval prior-value)))]
                    (when (mget me :ticking?)
-                     (js/setInterval #(mswap! me :count inc) 1000))) ;; 3
+                     (js/setInterval #(mswap! me :count inc) 1000)))
      :count      (cI 0)}
     (h2 "The count is now&hellip;")
     (span {:class :intro-a-counter}
       (str (mget (mx-par me) :count)))
-    (span {:class :intro-a-counter}
+    (span {:class :intro-a-counter
+           :style "font-size:64px"}
       (if-let [r (mget (mx-par me) :tick-rate)]
-        (pp/cl-format nil "~6,3f" r)
-        "rate"))
+        (pp/cl-format nil "~5,2f" r)
+        "0.00"))
     (div {:class "control-panel"}
       (button {:class   :push-button
                :onclick (cF (fn [event]
-                              (prn :tickstart (mget (fmu :a-counter) :tick-start))
                               (let [counter (fm! :a-counter me)]
                                 (mswap! counter :count dec))))}
         "-")

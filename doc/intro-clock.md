@@ -31,7 +31,7 @@ Q: What about changing state, without having pre-defined transactions to control
 
 A: Because a Web/MX app implicitly defines its DAG property-to-property, with full record of specific dependencies, Matrix internals can propagate any change to any affected properties completely, consistently, and non-redendantly; in a sense, the DAG dependency information defines executable transactions as emergent properties.
 
-### Summary
+### The GUI problem
 A state manager, after a change, must know:
 * what other properties must be recomputed;
 * in which order should they be recomputed; and
@@ -42,7 +42,7 @@ If those questons are not answered well after a state change, we risk:
 * incomplete recomputation (worse); and
 * duplicate, inconsistent recomputation, aka glitches.
 
-Let us look at some code that does all that, to make those ideas concrete.
+Let us look at some code that addresses all that.
 
 #### Hello Clock
 Follow these steps to clone Web/MX itself and run an example. 
@@ -78,7 +78,7 @@ Click "Refresh" to see the time. The code, with tutorial comments:
     {:class   :pushbutton
      :onclick #(let [me (evt-md %) 
                      ; evt-md ^^ derives the MX model from the event;
-                     ; then search the family up from me (fmu) to find 
+                     ; Next, we search the family up from me (fmu) to find 
                      ; the model named :the-clock...
                      clock (fmu :the-clock me)] 
                  ; ...and reset its property :now, transparently triggering

@@ -1,13 +1,11 @@
 # Web/MX&trade; In a Nutshell
 _Or, building a counter app._
 
-This write-up is also a working app, one of the Web/MX examples. . Look for NS `tiltontec.example.intro-a-counter` in this repo if you would like to run it live while reading.
-
-And now, Web/MX in a nutshell:
+Here is `Web/MX` in a tl;dr nutshell:
 * the developer writes standard HTML, CSS, and SVG;
-* property formulas can work off any other app properties; and
-* event handlers can update any app property.
-
+* component properties, GUI or domain, view or model, can be functions of any property of any other component;
+* event handlers can update any designated input property of any component; and
+* with more or less "glue" code, non-Matrix mechanisms can be made reactive.
 
 Let us look at each of those in the context of a simple counter app.
 
@@ -46,6 +44,7 @@ Any component can pull information it needs from anywhere, using "formulas" that
     (div (mapv (fn [idx] (span (str idx "...")))      
       (range (mget (fmu :a-counter me) :count)))))).  ;; <======
 ```
+The counter display will change when the counter changes, but we need the next example to change the counter.
 
 #### 3. Omnipotence
 Any handler can navigate to any property to change it, with all dependencies being updated before the MSET! or MSWAP! call returns.
@@ -87,11 +86,11 @@ Reactivity is neat, so we want to use it everywhere,even with software that know
     (span {:class :intro-a-counter}
       (str (mget (mx-par me) :count)))))
 ```
-1. By using a formula to create the interval,we get lexical acces to "me"
-2. Intervals fire asynchronously, and intervals do not know about Matrix, but in this case, we make them reactive by having the handler use the API `mswap!` to accurately update the :count and the entire DAG.
+1. By using a formula to create the interval, we get lexical acces to "me".
+2. Intervals fire asynchronously, and intervals do not know about Matrix, but we use the API `mswap!` to accurately update the :count and the entire DAG. In the end, async mechanisms are no more "async" than a user deciding at will to click a button.
 
 ## Summary:
-Rich, dynamic Web apps are greatly easier to build when we can write declarative component definitions with critical properties defined as functions of other properties. 
+Rich, dynamic Web apps are easier to build from declarative component definitions with critical properties defined as functions of other properties. 
 
 The resulting dependency graph, automatically detected, can be used by a generic engine to handle the tedious, error-prone work of keeping state consistent.
 

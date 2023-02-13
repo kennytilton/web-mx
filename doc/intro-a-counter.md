@@ -72,9 +72,29 @@ Any handler can navigate to any property to change it, with all dependencies bei
 3. we use the `FM!` family search utility to navigate to the :a-counter;
 4. mutate the property (and dependent state) using MSWAP!
 
+#### 4. All-in reactivity (omipresence?)
+Reactivity is neat, so we want to use it everywhere,even with software that knows nothing about Matrix reactive mechanisms. In this next example, we use some simple "glue code" to connect the non-reactive `js/setInterval` with reactive Matrix elements.
+```clojure
+
+(defn a-counter []
+  (div {:class "intro"}
+       {:name     :a-counter
+        :count    (cI 0)
+        :ticker   (cF (js/setInterval ;; 1
+                         #(mswap! me :count inc) ;; 2
+                         1000))}
+    (h2 "The count is now&hellip;")
+    (span {:class :intro-a-counter}
+      (str (mget (mx-par me) :count)))))
+```
+1. By using a formula to create the interval,we get lexical acces to "me"
+2. Intervals fire asynchronously, and intervals do not know about Matrix, but in this case, we make them reactive by having the handler use the API `mswap!` to accurately update the :count and the entire DAG.
+
 ## Summary:
 Rich, dynamic Web apps are greatly easier to build when we can write declarative component definitions with critical properties defined as functions of other properties. 
 
 The resulting dependency graph, automatically detected, can be used by a generic engine to handle the tedious, error-prone work of keeping state consistent.
 
 With the state management burden lifted, the developer can concentrate on the application, and is encouraged to make it even more responsive.
+
+The more utilities and libraries we "wrap" with Matrix, the bigger the productivity win.

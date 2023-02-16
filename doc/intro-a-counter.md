@@ -72,7 +72,43 @@ Any handler can navigate to any property to change it, with all dependencies bei
 3. we use the `FM!` family search utility to navigate to the :a-counter;
 4. mutate the property (and dependent state) using MSWAP!
 
-#### 4. All-in reactivity (omipresence?)
+#### 4. Internal/External dataflow
+Those three points above cover everything essential to Matrix, but one edge case comes up often enough, and is exceptional enough, to deserve mention: observers acting on the DAG. 
+
+A deep principle of Cell observers is that act only outside the Matrix dataflow. But it is not uncommon, when developing MX code, to encounter a use case where the dataflow can usefully detect a need to mutate an input cell. These are often cases where the user by design has control, but the system wants to offer a U/X nicety by automatically providing a user input. 
+
+To this end, MX allows observers to enqueue, via `with-cc`, mset!/mswap! of input Cells for execution immediately following the processing of the current mutation. In the example below, we want the user to control the counter, but we also want an automatic safeguard should the count reach a "dangerous" level.
+```clojure
+
+(defn start-stop-button []
+  (button {:class   :pushbutton
+           :style "border-color:white"
+           :onclick #(mswap! (fmu :a-counter (evt-md %)) :ticking? not)}
+    (if (mget (fmu :a-counter me) :ticking?)
+      "Stop" "Start")))
+
+(defn a-counter []
+  (div {:class "intro"}
+    {:name     :a-counter
+     :danger-count 5 ;; <============================
+     :ticking? (cI false)
+     :ticker   (cF+ [:watch (fn [_ _ newv prior _]
+                              (when (integer? prior)
+                                (js/clearInterval prior)))]
+                 (when (mget me :ticking?)
+                   (js/setInterval #(mswap! me :count inc) 1000)))
+     :count    (cI 0 :watch (fn [_ me new-ct _ _]
+                              (when (> new-ct (mget me :danger-count))
+                                (with-cc :tickofff ;; <=====================
+                                  (mset! me :ticking? false)))))
+     }
+    (h2 "The count is now&hellip;")
+    (span {:class :intro-a-counter}
+      (str (mget (mx-par me) :count)))
+    (start-stop-button)))
+```
+
+#### 5. All-in reactivity (omipresence?)
 Reactivity is neat, so we want to use it everywhere,even with software that knows nothing about Matrix reactive mechanisms. In this next example, we use some simple "glue code" to connect the non-reactive `js/setInterval` with reactive Matrix elements.
 ```clojure
 
@@ -87,9 +123,7 @@ Reactivity is neat, so we want to use it everywhere,even with software that know
     (span {:class :intro-a-counter}
       (str (mget (mx-par me) :count)))))
 ```
-1. By using a formula to create the interval,we get lexical acces to "me"
-2. Intervals fire asynchronously, and intervals do not know about Matrix, but in this case, we make them reactive by having the handler use the API `mswap!` to accurately update the :count and the entire DAG.
-
+This is a trivial case. XHR is more interesting to wrap in MX, and wrapping the browser DOM maintenance require hundreds of lines of code.
 ## Summary:
 Rich, dynamic Web apps are greatly easier to build when we can write declarative component definitions with critical properties defined as functions of other properties. 
 

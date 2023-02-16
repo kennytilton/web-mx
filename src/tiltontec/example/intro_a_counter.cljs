@@ -2,7 +2,9 @@
   (:require
     [clojure.string :as str]
     [clojure.pprint :as pp]
+    [tiltontec.cell.base :refer [minfo]]
     [tiltontec.cell.core :refer [cF cF+ cFonce cI cf-freeze]]
+    [tiltontec.cell.integrity :refer [with-cc]]
     [tiltontec.model.core
      :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fmu fm!] :as md]
     [tiltontec.web-mx.gen :refer [evt-md target-value]]
@@ -62,8 +64,7 @@
 ;;; --- omnipotence -----------------------------
 ;;; Any handler can navigate to any property to change it, with all
 ;;; dependencies updated before the MSET! or MSWAP! call returns.
-#_
-(defn a-counter []
+#_(defn a-counter []
     (div {:class [:intro]}
       (div {:class "intro"}
         {:name  :a-counter
@@ -89,18 +90,55 @@
 ;;; Reactivity is neat, so we want to use it everywhere, even with software that
 ;;; knows nothing about Matrix reactive mechanisms. In this next example, we use
 ;;; some simple "glue code" to connect the non-reactive `js/setInterval` with our Matrix.
+#_(defn a-counter []
+    (div {:class "intro"}
+      {:name   :a-counter
+       :ticker (cF (js/setInterval                          ;; 1
+                     #(mswap! me :count inc)                ;; 2
+                     1000))
+       :count  (cI 0)}
+      (h2 "The count is now&hellip;")
+      (span {:class :intro-a-counter}
+        (str (mget (mx-par me) :count)))))
 
+;;; --- observer/watch dataflow initiation ----------------------
+;;; It is not uncommon, when developing MX code, to encounter
+;;; a use case where the dataflow can detect a need to mutate an input
+;;; cell. These are often cases where the user has control, but the system
+;;; wants to offer a U/X nicety by doing what the user would do. But user
+;;; input comes from controls operating on MX input cells.
+;;; To this end, MX allows observers to enqueue, via `with-cc`, mset!/mswap! code for execution
+;;; immediately following the processing of the current mutation.
+
+;;; In the example below, we want the user to control the counter, but we also want
+;;; an automatic safeguard should the count reach a "dangerous" level
+
+(defn start-stop-button []
+  (button {:class   :pushbutton
+           :style "border-color:white"
+           :onclick #(mswap! (fmu :a-counter (evt-md %)) :ticking? not)}
+    (if (mget (fmu :a-counter me) :ticking?)
+      "Stop" "Start")))
 
 (defn a-counter []
   (div {:class "intro"}
     {:name     :a-counter
-     :count    (cI 0)
-     :ticker   (cF (js/setInterval ;; 1
-                     #(mswap! me :count inc) ;; 2
-                     1000))}
+     :danger-count 5
+     :ticking? (cI false)
+     :ticker   (cF+ [:watch (fn [_ _ newv prior _]
+                              (when (integer? prior)
+                                (js/clearInterval prior)))]
+                 (when (mget me :ticking?)
+                   (js/setInterval #(mswap! me :count inc) 1000)))
+     :count    (cI 0 :watch (fn [_ me new-ct _ _]
+                              (when (> new-ct (mget me :danger-count))
+                                (with-cc :tickofff
+                                  (mset! me :ticking? false)))))
+     }
     (h2 "The count is now&hellip;")
     (span {:class :intro-a-counter}
-      (str (mget (mx-par me) :count)))))
+      (str (mget (mx-par me) :count)))
+    (start-stop-button)))
 
 ;;; 1. By using a formula to create the interval,we get lexical acces to "me"
 ;;; 2. Intervals fire asynchronously, and intervals do not know about Matrix,
@@ -108,27 +146,26 @@
 ;;;    use the API `mswap!` to accurately update the :count and the entire DAG.
 
 ;;; --- user control ------------------------------------
-#_
-(defn a-counter []
-  (div {:class "intro"}
-    {:name     :a-counter
-     :ticking? (cI false)                                   ;; 0
-     :ticker   (cF+ [:watch (fn [prop-name me new-value prior-value cell] ;; 1
-                              (when (integer? prior-value)  ;; not initially
-                                (js/clearInterval prior-value)))] ;; 2
-                 (when (mget me :ticking?)
-                   (js/setInterval #(mswap! me :count inc) 1000))) ;; 3
-     :count    (cI 0)}
-    (h2 "The count is now&hellip;")
-    (span {:class :intro-a-counter}
-      (str (mget (mx-par me) :count)))
-    (button
-      {:class   :push-button
-       :style   {:min-width "96px"}
-       :title   "Click to start or stop counting."
-       :onclick #(mswap! (fmu :a-counter (evt-md %)) :ticking? not)} ;; 4
-      (if (mget (fmu :a-counter me) :ticking?)
-        "||" ">>"))))
+#_(defn a-counter []
+    (div {:class "intro"}
+      {:name     :a-counter
+       :ticking? (cI false)                                 ;; 0
+       :ticker   (cF+ [:watch (fn [prop-name me new-value prior-value cell] ;; 1
+                                (when (integer? prior-value) ;; not initially
+                                  (js/clearInterval prior-value)))] ;; 2
+                   (when (mget me :ticking?)
+                     (js/setInterval #(mswap! me :count inc) 1000))) ;; 3
+       :count    (cI 0)}
+      (h2 "The count is now&hellip;")
+      (span {:class :intro-a-counter}
+        (str (mget (mx-par me) :count)))
+      (button
+        {:class   :push-button
+         :style   {:min-width "96px"}
+         :title   "Click to start or stop counting."
+         :onclick #(mswap! (fmu :a-counter (evt-md %)) :ticking? not)} ;; 4
+        (if (mget (fmu :a-counter me) :ticking?)
+          "||" ">>"))))
 
 ;;; Notes on the above:
 ;;; 0. Since the user will be controlling whether the clock is `ticking?`, we make that an input Cell (cI).
@@ -141,8 +178,7 @@
 ;;; let the user use both, and also whether or not the automatic increment is running.
 ;;; We also show a running "count per seconds", starting from the first change.
 
-#_
-(defn a-counter []
+#_(defn a-counter []
     (div {:class "intro"}
       {:name       :a-counter
        :count      (cI 0)

@@ -1,13 +1,11 @@
 # Web/MX&trade; In a Nutshell
 _Or, building a counter app._
 
-This write-up is also a working app, one of the Web/MX examples. . Look for NS `tiltontec.example.intro-a-counter` in this repo if you would like to run it live while reading.
-
-And now, Web/MX in a nutshell:
-* the developer writes standard HTML, CSS, and SVG;
-* property formulas can work off any other app properties; and
-* event handlers can update any app property.
-
+Here is `Web/MX` in a tl;dr nutshell:
+* the developer writes standard HTML, CSS, and SVG, in declarative style;
+* component properties, GUI or domain, view or model, can be functions of any property of any other component;
+* event handlers can update any designated input property of any component; and
+* with more or less "glue" code, non-Matrix mechanisms can be made reactive.
 
 Let us look at each of those in the context of a simple counter app.
 
@@ -22,18 +20,14 @@ We still program with HTML and CSS:
     (button {:class   :push-button
              :onclick #(js/alert "RSN")} "+")))
 ```
-Where HTML has:
+Where HTML has: `<tag attributes*> children* </tag>`...
 
-`<tag attributes*> children* </tag>`
+...Web/MX has: `(tag [HTML-attributes* [custom-state]] children*)`
 
-Web/MX has:
-
-`(tag [HTML-attributes* [custom-state]] children*)`
-
-Also, CLJS keywords become strings in HTML. Otherwise, [MDN](https://developer.mozilla.org/en-US/docs/Web/Guide) is your guide.
+CLJS keywords become strings in HTML, and boolean HTML attributes need special handling. Otherwise, [MDN](https://developer.mozilla.org/en-US/docs/Web/Guide) is your guide.
 
 #### 2. Omniscience
-Any component can pull information it needs from anywhere, using "formulas" that can (1) navigate to any other object to (2) simply read its properties.
+Any component can pull information it needs from anywhere, first navigating to another object, then simply reading its properties. Matrix internals record the dependency transparently and trigger redraws automatically.
 ```clojure
 (defn a-counter []
   (div {:class [:intro]}
@@ -46,6 +40,7 @@ Any component can pull information it needs from anywhere, using "formulas" that
     (div (mapv (fn [idx] (span (str idx "...")))      
       (range (mget (fmu :a-counter me) :count)))))).  ;; <======
 ```
+The counter display will change when the counter changes, but we need the next example to prove that.
 
 #### 3. Omnipotence
 Any handler can navigate to any property to change it, with all dependencies being updated before the MSET! or MSWAP! call returns.
@@ -69,7 +64,7 @@ Any handler can navigate to any property to change it, with all dependencies bei
 
 1. `(cI <value>)` tells MX that the property :count can and might be changed by imperative code;
 2. we generate the event handler in a formula for handy access to "me"
-3. we use the `FM!` family search utility to navigate to the :a-counter;
+3. we use the `FM!` family search utility to navigate to the :a-counter; and
 4. mutate the property (and dependent state) using MSWAP!
 
 #### 4. Internal/External dataflow
@@ -110,6 +105,7 @@ To this end, MX allows observers to enqueue, via `with-cc`, mset!/mswap! of inpu
 
 #### 5. All-in reactivity (omipresence?)
 Reactivity is neat, so we want to use it everywhere,even with software that knows nothing about Matrix reactive mechanisms. In this next example, we use some simple "glue code" to connect the non-reactive `js/setInterval` with reactive Matrix elements.
+
 ```clojure
 
 (defn a-counter []
@@ -123,12 +119,11 @@ Reactivity is neat, so we want to use it everywhere,even with software that know
     (span {:class :intro-a-counter}
       (str (mget (mx-par me) :count)))))
 ```
-This is a trivial case. XHR is more interesting to wrap in MX, and wrapping the browser DOM maintenance require hundreds of lines of code.
-## Summary:
-Rich, dynamic Web apps are greatly easier to build when we can write declarative component definitions with critical properties defined as functions of other properties. 
+1. By using a formula to create the interval, we get lexical acces to "me".
+2. Intervals fire asynchronously, and intervals do not know about Matrix, but we use the API `mswap!` to accurately update the :count and the entire DAG. 
 
-The resulting dependency graph, automatically detected, can be used by a generic engine to handle the tedious, error-prone work of keeping state consistent.
+The resulting dependency graph, automatically detected, can be used by a generic engine to handle the tedious, error-prone work of keeping state consistent. The more utilities and libraries we "wrap" with Matrix, the bigger the productivity win.
 
 With the state management burden lifted, the developer can concentrate on the application, and is encouraged to make it even more responsive.
 
-The more utilities and libraries we "wrap" with Matrix, the bigger the productivity win.
+

@@ -3,9 +3,9 @@ _Or, building a counter app._
 
 Here is `Web/MX` in a tl;dr nutshell:
 * the developer writes standard HTML, CSS, and SVG, in declarative style;
-* component properties, GUI or domain, view or model, can be functions of any property of any other component;
-* event handlers can update any designated input property of any component; and
-* with more or less "glue" code, non-Matrix mechanisms can be made reactive.
+* component properties can be expressed as _functions_, of any other app property;
+* event handlers can update any input property of any component; and
+* with more or less "glue" code, non-Matrix libraries can be made reactive.
 
 Let us look at each of those in the context of a simple counter app.
 
@@ -26,7 +26,7 @@ Where HTML has: `<tag attributes*> children* </tag>`...
 
 CLJS keywords become strings in HTML, and boolean HTML attributes need special handling. Otherwise, [MDN](https://developer.mozilla.org/en-US/docs/Web/Guide) is your guide.
 
-#### 2. Omniscience
+#### 2. Easy component access to app state, globally.
 Any component can pull information it needs from anywhere, first navigating to another object, then simply reading its properties. Matrix internals record the dependency transparently and trigger redraws automatically.
 ```clojure
 (defn a-counter []
@@ -42,8 +42,8 @@ Any component can pull information it needs from anywhere, first navigating to a
 ```
 The counter display will change when the counter changes, but we need the next example to prove that.
 
-#### 3. Omnipotence
-Any handler can navigate to any property to change it, with all dependencies being updated before the MSET! or MSWAP! call returns.
+#### 3. Easy app responsiveness to change.
+Any handler can navigate to any property to change it.
 ```clojure
 (defn a-counter []
   (div {:class [:intro]}
@@ -67,12 +67,14 @@ Any handler can navigate to any property to change it, with all dependencies bei
 3. we use the `FM!` family search utility to navigate to the :a-counter; and
 4. mutate the property (and dependent state) using MSWAP!
 
+While that may sound uncontrolled, there is method to the madness: the property mutation gets propagated fully throughout the dag, consistently and without glitches, before the `mswap!` returns.
+
+If our formulas deciding the rest of the application state are correct, the app will be correct.
+
 #### 4. Internal/External dataflow
-Those three points above cover everything essential to Matrix, but one edge case comes up often enough, and is exceptional enough, to deserve mention: observers acting on the DAG. 
+Those three points above cover everything essential to Matrix, but one edge case comes up often enough, and is exceptional enough, to deserve mention: observers acting on the DAG. A vital quality of Cell observers is that act only _outside_ the Matrix dataflow. But it is not uncommon, when developing MX code, to encounter a use case where the dataflow can usefully detect a need to mutate an input cell. These are often cases where the user by design has control, but the system wants to offer a U/X nicety by automatically providing a user input. 
 
-A deep principle of Cell observers is that act only outside the Matrix dataflow. But it is not uncommon, when developing MX code, to encounter a use case where the dataflow can usefully detect a need to mutate an input cell. These are often cases where the user by design has control, but the system wants to offer a U/X nicety by automatically providing a user input. 
-
-To this end, MX allows observers to enqueue, via `with-cc`, mset!/mswap! of input Cells for execution immediately following the processing of the current mutation. In the example below, we want the user to control the counter, but we also want an automatic safeguard should the count reach a "dangerous" level.
+To this end, MX _does_ allow observers to mset!/mswap! of input Cells, but only by enqueueing said mutations for later execution, immediately following the processing of the current mutation. In the example below, we want the user to control the counter, but we also want an automatic safeguard should the count reach a "dangerous" level.
 ```clojure
 
 (defn start-stop-button []
@@ -103,8 +105,8 @@ To this end, MX allows observers to enqueue, via `with-cc`, mset!/mswap! of inpu
     (start-stop-button)))
 ```
 
-#### 5. All-in reactivity (omipresence?)
-Reactivity is neat, so we want to use it everywhere,even with software that knows nothing about Matrix reactive mechanisms. In this next example, we use some simple "glue code" to connect the non-reactive `js/setInterval` with reactive Matrix elements.
+#### 5. All-in reactivity
+Reactivity is neat, so we want to use it everywhere, even with software that knows nothing about Matrix. In this next example, we use some simple "glue code" to connect the non-reactive `js/setInterval` with reactive Matrix elements.
 
 ```clojure
 

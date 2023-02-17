@@ -1,4 +1,4 @@
-(ns tiltontec.example.intro-a-counter
+(ns tiltontec.example.intro-counter
   (:require
     [clojure.string :as str]
     [clojure.pprint :as pp]
@@ -12,20 +12,40 @@
      :refer [img section h1 h2 h3 input footer p a
              span i label ul li div button br]]
     [tiltontec.web-mx.style :refer [make-css-inline]]
-    [tiltontec.example.util :as exu]))
+    [tiltontec.example.util :as exu]
+    [cljs-http.client :as client]
+    [cljs.core.async :refer [go <!]]))
 
 ;;; --- intro counter -----------------------------------
-;;; We look at three core ideas:
+;;; Architectural design:
 ;;; 1. We just do standard HTML/CSS;
-;;; 2. "omniscience": formulas can work off any app state; and
-;;; 3. "omnipotence": event handlers can mutate at will.
+;;; 1.a. But composites of "just html" are allowed, via parameterized  function composition
+;;;      So we are not limited to HTML atoms. To a degree, this delivers HTML components. (?)
+;;; 1.b. We can include CLJS in the HTML generation (map genning kids)
+;;; 1.c. And we get a lot of syntactic sugar for specifying children. Transparent, actually.
+;;;      The macros and lexical capture hide a lot.
+;;; 2. "omniscience": formulas can work off any app state, via navigation
+;;; 2.a structural navigation
+;;; 2.b name etc navigation
+;;; 2.c function navigation
+;;; 3. property-to-property reactivity
+;;; 3.a. allows reliable "in place" state management: reactivity all the way to the leaf; no separate store;
+;;; 3.b. view is state, a first-class citizen: the color attribute of the style gets its own formula;
+;;; 3.c. update efficiency, without VDOM/diffing.
+;;; 4. "omnipotence": event handlers can mutate at will.
+;;; 5. "observers/watches": external; interval cleanuo, loggin
+;;; 6. "with-cc" observer internal DAG mutation;
+;;; 7. "all-in": omnipresence, ubiquity; reactive everywhere VIA wrapping
+;;; 7.a wrapping setTimeout
+;;; 7.b wrapping XHR
+;;; 7.c wrapping localStrage
 
 ;;; --- 1. It's just html -------------------------------------
 ;;; We still program HTML. Please find detailed notes following the code.
 #_(defn a-counter []
     (div {:class :intro}
       (h2 "The count is now....")
-      (span {:class :intro-a-counter} "42")
+      (span {:class :intro-counter} "42")
       (button {:class   :push-button
                :onclick #(js/alert "Feature Not Yet Implemented")} "+")))
 ;;; Where HTML has <tag attributes*> children* </tag>...
@@ -42,7 +62,7 @@
         {:name  :a-counter                                  ;; 1
          :count 3}                                          ;; 2
         (h2 "The count is now&hellip;")
-        (span {:class :intro-a-counter}
+        (span {:class :intro-counter}
           (str "&hellip;" (mget (mx-par me) :count))))      ;; 3
       ;; just demoing navigation by name, and dynamic content:
       (div (mapv (fn [idx] (span (str idx "...")))          ;; 4
@@ -70,7 +90,7 @@
         {:name  :a-counter
          :count (cI 2)}                                     ;; 1
         (h2 "The count is now&hellip;")
-        (span {:class :intro-a-counter}
+        (span {:class :intro-counter}
           (str (mget (mx-par me) :count)))
         (button {:class   :push-button
                  :onclick (cF (fn [event]                   ;; 2
@@ -98,8 +118,42 @@
                      1000))
        :count  (cI 0)}
       (h2 "The count is now&hellip;")
-      (span {:class :intro-a-counter}
+      (span {:class :intro-counter}
         (str (mget (mx-par me) :count)))))
+
+;;; In a more elaborate example, we show how to make an async XHR request reactive:
+
+(def random-joke-uri "https://official-joke-api.appspot.com/random_joke")
+(def cat-fact-uri "https://catfact.ninja/fact")
+
+(defn a-counter []
+  (div {:class "intro"}
+    {:name         :a-counter
+     :danger-count 10
+     :ticker       (cF (js/setInterval #(mswap! me :count inc) 1000))
+     :count        (cI 0)
+     }
+    (h2 "The count is now&hellip;")
+    (span {:class :intro-counter}
+      (str (mget (mx-par me) :count)))
+    (div {:style {:display        :flex
+                  :flex-direction :column
+                  :gap            "6px"}}
+      {:cat-request   (cF+ [:watch (fn [_ me response-chan _ _]
+                                     (when response-chan
+                                       (go (let [response (<! response-chan)]
+                                             (with-cc :set-cat
+                                               (mset! me :cat-response response))))))]
+                        (when (and (zero? (mod (mget (mx-par me) :count) 5))
+                                      #_(< (mget (mx-par me) :count) 21))
+                                (client/get cat-fact-uri {:with-credentials? false})))
+       :cat-response  (cI nil)}
+      (if-let [jr (mget me :cat-response)]
+          (if (:success jr)
+            (span (get-in jr [:body :fact]))
+            (str "Error>  " (:error-code jr)
+              ": " (:error-text jr)))
+          "no cats yet"))))
 
 ;;; --- observer/watch dataflow initiation ----------------------
 ;;; It is not uncommon, when developing MX code, to encounter
@@ -115,30 +169,54 @@
 
 (defn start-stop-button []
   (button {:class   :pushbutton
-           :style "border-color:white"
+           :style   "border-color:white"
            :onclick #(mswap! (fmu :a-counter (evt-md %)) :ticking? not)}
     (if (mget (fmu :a-counter me) :ticking?)
       "Stop" "Start")))
 
-(defn a-counter []
-  (div {:class "intro"}
-    {:name     :a-counter
-     :danger-count 5
-     :ticking? (cI false)
-     :ticker   (cF+ [:watch (fn [_ _ newv prior _]
-                              (when (integer? prior)
-                                (js/clearInterval prior)))]
-                 (when (mget me :ticking?)
-                   (js/setInterval #(mswap! me :count inc) 1000)))
-     :count    (cI 0 :watch (fn [_ me new-ct _ _]
-                              (when (> new-ct (mget me :danger-count))
-                                (with-cc :tickofff
-                                  (mset! me :ticking? false)))))
-     }
-    (h2 "The count is now&hellip;")
-    (span {:class :intro-a-counter}
-      (str (mget (mx-par me) :count)))
-    (start-stop-button)))
+#_(defn a-counter []
+    (div {:class "intro"}
+      {:name         :a-counter
+       :danger-count 10
+       :ticking?     (cI false)
+       :ticker       (cF+ [:watch (fn [_ _ newv prior _]
+                                    (when (integer? prior)
+                                      (js/clearInterval prior)))]
+                       (when (mget me :ticking?)
+                         (js/setInterval #(mswap! me :count inc) 1000)))
+       :count        (cI 0 :watch (fn [_ me new-ct _ _]
+                                    (when (> new-ct (+ 5 (mget me :danger-count)))
+                                      (with-cc :tickofff
+                                        (mset! me :ticking? false)))))
+       }
+      (h2 "The count is now&hellip;")
+      (span {:class :intro-counter
+             :style (cF (str "background:"
+                          (let [ct (mget (mx-par me) :count)
+                                danger (mget (mx-par me) :danger-count)]
+                            (cond
+                              (< ct danger) "black"
+                              (= ct danger) "yellow"
+                              :else "red"))))}
+        (str (mget (mx-par me) :count)))
+      (p {}
+        {:joke-request  (cF+ [:watch (fn [_ me response-chan _ _]
+                                       (when response-chan
+                                         (go (let [response (<! response-chan)]
+                                               (with-cc :setjoke
+                                                 (prn :set-up (get-in response [:body :setup]))
+                                                 ;; check your js console to see the joke
+                                                 (mset! me :joke-response response))))))]
+                          (when (even? (mget (mx-par me) :count))
+                            (client/get random-joke-uri {:with-credentials? false})))
+         :joke-response (cI nil)}
+        (if-let [jr (mget me :joke-response)]
+          (if (:success jr)
+            (get-in jr [:body :punchline])
+            (str "Error>  " (:error-code jr)
+              ": " (:error-text jr)))
+          "no joke yet"))
+      (start-stop-button)))
 
 ;;; 1. By using a formula to create the interval,we get lexical acces to "me"
 ;;; 2. Intervals fire asynchronously, and intervals do not know about Matrix,
@@ -157,7 +235,7 @@
                      (js/setInterval #(mswap! me :count inc) 1000))) ;; 3
        :count    (cI 0)}
       (h2 "The count is now&hellip;")
-      (span {:class :intro-a-counter}
+      (span {:class :intro-counter}
         (str (mget (mx-par me) :count)))
       (button
         {:class   :push-button
@@ -199,9 +277,9 @@
                        (js/setInterval #(mswap! me :count inc) 1000)))
        }
       (h2 "The count is now&hellip;")
-      (span {:class :intro-a-counter}
+      (span {:class :intro-counter}
         (str (mget (mx-par me) :count)))
-      (span {:class :intro-a-counter
+      (span {:class :intro-counter
              :style "font-size:64px"}
         (if-let [r (mget (mx-par me) :tick-rate)]
           (pp/cl-format nil "~5,2f" r)

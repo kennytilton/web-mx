@@ -25,7 +25,7 @@ div, h1, input {
  src: url('../font/digital-7 (mono italic).ttf');
 }
 
-.intro-a-counter {
+.intro-counter {
     font-size: 128px;
     font-family: digital-clock-font, HelveticaNeue-UltraLight, Helvetica;
     padding: 16px 24px;

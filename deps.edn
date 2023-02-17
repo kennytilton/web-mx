@@ -5,6 +5,7 @@
            com.andrewmcveigh/cljs-time     {:mvn/version "0.5.2"}
            com.tiltontec/matrix            {:mvn/version "4.3.1-SNAPSHOT"}
            com.tiltontec/mxxhr             {:mvn/version "1.0.1-SNAPSHOT"}
-           funcool/bide                    {:mvn/version "1.7.0"}}
+           funcool/bide                    {:mvn/version "1.7.0"}
+           cljs-http/cljs-http             {:mvn/version "0.1.46"}}
  :aliases {:fig {:main-opts ["-m" "figwheel.main"]}}
  :paths   ["src" "target" "resources"]}

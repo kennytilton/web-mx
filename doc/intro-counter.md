@@ -16,7 +16,7 @@ We still program with HTML and CSS:
 (defn a-counter []
   (div {:class :intro}
     (h2 "The count is now....")
-    (p {:class :intro-a-counter} "42")
+    (p {:class :intro-counter} "42")
     (button {:class   :push-button
              :onclick #(js/alert "RSN")} "+")))
 ```
@@ -35,7 +35,7 @@ Any component can pull information it needs from anywhere, first navigating to a
       {:name  :a-counter                                  
        :count 3}                                          
       (h2 "The count is now&hellip;")
-      (p {:class :intro-a-counter}
+      (p {:class :intro-counter}
         (str "&hellip;" (mget (mx-par me) :count))))  ;; <======
     (div (mapv (fn [idx] (span (str idx "...")))      
       (range (mget (fmu :a-counter me) :count)))))).  ;; <======
@@ -51,7 +51,7 @@ Any handler can navigate to any property to change it, with all dependencies bei
       {:name  :a-counter
        :count (cI 3)}                                ;; 1
   (h2 "The count is now&hellip;") 
-  (p {:class :intro-a-counter}
+  (p {:class :intro-counter}
     (str "&hellip;" (mget (mx-par me) :count)))
   (button {:class   :push-button
    :onclick (cF (fn [event]                          ;; 2
@@ -98,7 +98,7 @@ To this end, MX allows observers to enqueue, via `with-cc`, mset!/mswap! of inpu
                                   (mset! me :ticking? false)))))
      }
     (h2 "The count is now&hellip;")
-    (span {:class :intro-a-counter}
+    (span {:class :intro-counter}
       (str (mget (mx-par me) :count)))
     (start-stop-button)))
 ```
@@ -116,7 +116,7 @@ Reactivity is neat, so we want to use it everywhere,even with software that know
                          #(mswap! me :count inc) ;; 2
                          1000))}
     (h2 "The count is now&hellip;")
-    (span {:class :intro-a-counter}
+    (span {:class :intro-counter}
       (str (mget (mx-par me) :count)))))
 ```
 1. By using a formula to create the interval, we get lexical acces to "me".

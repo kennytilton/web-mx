@@ -47,7 +47,6 @@
 
 (defn manual-clock []
   (div {:class [:intro :ticktock]}
-    ;(h3 "A Manual Clock")
     (h3 "The time is now....")
     (div {:class   "intro-clock"
           :content (cF (if-let [now (mget me :now)]         ;; mget, the standard MX getter, can be used from any code,
@@ -63,6 +62,35 @@
 ;;; --- running clock example --------------------------------------------
 
 (def running-clock-code
+  "(div {:class [:intro :ticktock]}
+    {:name :running-clock}
+    (h3 \"The time is now....\")
+    (div {:class   \"intro-clock\"
+          :style   (cF (str \"background:black; color:\"
+                         (if (mget me :ticking?) \"cyan\" \"red\")))
+          :content (cF (if-let [now (mget me :now)]
+                         (-> now .toTimeString (str/split \" \") first)
+                         \"__:__:__\"))}
+      {:name     :the-clock
+       :now      (cI nil)
+       :ticking? (cI false)
+       :start    (cF (when (mget me :ticking?)
+                       (js/Date.)))
+       :elapsed  (cF+ [:watch (fn [_ me new-val _ _]
+                                (when (and (mget me :ticking?)
+                                        (> new-val 5000))
+                                  (with-cc :stop-after-3
+                                    (mset! me :ticking? false))))]
+                   (when-let [start (mget me :start)]
+                     (when (> (mget me :now) start)
+                       (- (mget me :now) start))))
+       :ticker   (cF+ [:watch (fn [_ _ new-value prior-value _]
+                                (when (integer? prior-value)
+                                  (js/clearInterval prior-value)))]
+                   (when (mget me :ticking?)
+                     (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
+    (start-stop-button))"
+  #_
   "(defn start-stop-button []\n  (button\n    {:class   :pushbutton\n     :onclick #(mswap! (fmu :the-clock (evt-md %)) :ticking? not)}\n    (if (mget (fmu :the-clock me) :ticking?)\n      \"Stop\" \"Start\")))\n\n(defn running-clock []\n  (div {:class [:intro :ticktock]}\n    (h2 \"The time is now....\")\n    (div {:class   \"intro-clock\"\n          :style   (cF (str \"background:black; color:\"\n                         (if (mget me :ticking?) \"cyan\" \"red\")))\n          :content (cF (if-let [now (mget me :now)]\n                         (-> now .toTimeString (str/split \" \") first)\n                         \"__:__:__\"))}\n      {:name     :the-clock\n       :now      (cI nil)\n       :ticking? (cI false)\n       :ticker   (cF+ [:watch (fn [_ _ _ prior-value _]\n                                (when (integer? prior-value)\n                                  (js/clearInterval prior-value)))]\n                   (when (mget me :ticking?)\n                     (js/setInterval #(mset! me :now (js/Date.)) 1000)))})\n    (start-stop-button)))")
 
 (defn start-stop-button []
@@ -89,7 +117,7 @@
                        (js/Date.)))
        :elapsed  (cF+ [:watch (fn [_ me new-val _ _]
                                 (when (and (mget me :ticking?)
-                                        (> new-val 3000))
+                                        (> new-val 5000))
                                   (with-cc :stop-after-3
                                     (mset! me :ticking? false))))]
                    (when-let [start (mget me :start)]

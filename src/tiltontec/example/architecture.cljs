@@ -1,4 +1,4 @@
-(ns tiltontec.example.intro-counter
+(ns tiltontec.example.architecture
   (:require
     [clojure.string :as str]
     [clojure.pprint :as pp]
@@ -17,6 +17,28 @@
     [cljs.core.async :refer [go <!]]))
 
 ;;; --- intro counter -----------------------------------
+;;; Architectural design:
+;;; 1. We just do standard HTML/CSS;
+;;; 1.a. But composites of "just html" are allowed, via parameterized  function composition
+;;;      So we are not limited to HTML atoms. To a degree, this delivers HTML components. (?)
+;;; 1.b. We can include CLJS in the HTML generation (map genning kids)
+;;; 1.c. And we get a lot of syntactic sugar for specifying children. Transparent, actually.
+;;;      The macros and lexical capture hide a lot.
+;;; 2. "omniscience": formulas can work off any app state, via navigation
+;;; 2.a structural navigation
+;;; 2.b name etc navigation
+;;; 2.c function navigation
+;;; 3. property-to-property reactivity
+;;; 3.a. allows reliable "in place" state management: reactivity all the way to the leaf; no separate store;
+;;; 3.b. view is state, a first-class citizen: the color attribute of the style gets its own formula;
+;;; 3.c. update efficiency, without VDOM/diffing.
+;;; 4. "omnipotence": event handlers can mutate at will.
+;;; 5. "observers/watches": external; interval cleanuo, loggin
+;;; 6. "with-cc" observer internal DAG mutation;
+;;; 7. "all-in": omnipresence, ubiquity; reactive everywhere VIA wrapping
+;;; 7.a wrapping setTimeout
+;;; 7.b wrapping XHR
+;;; 7.c wrapping localStrage
 
 ;;; --- 1. It's just html -------------------------------------
 ;;; We still program HTML. Please find detailed notes following the code.

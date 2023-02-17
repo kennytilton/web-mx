@@ -20,21 +20,33 @@
 
 ;;; --- 1. It's just html -------------------------------------
 ;;; We still program HTML. Please find detailed notes following the code.
-#_(defn a-counter []
-    (div {:class :intro}
-      (h2 "The count is now....")
-      (span {:class :intro-counter} "42")
-      (button {:class   :push-button
-               :onclick #(js/alert "Feature Not Yet Implemented")} "+")))
+
+(def counter-fnyi-code
+  "(defn counter-fnyi []\n  (prn :counter-fnyi)\n  (div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :intro-counter} \"42\")\n    ;; CLJS can be embedded right in the \"HTML\".\n    ;; It is all CLJS, in fact.\n    (doall (for [txt [\"-\" \"=\" \"+\"]]\n             (button {:class   :push-button\n                      :onclick #(js/alert \"Feature Not Yet Implemented\")} txt)))))")
+
+(defn counter-fnyi []
+  (prn :counter-fnyi)
+  (div {:class :intro}
+    (h2 "The count is now....")
+    (span {:class :intro-counter} "42")
+    ;; ...but CLJS can be embedded right in the "HTML".
+    ;; It is all CLJS, in fact.
+    (div (doall (for [txt ["-" "=" "+"]]
+             (button {:class   :push-button
+                      :onclick #(js/alert "Feature Not Yet Implemented")} txt))))))
+
 ;;; Where HTML has <tag attributes*> children* </tag>...
 ;;; Web/MX has (tag [HTML-attribute-map [custom-attr-map]] children*)
 ;;; Keywords become strings in HTML.
 ;;; Otherwise, MDN is your guide.
 
-;;; --- omniscience -----------------------------
+
+;;; --- unlimited access to program state -----------------------------
 ;;; Any component can pull information it needs from anywhere, using
 ;;; "formulas" that can navigate to any object for any property.
-#_(defn a-counter []
+(def counter-omniscience-code
+  "   (div {:class \"intro\"}\n      (div {}\n        {:name  :a-counter                                  ;; 1\n         :count 3}                                          ;; 2\n        (h2 \"The count is now&hellip;\")\n        (span {:class :intro-counter}\n          (str \"&hellip;\" (mget (mx-par me) :count))))      ;; 3\n      ;; just demoing navigation by name, and dynamic content:\n      (div (mapv (fn [idx] (span (str idx \"...\")))          ;; 4\n             (range (mget (fmu :a-counter me)               ;; 5a\n                      :count)))))")
+(defn counter-omniscience []
     (div {:class "intro"}
       (div {}
         {:name  :a-counter                                  ;; 1
@@ -59,10 +71,13 @@
 ;;;
 ;;; For those wondering, dependency cycles throw an exception at runtime.
 
+
+
 ;;; --- omnipotence -----------------------------
 ;;; Any handler can navigate to any property to change it, with all
 ;;; dependencies updated before the MSET! or MSWAP! call returns.
-#_(defn a-counter []
+
+(defn counter-omnipotent []
     (div {:class [:intro]}
       (div {:class "intro"}
         {:name  :a-counter
@@ -84,11 +99,22 @@
 ;;; 3. Use `FM!` family search utility to navigate to the :a-counter MX proxy;
 ;;; 4. Mutate the property (and dependent state) using MSWAP!
 
+(def counter-omnipotent-code
+  "(defn counter-omnipotent []\n    (div {:class [:intro]}\n      (div {:class \"intro\"}\n        {:name  :a-counter\n         :count (cI 2)}                                     ;; 1\n        (h2 \"The count is now&hellip;\")\n        (span {:class :intro-counter}\n          (str (mget (mx-par me) :count)))\n        (button {:class   :push-button\n                 :onclick (cF (fn [event]                   ;; 2\n                                (let [counter (fm! :a-counter me)] ;; 3\n                                  (mswap! counter :count inc))))} ;; 4\n          \"+\"))\n      (div (mapv (fn [idx] (span (str idx \"...\")))\n             (range (mget (fmu :a-counter me) :count))))))")
+
+
+(exu/main #(md/make ::intro
+             :mx-dom (exu/multi-demo 99
+                       {:title "Just HTML&trade;" :builder counter-fnyi :code counter-fnyi-code}
+                       {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
+                       {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code})))
+
 ;;; --- omnipresence ------------------
 ;;; Reactivity is neat, so we want to use it everywhere, even with software that
 ;;; knows nothing about Matrix reactive mechanisms. In this next example, we use
 ;;; some simple "glue code" to connect the non-reactive `js/setInterval` with our Matrix.
-#_(defn a-counter []
+
+#_ (defn a-counter []
     (div {:class "intro"}
       {:name   :a-counter
        :ticker (cF (js/setInterval                          ;; 1
@@ -117,21 +143,21 @@
     (div {:style {:display        :flex
                   :flex-direction :column
                   :gap            "6px"}}
-      {:cat-request   (cF+ [:watch (fn [_ me response-chan _ _]
-                                     (when response-chan
-                                       (go (let [response (<! response-chan)]
-                                             (with-cc :set-cat
-                                               (mset! me :cat-response response))))))]
-                        (when (and (zero? (mod (mget (mx-par me) :count) 5))
-                                      #_(< (mget (mx-par me) :count) 21))
-                                (client/get cat-fact-uri {:with-credentials? false})))
-       :cat-response  (cI nil)}
+      {:cat-request  (cF+ [:watch (fn [_ me response-chan _ _]
+                                    (when response-chan
+                                      (go (let [response (<! response-chan)]
+                                            (with-cc :set-cat
+                                              (mset! me :cat-response response))))))]
+                       (when (and (zero? (mod (mget (mx-par me) :count) 5))
+                               #_(< (mget (mx-par me) :count) 21))
+                         (client/get cat-fact-uri {:with-credentials? false})))
+       :cat-response (cI nil)}
       (if-let [jr (mget me :cat-response)]
-          (if (:success jr)
-            (span (get-in jr [:body :fact]))
-            (str "Error>  " (:error-code jr)
-              ": " (:error-text jr)))
-          "no cats yet"))))
+        (if (:success jr)
+          (span (get-in jr [:body :fact]))
+          (str "Error>  " (:error-code jr)
+            ": " (:error-text jr)))
+        "no cats yet"))))
 
 ;;; --- observer/watch dataflow initiation ----------------------
 ;;; It is not uncommon, when developing MX code, to encounter
@@ -280,6 +306,6 @@
                                   (mswap! counter :count inc))))}
           "+"))))
 
-(exu/main #(md/make
-             :mx-dom (a-counter)))
+#_(exu/main #(md/make
+               :mx-dom (a-counter)))
 

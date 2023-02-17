@@ -12,7 +12,8 @@
      :refer [img section h1 h2 h3 input footer p a
              span i label ul li div button code pre]]
     [tiltontec.web-mx.style :refer [make-css-inline]]
-    [tiltontec.example.util :as exu]))
+    [tiltontec.example.util :as exu]
+    #_ [tiltontec.example.demo-driver :refer [multi-demo]]))
 
 ;;; --- intro clock starter code -----------------------------------
 
@@ -130,10 +131,16 @@
                      (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
 
-(defn multi-clock []
-  (div {} {:name           :clocks
-           :selected-clock (cFn (second (mget me :clocks)))
-           :clocks         [{:title "Manual Clock" :builder manual-clock :code manual-clock-code}
+(exu/main #(md/make ::intro
+             :mx-dom (exu/multi-demo 0
+                       {:title "Manual Clock" :builder manual-clock :code manual-clock-code}
+                       {:title "Running Clock" :builder running-clock :code running-clock-code})))
+
+#_
+(defn multi-demo []
+  (div {} {:name           :demos
+           :selected-demo (cFn (second (mget me :demos)))
+           :demos         [{:title "Manual Clock" :builder manual-clock :code manual-clock-code}
                             {:title "Running Clock" :builder running-clock :code running-clock-code}]}
     (div {:style {:display         :flex
                   :flex-direction  :row
@@ -204,6 +211,5 @@
         (if (mget (fmu :the-clock me) :ticking?)
           "Stop" "Start"))))
 
-(exu/main #(md/make ::intro
-             :mx-dom (multi-clock)))
+
 

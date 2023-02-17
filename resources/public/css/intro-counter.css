@@ -9,6 +9,7 @@ div, h1, input {
     align-items:     center;
     justify-content: start;
     gap: 1em;
+    padding: 9px;
 }
 
 .control-panel {

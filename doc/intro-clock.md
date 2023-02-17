@@ -1,7 +1,8 @@
-# Introduction to Web/MX
+# Web/MX: Into the Weeds
+> WARNING: We discuss below the _internal_ architecture of `Web/MX`, like of interest only to other UI architects.
 
-Web/MX delivers a simple, delightful developer experience through several unconventional design choices:
-* **transparent, fine-grained reactivity:** the underlying [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager transparently detects property-to-property dependencies. It uses that information to keep state self-consistent when any property changes;
+Web/MX delivers a simple yet powerful developer experience through several unconventional design choices, none unique to Web/MX, but most executed differently in important ways:
+* **transparent, fine-grained reactivity:** the underlying [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager transparently detects property-to-property dependencies. It uses that information to keep state self-consistent when any property changes. By contraast, almost every UI framework has a "bulk" dependency of a so-called view function on any number of subscriptions to more or less granular nodes in an external store, in the [Facebook Flux](https://facebook.github.io/flux/docs/in-depth-overview/#) model.
 
 * **the application is the database:** state is managed "in place", gathered locally by app components as needed. No defining, updating, or accessing a separate store; and
 

@@ -55,6 +55,8 @@
                            (str/split " ") first)           ;; if called within a formula.
                          "__:__:__"))}
       {:name :the-clock
+       ;; Uncomment the next line to make the clock run
+       ;; :ticker (cF (js/setInterval #(mset! me :now (js/Date.)) 1000))
        :now  (cI nil)})                                     ;; cI for "cell Input"; procedural code can write to these
     (refresh-button)))
 

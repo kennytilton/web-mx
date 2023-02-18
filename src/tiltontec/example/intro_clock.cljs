@@ -53,10 +53,8 @@
           :content (cF (if-let [now (mget me :now)]         ;; mget, the standard MX getter, can be used from any code,
                          (-> now .toTimeString              ;; but transparently establishes a dependency, or "subscribes",
                            (str/split " ") first)           ;; if called within a formula.
-                         "---"))}
+                         "__:__:__"))}
       {:name :the-clock
-       ;; uncomment next line to run automatically
-       ;; :ticker (cF (js/setInterval #(mset! me :now (js/Date.)) 1000))
        :now  (cI nil)})                                     ;; cI for "cell Input"; procedural code can write to these
     (refresh-button)))
 
@@ -136,42 +134,7 @@
                        {:title "Manual Clock" :builder manual-clock :code manual-clock-code}
                        {:title "Running Clock" :builder running-clock :code running-clock-code})))
 
-#_
-(defn multi-demo []
-  (div {} {:name           :demos
-           :selected-demo (cFn (second (mget me :demos)))
-           :demos         [{:title "Manual Clock" :builder manual-clock :code manual-clock-code}
-                            {:title "Running Clock" :builder running-clock :code running-clock-code}]}
-    (div {:style {:display         :flex
-                  :flex-direction  :row
-                  :align-items     :center
-                  :justify-content "center"                 ;; "space-around"
-                  :padding         "3px"
-                  :margin          "6px"
-                  :gap             "1em"
-                  }}
-      (span "Pick one:")
-      (doall (for [{:keys [title] :as clk} (mget (mx-par me) :clocks)]
-               (button {:class   :pushbutton
-                        :cursor  :finger
-                        :style   (cF (let [curr-clk (mget (fasc :clocks me) :selected-clock)]
-                                       {:border-color (if (= clk curr-clk)
-                                                        "dark-gray" "white")
-                                        :font-weight  (if (= clk curr-clk)
-                                                        "bold" "normal")}))
-                        :onclick (cF (fn [] (mset! (fmu :clocks) :selected-clock clk)))}
-                 title))))
-    (when-let [clk (mget me :selected-clock)]
-      (div {:style {:display        :flex
-                    :flex-direction :column-reverse
-                    :gap            "1em"
-                    }}
-        (pre {:style {:margin-left "96px"}}
-          (code (:code clk))) (div {:style {:border-color "gray"
-                                            :border-style "solid"
-                                            :border-width "2px"}}
-                                ((:builder clk)))
-        ))))
+
 
 #_(defn nyc-std-clock [interval]
     (div {:class   "intro-clock"

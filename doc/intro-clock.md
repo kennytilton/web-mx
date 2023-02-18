@@ -62,14 +62,14 @@ Click "Refresh" to see the time. The code, with tutorial comments:
 ```clojure
 (declare refresh-button)
 
-(defn simple-clock []
+(defn manual-clock []
   (div {:class [:intro :ticktock]}
     (h2 "The time is now....")
     (div {:class   "intro-clock"
           :content (cF (if-let [now (mget me :now)]         ;; mget, the standard MX getter, can be used from any code,
                          (-> now .toTimeString              ;; but transparently establishes a dependency, or "subscribes",
                            (str/split " ") first)           ;; if called within a formula.
-                         "*checking*"))}
+                         "__:__:__"))}
       {:name :the-clock
        :now  (cI nil)})                                     ;; cI for "cell Input"; procedural code can write to these
     (refresh-button)))
@@ -88,7 +88,7 @@ Click "Refresh" to see the time. The code, with tutorial comments:
     "Refresh"))
 
 (exu/main #(md/make ::intro
-             :mx-dom (simple-clock)))
+             :mx-dom (manual-clock)))
 ```
 
 Let us pause to highlight specifically where each unconventional choice manifests itself in concrete code:

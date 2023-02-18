@@ -1,8 +1,8 @@
 # Web/MX: Into the Weeds
-> WARNING: We discuss below the _internal_ architecture of `Web/MX`, like of interest only to other UI architects.
+> WARNING: We discuss below the _internal_ architecture of `Web/MX`, likely of interest only to other UI architects.
 
 Web/MX delivers a simple yet powerful developer experience through several unconventional design choices, none unique to Web/MX, but most executed differently in important ways:
-* **transparent, fine-grained reactivity:** the underlying [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager transparently detects property-to-property dependencies. It uses that information to keep state self-consistent when any property changes. By contraast, almost every UI framework has a "bulk" dependency of a so-called view function on any number of subscriptions to more or less granular nodes in an external store, in the [Facebook Flux](https://facebook.github.io/flux/docs/in-depth-overview/#) model.
+* **transparent, fine-grained reactivity:** the underlying [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager transparently detects property-to-property dependencies. It uses that information to keep state self-consistent when any property changes. By contraast, almost every UI framework has a "bulk" dependency of a so-called view function on any number of subscriptions to more or less granular nodes in an external store, in the [Facebook Flux](https://facebook.github.io/flux/docs/in-depth-overview/#) model. Exceptions here are (the original) MobX and SolidJS, both of which handle fine-grained granularity transparently.
 
 * **the application is the database:** state is managed "in place", gathered locally by app components as needed. No defining, updating, or accessing a separate store; and
 
@@ -18,19 +18,19 @@ Here is what all that means to the Web/MX developer:
 * event handlers can change any designated "input" property of any other widget.
 
 ### How can this possibly work?
-That is a lot of easy expressiveness, but is "ask anybody anything" or "fire at will" state manageable? Is that not why we need a secondary store, in the Flux pattern? We can explain why this works, but first, here are two live existence proofs you can try now:
+We have described a lot of easy expressiveness, but are capabilities such as "ask anybody anything" or "fire at will" manageable? At scale? Is that not why we need a secondary store, in the Flux pattern? We can explain why this works, but first, here are two live existence proofs you can try now:
 * a simulation of a [private Algebra tutor](http://tiltonsalgebra.com/#); and
 * a browser for the monthly Hacker News [askHN: Who's Hiring?](https://kennytilton.github.io/whoishiring/) question.
 
 Now _why_ it works, in Q&A form:
 
-Q: So how does unfettered state dependency work, without a "separate store" as a single source of truth where integrity can be enforced?
+Q: How does unfettered state dependency work, without a "separate store" as a single source of truth where integrity can be enforced?
 
-A: As formulas for specific widget properties run, and as those formulas read other properties, Matrix quietly weaves a one-way DAG in memory, recording dependencies between computed and read properties. We call this `in-place state management`.
+A: We still have a DAG. As formulas for specific widget properties run, and as those formulas read other properties, Matrix quietly weaves a one-way DAG in memory, recording dependencies between computed and read properties. We call this `in-place state management`.
 
 Q: What about changing state, without having pre-defined transactions to control change?
 
-A: Because a Web/MX app implicitly defines its DAG property-to-property, with full record of specific dependencies, Matrix internals can propagate any change to any affected properties completely, consistently, and non-redendantly; in a sense, the DAG dependency information defines executable transactions as emergent properties.
+A: Because a Web/MX app defines a property-to-property DAG, with a full record of specific dependencies, Matrix internals can propagate any change to any affected properties completely, consistently, and non-redendantly. A secondary store transaction is code a developer thinks will preserve consistency. In a sense, MX formulas are natural transactions we need not think about.
 
 ### The GUI problem
 A state manager, after a change, must know:

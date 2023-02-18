@@ -31,7 +31,8 @@
     (span {:class :intro-counter} "42")
     ;; ...but CLJS can be embedded right in the "HTML".
     ;; It is all CLJS, in fact.
-    (div (doall (for [txt ["-" "=" "+"]]
+    (div {:class :toolbar}
+      (doall (for [txt ["-" "=" "+"]]
              (button {:class   :push-button
                       :onclick #(js/alert "Feature Not Yet Implemented")} txt))))))
 
@@ -41,9 +42,10 @@
 ;;; Otherwise, MDN is your guide.
 
 
-;;; --- unlimited access to program state -----------------------------
-;;; Any component can pull information it needs from anywhere, using
-;;; "formulas" that can navigate to any object for any property.
+;;; --- unlimited access to program state, aka omniscience -----------------------------
+;;; Any component can pull the information it needs to do its job from anywhere, by having
+;;; "formula" code that can navigate to any object for any property.
+
 (def counter-omniscience-code
   "   (div {:class \"intro\"}\n      (div {}\n        {:name  :a-counter                                  ;; 1\n         :count 3}                                          ;; 2\n        (h2 \"The count is now&hellip;\")\n        (span {:class :intro-counter}\n          (str \"&hellip;\" (mget (mx-par me) :count))))      ;; 3\n      ;; just demoing navigation by name, and dynamic content:\n      (div (mapv (fn [idx] (span (str idx \"...\")))          ;; 4\n             (range (mget (fmu :a-counter me)               ;; 5a\n                      :count)))))")
 (defn counter-omniscience []
@@ -70,8 +72,6 @@
 ;;;   b. reading its :count property.
 ;;;
 ;;; For those wondering, dependency cycles throw an exception at runtime.
-
-
 
 ;;; --- omnipotence -----------------------------
 ;;; Any handler can navigate to any property to change it, with all
@@ -103,11 +103,7 @@
   "(defn counter-omnipotent []\n    (div {:class [:intro]}\n      (div {:class \"intro\"}\n        {:name  :a-counter\n         :count (cI 2)}                                     ;; 1\n        (h2 \"The count is now&hellip;\")\n        (span {:class :intro-counter}\n          (str (mget (mx-par me) :count)))\n        (button {:class   :push-button\n                 :onclick (cF (fn [event]                   ;; 2\n                                (let [counter (fm! :a-counter me)] ;; 3\n                                  (mswap! counter :count inc))))} ;; 4\n          \"+\"))\n      (div (mapv (fn [idx] (span (str idx \"...\")))\n             (range (mget (fmu :a-counter me) :count))))))")
 
 
-(exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo 99
-                       {:title "Just HTML&trade;" :builder counter-fnyi :code counter-fnyi-code}
-                       {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
-                       {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code})))
+
 
 ;;; --- omnipresence ------------------
 ;;; Reactivity is neat, so we want to use it everywhere, even with software that
@@ -130,7 +126,7 @@
 (def random-joke-uri "https://official-joke-api.appspot.com/random_joke")
 (def cat-fact-uri "https://catfact.ninja/fact")
 
-(defn a-counter []
+(defn reactivity-all-in []
   (div {:class "intro"}
     {:name         :a-counter
      :danger-count 10
@@ -140,24 +136,36 @@
     (h2 "The count is now&hellip;")
     (span {:class :intro-counter}
       (str (mget (mx-par me) :count)))
-    (div {:style {:display        :flex
-                  :flex-direction :column
-                  :gap            "6px"}}
+    (span {:style {:display :block
+                   :text-align :left
+                   :padding "6px"
+                   :max-width "40em"
+                   :min-width "40em"
+                   :min-height "6em"}}
       {:cat-request  (cF+ [:watch (fn [_ me response-chan _ _]
                                     (when response-chan
                                       (go (let [response (<! response-chan)]
                                             (with-cc :set-cat
                                               (mset! me :cat-response response))))))]
-                       (when (and (zero? (mod (mget (mx-par me) :count) 5))
-                               #_(< (mget (mx-par me) :count) 21))
+                       (when (zero? (mod (mget (mx-par me) :count) 5))
                          (client/get cat-fact-uri {:with-credentials? false})))
        :cat-response (cI nil)}
       (if-let [jr (mget me :cat-response)]
         (if (:success jr)
-          (span (get-in jr [:body :fact]))
+          (p (get-in jr [:body :fact]))
           (str "Error>  " (:error-code jr)
             ": " (:error-text jr)))
         "no cats yet"))))
+
+(def reactivity-all-in-code
+  "(div {:class \"intro\"}\n    {:name         :a-counter\n     :danger-count 10\n     :ticker       (cF (js/setInterval #(mswap! me :count inc) 1000))\n     :count        (cI 0)\n     }\n    (h2 \"The count is now&hellip;\")\n    (span {:class :intro-counter}\n      (str (mget (mx-par me) :count)))\n    (div {:style {:display        :flex\n                  :flex-direction :column\n                  :gap            \"6px\"}}\n      {:cat-request  (cF+ [:watch (fn [_ me response-chan _ _]\n                                    (when response-chan\n                                      (go (let [response (<! response-chan)]\n                                            (with-cc :set-cat\n                                              (mset! me :cat-response response))))))]\n                       (when (and (zero? (mod (mget (mx-par me) :count) 5))\n                               #_(< (mget (mx-par me) :count) 21))\n                         (client/get cat-fact-uri {:with-credentials? false})))\n       :cat-response (cI nil)}\n      (if-let [jr (mget me :cat-response)]\n        (if (:success jr)\n          (span (get-in jr [:body :fact]))\n          (str \"Error>  \" (:error-code jr)\n            \": \" (:error-text jr)))\n        \"no cats yet\")))")
+
+(exu/main #(md/make ::intro
+             :mx-dom (exu/multi-demo 99
+                       {:title "Just HTML&trade;" :builder counter-fnyi :code counter-fnyi-code}
+                       {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
+                       {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code}
+                       {:title "Reactivity All-In" :builder reactivity-all-in :code reactivity-all-in-code})))
 
 ;;; --- observer/watch dataflow initiation ----------------------
 ;;; It is not uncommon, when developing MX code, to encounter

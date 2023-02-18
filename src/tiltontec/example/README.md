@@ -25,3 +25,5 @@ Just duplicate these three files from one of the examples:
 * ticktock.cljs.edn
 * resources/public/ticktock.html
 * if needed, resources/public/css/ticktock.css
+
+The tricky part is finding and replacing the many internal "ticktock" strings with the name of your own example. I always miss  a couple.

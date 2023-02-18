@@ -16,8 +16,49 @@
     [cljs-http.client :as client]
     [cljs.core.async :refer [go <!]]))
 
-;;; --- intro counter -----------------------------------
 ;;; Architectural design:
+;;; --- deep thoughts ---
+;;; mutation is permitted only from outside dataflow
+;;; - event handlers are outside dataflow
+;;; - observers run as part of dataflow, but should mutate only outside the system
+;;; - observers can enqueue mutations for execution immediately after the change being propagated;
+;;; - it should be possible for enqueued actions to be tagged with deferral hints, which will
+;;;   get relayed to an optional application deferral handler;
+;;; any derivation can navigate the entire DAG to get information; or at least a subset;
+;;; derivations can cycle only with explicit "cycle handlers";
+;;; properties can be expressed as functions of zero more properties;
+;;; properties can compute models, so models are trees that can grow;
+;;; the same property can have different derivations for different instances;
+;;; the same property can also have different observers;
+;;; we can give objects such as DIVs custom properties, in the Flux model;
+;;; view = f(state) should be state=f(state), because view is state;
+;;; separate stores balkanize state;
+;;; a reactive system forms a DAG, whether or not we concoct a separate store;
+;;; derivation should be customizable, such as lazy or not, and lazy how;
+
+
+;;; learning
+; just  html--invite abouse/help
+; -- explain syntax difference
+; plus cljs
+; put it in functions--components
+; now do (div {:style (cF {:background (if (> (mget me :temp) 100) ...etc }}
+;             {:temperature 100}
+;             "test   background"))
+; ie, without navigating, do a formula
+; now do a logging observer on background
+; now do navigation to parent
+; then do navigation by name -- document navigation
+; -- display doc for generic fm-navig
+; have a handler mutate state
+; maybe now add second consumer of count, and move count to parent;
+; -- demonstrates state flexibility but still natural organization;
+; do an ephemeral (too much? or good idea to show off a little?)
+; wrap an XHR -- cat fact
+; now have an observer mutate with-cc, maybe when count mod 3 is zero
+; display use of _cache, perhaps to sum counts
+; family-values
+
 ;;; 1. We just do standard HTML/CSS;
 ;;; 1.a. But composites of "just html" are allowed, via parameterized  function composition
 ;;;      So we are not limited to HTML atoms. To a degree, this delivers HTML components. (?)

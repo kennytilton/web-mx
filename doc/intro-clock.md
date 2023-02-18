@@ -56,7 +56,7 @@ clojure -M -m figwheel.main --build intro-clock --repl
 ```
 In a minute, look for this to appear in your browser at [localhost:9500/intro-clock](http://localhost:9500/intro-clock.html):
 
-![Web MX](https://github.com/kennytilton/web-mx/blob/main/resources/public/image/intro-checking.jpg)
+![Web MX](https://github.com/kennytilton/web-mx/blob/main/resources/public/image/manual-clock.png)
 
 Click "Refresh" to see the time. The code, with tutorial comments:
 ```clojure

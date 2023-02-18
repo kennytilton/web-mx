@@ -58,7 +58,7 @@
                     :flex-direction :column-reverse
                     :gap            "1em"
                     }}
-        (span "(Please see source for any footnotes.)")
+        (span "Please see source code or ./doc/intro-*.md for any footnotes.")
         (pre {:style {:margin-left "96px"}}
           (code (:code clk)))
         (div {:style {:border-color "orange"

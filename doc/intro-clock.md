@@ -114,16 +114,6 @@ That is great, but now let us allow the user to control things.
 
 > Exercise #2
 
-Switch to the next example by modifying the launch code at the bottom of the source thus:
-
-```
-(exu/main #(md/make ::intro
-             :mx-dom (running-clock)))
-```
-Save and, after the rebuild, the browser app should show a blank, stopped clock. Click "Start" to get the clock running. 
-
-> Exercise #3
-
 Examine the source of the `running-clock` function to see how the crucial `TICKING?` property is used to give the user control. For your convenience:
 
 ```clojure

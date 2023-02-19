@@ -58,7 +58,7 @@
   {:title "...and CLJS" :builder and-cljs
    :preamble "\"Just HTML\", but we can write CLJS, too. Indeed, is all CLJS. eg, DIV is a CLJS macro wrapping  a function call."
    :code "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :intro-counter} \"42\")\n    (doall (for [opcode [\"-\" \"=\" \"+\"]]\n             (button {:class   :push-button\n                      :onclick #(js/alert \"Feature Not Yet Implemented\")}\n               opcode))))"
-   })
+   :comment "For the curious, the functions behind DIV, BUTTON, et al return proxy objects capable of generating actual DOM."})
 
 ;;; --- components realized --------------------------------
 

@@ -49,8 +49,10 @@
       (div {:style {:display        :flex
                     :flex-direction :column-reverse
                     :gap            "1em"
+                    :padding "36px"
                     }}
-        (span "Please see source code or ./doc/intro-*.md for any footnotes.")
+        (when-let [c (:comment clk)]
+          (p c))
         (pre {:style {:margin-left "96px"}}
           (code (:code clk)))
         (div {:style {:border-color "orange"

@@ -173,6 +173,9 @@
    :preamble "Watch functions <i>can</i> alter the Matrix <i>if</i> they defer the alteration.
    <br><br>Try increasing the speed above 55."
    :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]\n                            (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
-   :comment  ""})
+   :comment  "In our experience of Matrix coding, we frequently spot opportunities where the app could very usefully
+   update state normally controlled by the user. But watches run during propagation of some original change, and
+   DAG updates must run sequentially. The macro <code>(with-cc :my-tag (mset! ...))</code> schedules the mutation for execution
+   immediately after the current propagation."})
 
 

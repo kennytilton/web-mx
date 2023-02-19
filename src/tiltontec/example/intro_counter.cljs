@@ -10,7 +10,8 @@
     [tiltontec.web-mx.gen :refer [evt-md target-value]]
     [tiltontec.web-mx.gen-macro
      :refer [img section h1 h2 h3 input footer p a
-             span i label ul li div button br]]
+             span i label ul li div button br
+             defexample]]
     [tiltontec.web-mx.style :refer [make-css-inline]]
     [tiltontec.example.util :as exu]
     [cljs-http.client :as client]
@@ -102,9 +103,6 @@
 (def counter-omnipotent-code
   "(defn counter-omnipotent []\n    (div {:class [:intro]}\n      (div {:class \"intro\"}\n        {:name  :a-counter\n         :count (cI 2)}                                     ;; 1\n        (h2 \"The count is now&hellip;\")\n        (span {:class :intro-counter}\n          (str (mget (mx-par me) :count)))\n        (button {:class   :push-button\n                 :onclick (cF (fn [event]                   ;; 2\n                                (let [counter (fm! :a-counter me)] ;; 3\n                                  (mswap! counter :count inc))))} ;; 4\n          \"+\"))\n      (div (mapv (fn [idx] (span (str idx \"...\")))\n             (range (mget (fmu :a-counter me) :count))))))")
 
-
-
-
 ;;; --- omnipresence ------------------
 ;;; Reactivity is neat, so we want to use it everywhere, even with software that
 ;;; knows nothing about Matrix reactive mechanisms. In this next example, we use
@@ -160,12 +158,25 @@
 (def reactivity-all-in-code
   "(div {:class \"intro\"}\n    {:name         :a-counter\n     :danger-count 10\n     :ticker       (cF (js/setInterval #(mswap! me :count inc) 1000))\n     :count        (cI 0)\n     }\n    (h2 \"The count is now&hellip;\")\n    (span {:class :intro-counter}\n      (str (mget (mx-par me) :count)))\n    (div {:style {:display        :flex\n                  :flex-direction :column\n                  :gap            \"6px\"}}\n      {:cat-request  (cF+ [:watch (fn [_ me response-chan _ _]\n                                    (when response-chan\n                                      (go (let [response (<! response-chan)]\n                                            (with-cc :set-cat\n                                              (mset! me :cat-response response))))))]\n                       (when (and (zero? (mod (mget (mx-par me) :count) 5))\n                               #_(< (mget (mx-par me) :count) 21))\n                         (client/get cat-fact-uri {:with-credentials? false})))\n       :cat-response (cI nil)}\n      (if-let [jr (mget me :cat-response)]\n        (if (:success jr)\n          (span (get-in jr [:body :fact]))\n          (str \"Error>  \" (:error-code jr)\n            \": \" (:error-text jr)))\n        \"no cats yet\")))")
 
+(defn minitest []
+  ;; (prn :defexample!!! (defexample "mini test 2" (defn minitest2 [] (span "boom"))))
+  (div {:class "intro"}
+    {:name   :a-counter
+     :count  (cI 0)}
+    (h2 "The count is now&hellip;")
+    (span {:class :intro-counter}
+      (str (mget (mx-par me) :count)))))
+
+(def minitest-code "(defn minitest []\n  (div {:class \"intro\"}\n    {:name   :a-counter\n     :count  (cI 0)}\n    (h2 \"The count is now&hellip;\")\n    (span {:class :intro-counter}\n      (str (mget (mx-par me) :count)))))")
+
+
 (exu/main #(md/make ::intro
              :mx-dom (exu/multi-demo 99
                        {:title "Just HTML&trade;" :builder counter-fnyi :code counter-fnyi-code}
                        {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
                        {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code}
-                       {:title "Reactivity All-In" :builder reactivity-all-in :code reactivity-all-in-code})))
+                       {:title "Reactivity All-In" :builder reactivity-all-in :code reactivity-all-in-code}
+                      #_  {:title "Mini test" :builder minitest :code minitest-code})))
 
 ;;; --- observer/watch dataflow initiation ----------------------
 ;;; It is not uncommon, when developing MX code, to encounter

@@ -33,15 +33,7 @@
                                    (>= start-demo-ix (count demos)) (dec (count demos))
                                    :else start-demo-ix)))
            :demos         demos}
-    (div {:class :toolbar
-          #_ #_ :style {:display         :flex
-                  :flex-direction  :row
-                  :align-items     :center
-                  :justify-content "center"                 ;; "space-around"
-                  :padding         "3px"
-                  :margin          "6px"
-                  :gap             "1em"
-                  }}
+    (div {:class :toolbar}
       (span "Pick one:")
       (doall (for [{:keys [title] :as clk} (mget (mx-par me) :demos)]
                (button {:class   :pushbutton
@@ -64,7 +56,8 @@
         (div {:style {:border-color "orange"
                       :border-style "solid"
                       :border-width "2px"}}
-          ((:builder clk)))))))
+          ((:builder clk)))
+        (p (:preamble clk "No preamble."))))))
 
 ;(exu/main #(md/make ::intro
 ;             :mx-dom (multi-demo {:title "Manual Clock" :builder manual-clock :code manual-clock-code}

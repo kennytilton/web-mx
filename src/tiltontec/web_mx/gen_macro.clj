@@ -3,6 +3,14 @@
   (:require
     [tiltontec.web-mx.gen :refer [make-tag]]))
 
+(defmacro defexample [title defn]
+  (prn :defex-sees title (second defn))
+  `(do
+     ~defn
+     {:title   ~title
+      :builder (second defn)
+      :code    (quote ~defn)}))
+
 (defmacro deftag [tag]
   (let [kids (gensym "kids")
         vargs (gensym "vargs")

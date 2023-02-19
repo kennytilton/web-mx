@@ -38,7 +38,7 @@ A state manager, after a change, must know:
 * in which order should they be recomputed; and
 * how do we orchestrate any side effects required by given recomputations?
 
-If those questons are not answered well after a state change, we risk:
+If those questions are not answered well after a state change, we risk:
 * unnecessary recomputation;
 * incomplete recomputation (worse); and
 * duplicate, inconsistent recomputation, aka glitches.

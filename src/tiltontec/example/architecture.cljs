@@ -38,8 +38,9 @@
 
 
 ;;; learning
-; just  html--invite abouse/help
+; just  html--invite abuse/help with JS completeness
 ; -- explain syntax difference
+; -- mention proxy dom
 ; plus cljs
 ; put it in functions--components
 ; now do (div {:style (cF {:background (if (> (mget me :temp) 100) ...etc }}
@@ -58,6 +59,12 @@
 ; now have an observer mutate with-cc, maybe when count mod 3 is zero
 ; display use of _cache, perhaps to sum counts
 ; family-values
+; wrap local storage
+; ALSO SOMEWHERE:
+; -- address mget, mswap, mset!, mreset!, make
+; -- finalization
+; -- lifecycle: awaken, auto-observe
+; -- cell types beyond cI cF
 
 ;;; 1. We just do standard HTML/CSS;
 ;;; 1.a. But composites of "just html" are allowed, via parameterized  function composition

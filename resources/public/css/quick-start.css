@@ -1,0 +1,49 @@
+div, h1, input {
+    font-family: HelveticaNeue, Helvetica;
+    color: #777;
+}
+/* the top page DIV */
+.intro {
+    display:         flex;
+    flex-direction: column;
+    align-items:     center;
+    justify-content: start;
+    gap: 1em;
+    padding: 9px;
+}
+
+.control-panel {
+    display:         flex;
+    flex-direction:  row;
+    align-items:     center;
+    justify-content: start;
+    gap: 1em;
+}
+
+/* the counter display */
+@font-face{
+ font-family:'digital-clock-font';
+ src: url('../font/digital-7 (mono italic).ttf');
+}
+
+.quick-start {
+    font-size: 128px;
+    font-family: digital-clock-font, HelveticaNeue-UltraLight, Helvetica;
+    padding: 16px 24px;
+    min-width: 325px;
+    color: cyan;
+    text-align: center;
+    background: black;
+}
+
+/* the + button */
+.push-button {
+  background-color: rgba(51, 51, 51, 0.05);
+  border-radius: 16px;
+  border-width: 0;
+  color: #333333;
+  cursor: pointer;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 64px;
+  text-align: center;
+}

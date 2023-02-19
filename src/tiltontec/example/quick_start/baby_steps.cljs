@@ -117,17 +117,18 @@
   (div {:class :intro}
     (h2 "The speed is now...")
     (span {:class   :digi-readout
-           :style (cF {:color (if (> (mget me :mph) 50)
-                                "red" "cyan")})
+           :style   (cF {:color (if (> (mget me :mph) 50)
+                                  "red" "cyan")})
            :onclick #(mswap! (evt-md %) :mph inc)}
-      {:mph (cI 42)
+      {:mph     (cI 42)
        :display (cF (str (mget me :mph) " mph"))}
       (mget me :display))
     (p "Click display to increment.")))
 
 (def ex-handler-mutation
   {:title    "Mutation I" :builder handler-mutation
-   :preamble "Mutating state. Event handlers can freely mutate 'input' properties using <code>mswap!</code>.
+   :preamble "Mutating state. Event handlers can freely mutate 'input' properties using <code>mswap!</code> or
+   aliases <code>mset!/mreset!</code>.
    <br><br>The readout text and text color keep up automatically."
    :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :style (cF {:color (if (> (mget me :mph) 50)\n                                \"red\" \"cyan\")})\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42)\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :comment  "Notes:<br>1. <code>(evt-md %)</code> identifies the tag proxy behind the event handler.
@@ -142,8 +143,8 @@
     (h2 "The speed is now...")
     (span {:class   :digi-readout
            :onclick #(mswap! (evt-md %) :mph inc)}
-      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]
-                            (prn :watch slot new-val)))
+      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]
+                                (prn :watch slot new-val)))
        :display (cF (str (mget me :mph) " mph"))}
       (mget me :display))
     (p "Click display to increment.")))
@@ -155,15 +156,17 @@
    :comment  "Please open the browser JS console to see the output.<br><br>A 'watch' function fires when a cell value is initialized, and if it changes. They are used to
    dispatch actions outside the Matrix, if only logging, as here."})
 
+;;; --- throttling watch -------------------
+
 (defn throttle []
   (div {:class :intro}
     (h2 "The speed is now...")
     (span {:class   :digi-readout
            :onclick #(mswap! (evt-md %) :mph inc)}
-      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]
-                            (when (> new-val 55)
-                              (with-cc :speed-governor
-                                (mset! me :mph 45)))))
+      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]
+                                (when (> new-val 55)
+                                  (with-cc :speed-governor
+                                    (mset! me :mph 45)))))
        :display (cF (str (mget me :mph) " mph"))}
       (mget me :display))
     (p "Click display to increment.")))
@@ -178,4 +181,39 @@
    DAG updates must run sequentially. The macro <code>(with-cc :my-tag (mset! ...))</code> schedules the mutation for execution
    immediately after the current propagation."})
 
+(defn ephemeral []
+  (div {:class :intro}
+    {:name    :roulette
+     :bet     (cI nil :ephemeral? true) ;; <====== ephemeral
+     :bet-history (cF (when-let [bet (mget me :bet)]
+                        (conj _cache bet))) ;; <====== _cache
+     :spin    (cF (when (mget me :bet)
+                    (if (zero? (rand-int 2))
+                      :black :red)))
+     :outcome (cF (when-let [bet (mget me :bet)]
+                    (if (= bet (mget me :spin))
+                      :win :loss)))}
+    (h2 (str "Faites jeux #" (inc (count (mget (mx-par me) :bet-history)))))
+    (div {:style {:display :flex :gap     "1em"}}
+      (mapv (fn [color]
+              (opcode-button color
+                #(mset! (fmu :roulette) :bet (keyword color))))
+        ["red" "black"]))
+    (span {:style (cF (str "visibility:" (name (if (mget (fmu :roulette) :bet)
+                                                 :visible :hidden))))}
+      "The background below shows the spin.")
+    (span {:style (cF (str "font-size:28px; padding:9px; color:white; background:" (if-let [spin (mget (fmu :roulette) :spin)]
+                                                       (name spin) :white)))}
+      (case (mget (fmu :roulette) :outcome)
+        :win "Wins!"
+        :loss "Loses :("
+        "..."))))
+
+(def ex-ephemeral
+  {:title    "Ephemerals" :builder ephemeral
+   :preamble "When processing events, consecutive identical events are still two different events."
+   :code     "(div {:class :intro}\n    {:name    :roulette\n     :bet     (cI nil :ephemeral? true) ;; <====== ephemeral\n     :bet-history (cF (when-let [bet (mget me :bet)]\n                        (conj _cache bet))) ;; <====== _cache\n     :spin    (cF (when (mget me :bet)\n                    (if (zero? (rand-int 2))\n                      :black :red)))\n     :outcome (cF (when-let [bet (mget me :bet)]\n                    (if (= bet (mget me :spin))\n                      :win :loss)))}\n    (h2 (str \"Faites jeux #\" (inc (count (mget (mx-par me) :bet-history)))))\n    (div {:style {:display :flex :gap     \"1em\"}}\n      (mapv (fn [color]\n              (opcode-button color\n                #(mset! (fmu :roulette) :bet (keyword color))))\n        [\"red\" \"black\"]))\n    (span {:style (cF (str \"visibility:\" (name (if (mget (fmu :roulette) :bet)\n                                                 :visible :hidden))))}\n      \"The background below shows the spin.\")\n    (span {:style (cF (str \"font-size:28px; padding:9px; color:white; background:\" (if-let [spin (mget (fmu :roulette) :spin)]\n                                                       (name spin) :white)))}\n      (case (mget (fmu :roulette) :outcome)\n        :win \"Wins!\"\n        :loss \"Loses :(\"\n        \"...\")))"
+   :comment  "Ephemeral cells start at nil. When changed to some value X, they propagate fully, then revert silently to nil.
+   When they are changed to X again, it is still recognized as a change.
+   <br><br>The lexically injected <code>_cache</code> lets us consider history in formulas."})
 

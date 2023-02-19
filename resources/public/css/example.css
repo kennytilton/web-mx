@@ -34,3 +34,20 @@ body {
   -webkit-user-select: none;
   touch-action: manipulation;
 }
+
+/* the counter display */
+@font-face{
+ font-family:'digital-clock-font';
+ src: url('../font/digital-7 (mono italic).ttf');
+}
+
+.digi-readout {
+    font-size: 96px;
+    font-family: digital-clock-font, HelveticaNeue-UltraLight, Helvetica;
+    padding: 16px 24px;
+    min-width: 325px;
+    color: cyan;
+    text-align: center;
+    background: black;
+    user-select: none;
+}

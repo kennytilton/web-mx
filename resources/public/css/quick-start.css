@@ -20,21 +20,6 @@ div, h1, input {
     gap: 1em;
 }
 
-/* the counter display */
-@font-face{
- font-family:'digital-clock-font';
- src: url('../font/digital-7 (mono italic).ttf');
-}
-
-.quick-start {
-    font-size: 128px;
-    font-family: digital-clock-font, HelveticaNeue-UltraLight, Helvetica;
-    padding: 16px 24px;
-    min-width: 325px;
-    color: cyan;
-    text-align: center;
-    background: black;
-}
 
 /* the + button */
 .push-button {
@@ -46,4 +31,9 @@ div, h1, input {
   font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 64px;
   text-align: center;
+}
+
+.preamble {
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
 }

@@ -38,20 +38,22 @@
 
 
 ;;; learning
-; just  html--invite abuse/help with JS completeness
-; -- explain syntax difference
-; -- mention proxy dom
-; plus cljs
-; put it in functions--components
+; TODO sneak in the manifesto somewhere after observers
+;V just  html--invite abuse/help with JS completeness
+;V -- explain syntax difference
+;V -- mention proxy dom
+;V plus cljs
+;V put it in functions--components
+;V ie, without navigating, do a formula
+
 ; now do (div {:style (cF {:background (if (> (mget me :temp) 100) ...etc }}
 ;             {:temperature 100}
 ;             "test   background"))
-; ie, without navigating, do a formula
 ; now do a logging observer on background
 ; now do navigation to parent
 ; then do navigation by name -- document navigation
 ; -- display doc for generic fm-navig
-; have a handler mutate state
+;V have a handler mutate state
 ; maybe now add second consumer of count, and move count to parent;
 ; -- demonstrates state flexibility but still natural organization;
 ; do an ephemeral (too much? or good idea to show off a little?)

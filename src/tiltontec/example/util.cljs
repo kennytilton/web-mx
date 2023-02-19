@@ -34,7 +34,7 @@
                                    :else start-demo-ix)))
            :demos         demos}
     (div {:class :toolbar}
-      (span "Pick one:")
+      ;;(span "Pick one:")
       (doall (for [{:keys [title] :as clk} (mget (mx-par me) :demos)]
                (button {:class   :pushbutton
                         :cursor  :finger
@@ -52,14 +52,15 @@
                     :padding "36px"
                     }}
         (when-let [c (:comment clk)]
-          (p c))
+          (p {:class :preamble} c))
         (pre {:style {:margin-left "96px"}}
           (code (:code clk)))
         (div {:style {:border-color "orange"
                       :border-style "solid"
                       :border-width "2px"}}
           ((:builder clk)))
-        (p (:preamble clk "No preamble."))))))
+        (p {:class :preamble}
+          (:preamble clk "No preamble."))))))
 
 ;(exu/main #(md/make ::intro
 ;             :mx-dom (multi-demo {:title "Manual Clock" :builder manual-clock :code manual-clock-code}

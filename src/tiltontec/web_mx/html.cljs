@@ -336,7 +336,7 @@
               ;; (pln :obs-by-type-setAttr-onknown (name slot) (minfo me) newv)
               (.setAttribute dom (name slot) newv))))
 
-        (+inline-css+ slot)
+        #_#_ (+inline-css+ slot)
         (throw (js/Error. (str "tiltontec.web-mx obs sees oldskool style: " slot)))))))
 
 (defmethod observe-by-type [:web-mx.base/svg] [slot me newv oldv _]

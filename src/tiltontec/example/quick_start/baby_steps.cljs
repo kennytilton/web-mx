@@ -117,18 +117,42 @@
   (div {:class :intro}
     (h2 "The count is now...")
     (span {:class   :digi-readout
+           :style (cF {:color (if (> (mget me :mph) 50)
+                                "red" "cyan")})
            :onclick #(mswap! (evt-md %) :mph inc)}
-      {:mph (cI 42)}
-      (str (mget me :mph) " mph"))
+      {:mph (cI 42)
+       :display (cF (str (mget me :mph) " mph"))}
+      (mget me :display))
     (p "Click display to increment.")))
 
 (def ex-handler-mutation
   {:title    "Mutation I" :builder handler-mutation
-   :preamble "Mutating state. Event handlers can freely mutate 'input' properties using <code>mswap!</code>.<br><br>The
-   readout keeps up automatically."
-   :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :count inc)}\n      {:count (cI 42)}\n      (str (mget me :mph) \" mph\")))"
-   :comment  "Just <i>reading</i> the <code>:mph</code> property via <code>mget</code> established the readout's dependency on <code>:mph</code>.
-   No explicit subscription necessary."})
+   :preamble "Mutating state. Event handlers can freely mutate 'input' properties using <code>mswap!</code>.
+   <br><br>The readout text and text color keep up automatically."
+   :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :style (cF {:color (if (> (mget me :mph) 50)\n                                \"red\" \"cyan\")})\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42)\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
+   :comment  "Note: <code>(evt-md %)</code> identifies the tag proxy behind the event handler.
+   <br><br>Just <i>reading</i> the <code>:mph</code> property via <code>mget</code> established the :<code>:display</code> dependency on <code>:mph</code>.
+   No explicit subscription necessary. Same for the text color."})
+
+;;; --- watches ----------------------------------
+
+(defn watches []
+  (div {:class :intro}
+    (h2 "The count is now...")
+    (span {:class   :digi-readout
+           :onclick #(mswap! (evt-md %) :mph inc)}
+      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]
+                            (prn :watch slot new-val)))
+       :display (cF (str (mget me :mph) " mph"))}
+      (mget me :display))
+    (p "Click display to increment.")))
+
+(def ex-watches
+  {:title    "Watches I" :builder watches
+   :preamble "Any input or computed cell can be assigned a 'watch' function."
+   :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]\n                            (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
+   :comment  "Please open the browser JS console to see the output.<br><br>A 'watch' function fires when a cell value is initialized, and if it changes. They are used to
+   dispatch actions outside the Matrix, if only logging, as here."})
 
 #_(defn cf-state []
     (div {:class :intro}

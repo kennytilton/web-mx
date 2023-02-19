@@ -76,24 +76,26 @@
            :onclick onclick}
     label))
 
+(defn opcode-buttons [& opcodes]
+  (div {:style {:display :flex
+                :gap     "1em"}}
+    (mapv (fn [opcode]
+            (opcode-button opcode
+              #(js/alert "Feature Not Yet Implemented")))
+      opcodes)))
+
 (defn component-ish []
   (div {:class :intro}
     (h2 "The count is now....")
     (span {:class :digi-readout} "42")
-    (div {:style {:display :flex
-                  :gap     "1em"}}
-      (mapv (fn [opcode]
-              (opcode-button opcode
-                #(js/alert "Feature Not Yet Implemented")))
-        ["-" "=" "+"]))))
+    (opcode-buttons "-" "=" "+")))
 
 (def ex-component-ish
   {:title    "Components-Ish" :builder component-ish
    :preamble "Because it is all CLJS, we can move sub-structure into functions."
-   :code     "(defn opcode-button [label onclick]\n  (button {:class   :push-button\n           :onclick onclick}\n    label))<br><br>(defn component-ish []\n  (div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (div {:style {:display :flex\n                  :gap \"1em\"}}\n      (mapv (fn [opcode]\n              (opcode-button opcode\n               #(js/alert \"Feature Not Yet Implemented\")))\n        [\"-\" \"=\" \"+\"]))))"
+   :code     "(defn opcode-button [label onclick]\n  ;; this could be an elaborate component\n  (button {:class   :push-button\n           :onclick onclick}\n    label))\n\n(defn opcode-buttons [& opcodes]\n  (div {:style {:display :flex\n                :gap     \"1em\"}}\n    (mapv (fn [opcode]\n            (opcode-button opcode\n              #(js/alert \"Feature Not Yet Implemented\")))\n      opcodes)))\n\n(defn component-ish []\n  (div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (opcode-buttons \"-\" \"=\" \"+\")))"
    :comment  "Composing HTML is now as easy as function composition.
-   In a sense, we have <a href=https://developer.mozilla.org/en-US/docs/Web/Web_Components>HTML Web Components</a>, but with the full power of CLJS.
-   Which is nice."})
+   We have <a href=https://developer.mozilla.org/en-US/docs/Web/Web_Components>HTML Web Components</a>, composed with the power of an HLL."})
 
 ;;; --- custom-state ---------------------------------
 
@@ -106,7 +108,7 @@
 
 (def ex-custom-state
   {:title    "Custom State" :builder custom-state
-   :preamble "State. An optional second parameter, here <code>{:count 42}</code>, defines additional properties."
+   :preamble "Local state: an optional second parameter map, here <code>{:count 42}</code>, defines custom widget properties."
    :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class :digi-readout}\n      {:mph 42}\n      (str (mget me :mph) \" mph\")))"
    :comment  "We enjoy the power of the protoype model of objects, in which custom properties can be specified as needed to support a tag's (re-)use.
    The SPAN reads (<i>mgets</i>) the count to decide its full display."})
@@ -129,11 +131,9 @@
   {:title    "Mutation I" :builder handler-mutation
    :preamble "Mutating state. Event handlers can freely mutate 'input' properties using <code>mswap!</code> or
    aliases <code>mset!/mreset!</code>.
-   <br><br>The readout text and text color keep up automatically."
+   <br><br>The derived readout text and text color will keep up automatically. Speed limit is fifty, by the way."
    :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :style (cF {:color (if (> (mget me :mph) 50)\n                                \"red\" \"cyan\")})\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42)\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
-   :comment  "Notes:<br>1. <code>(evt-md %)</code> identifies the tag proxy behind the event handler.
-   <br>2. Formula macro <code>cF</code> lexically injects <code>me</code>, akin to <code>this</code> or <code>self</code>.
-   <br><br>Just <i>reading</i> the <code>:mph</code> property via <code>mget</code> established the :<code>:display</code> dependency on <code>:mph</code>.
+   :comment  "Just <i>reading</i> the <code>:mph</code> property via <code>mget</code> was enough to establish the <code>:display</code> dependency on <code>:mph</code>.
    No explicit subscription necessary. Same for the text color."})
 
 ;;; --- watches ----------------------------------
@@ -176,7 +176,7 @@
    :preamble "Watch functions <i>can</i> alter the Matrix <i>if</i> they defer the alteration.
    <br><br>Try increasing the speed above 55."
    :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]\n                            (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
-   :comment  "In our experience of Matrix coding, we frequently spot opportunities where the app could very usefully
+   :comment  "In our experience of Matrix coding, we frequently spot opportunities where the app could usefully
    update state normally controlled by the user. But watches run during propagation of some original change, and
    DAG updates must run sequentially. The macro <code>(with-cc :my-tag (mset! ...))</code> schedules the mutation for execution
    immediately after the current propagation."})

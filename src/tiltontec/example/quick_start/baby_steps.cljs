@@ -95,19 +95,19 @@
    In a sense, we have <a href=https://developer.mozilla.org/en-US/docs/Web/Web_Components>HTML Web Components</a>, but with the full power of CLJS.
    Which is nice."})
 
-;;; --- cf-state ---------------------------------
+;;; --- custom-state ---------------------------------
 
-(defn cf-state []
+(defn custom-state []
   (div {:class :intro}
     (h2 "The count is now...")
     (span {:class :digi-readout}
       {:mph 42}
       (str (mget me :mph) " mph"))))
 
-(def ex-cf-state
-  {:title    "cF/State" :builder cf-state
+(def ex-custom-state
+  {:title    "Custom State" :builder custom-state
    :preamble "State. An optional second parameter, here <code>{:count 42}</code>, defines additional properties."
-   :code     "(defn cf-state []\n  (div {:class :intro}\n    (h2 \"The count is now half of....\")\n    (span {:class :digi-readout}\n      {:count 42}\n      (str (mget me :count)))))"
+   :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class :digi-readout}\n      {:mph 42}\n      (str (mget me :mph) \" mph\")))"
    :comment  "We enjoy the power of the protoype model of objects, in which custom properties can be specified as needed to support a tag's (re-)use.
    The SPAN reads (<i>mgets</i>) the count to decide its full display."})
 
@@ -115,7 +115,7 @@
 
 (defn handler-mutation []
   (div {:class :intro}
-    (h2 "The count is now...")
+    (h2 "The speed is now...")
     (span {:class   :digi-readout
            :style (cF {:color (if (> (mget me :mph) 50)
                                 "red" "cyan")})
@@ -130,7 +130,8 @@
    :preamble "Mutating state. Event handlers can freely mutate 'input' properties using <code>mswap!</code>.
    <br><br>The readout text and text color keep up automatically."
    :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :style (cF {:color (if (> (mget me :mph) 50)\n                                \"red\" \"cyan\")})\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42)\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
-   :comment  "Note: <code>(evt-md %)</code> identifies the tag proxy behind the event handler.
+   :comment  "Notes:<br>1. <code>(evt-md %)</code> identifies the tag proxy behind the event handler.
+   <br>2. Formula macro <code>cF</code> lexically injects <code>me</code>, akin to <code>this</code> or <code>self</code>.
    <br><br>Just <i>reading</i> the <code>:mph</code> property via <code>mget</code> established the :<code>:display</code> dependency on <code>:mph</code>.
    No explicit subscription necessary. Same for the text color."})
 
@@ -138,7 +139,7 @@
 
 (defn watches []
   (div {:class :intro}
-    (h2 "The count is now...")
+    (h2 "The speed is now...")
     (span {:class   :digi-readout
            :onclick #(mswap! (evt-md %) :mph inc)}
       {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]
@@ -148,16 +149,30 @@
     (p "Click display to increment.")))
 
 (def ex-watches
-  {:title    "Watches I" :builder watches
+  {:title    "Watch External" :builder watches
    :preamble "Any input or computed cell can be assigned a 'watch' function."
    :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]\n                            (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :comment  "Please open the browser JS console to see the output.<br><br>A 'watch' function fires when a cell value is initialized, and if it changes. They are used to
    dispatch actions outside the Matrix, if only logging, as here."})
 
-#_(defn cf-state []
-    (div {:class :intro}
-      (h2 "The count is now half of....")
-      (span {:class :digi-readout}
-        {:count        42
-         :double-count (cF (* 2 (mget me :count)))}
-        (str (mget me :double-count)))))
+(defn throttle []
+  (div {:class :intro}
+    (h2 "The speed is now...")
+    (span {:class   :digi-readout
+           :onclick #(mswap! (evt-md %) :mph inc)}
+      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]
+                            (when (> new-val 55)
+                              (with-cc :speed-governor
+                                (mset! me :mph 45)))))
+       :display (cF (str (mget me :mph) " mph"))}
+      (mget me :display))
+    (p "Click display to increment.")))
+
+(def ex-throttle
+  {:title    "Watch Mutation" :builder throttle
+   :preamble "Watch functions <i>can</i> alter the Matrix <i>if</i> they defer the alteration.
+   <br><br>Try increasing the speed above 55."
+   :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]\n                            (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
+   :comment  ""})
+
+

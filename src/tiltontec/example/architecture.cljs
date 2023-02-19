@@ -45,11 +45,12 @@
 ;V plus cljs
 ;V put it in functions--components
 ;V ie, without navigating, do a formula
-
-; now do (div {:style (cF {:background (if (> (mget me :temp) 100) ...etc }}
+;V now do (div {:style (cF {:background (if (> (mget me :temp) 100) ...etc }}
 ;             {:temperature 100}
 ;             "test   background"))
-; now do a logging observer on background
+;V now do a logging observer on background
+;V now have an observer mutate with-cc, maybe when count mod 3 is zero
+
 ; now do navigation to parent
 ; then do navigation by name -- document navigation
 ; -- display doc for generic fm-navig
@@ -58,7 +59,6 @@
 ; -- demonstrates state flexibility but still natural organization;
 ; do an ephemeral (too much? or good idea to show off a little?)
 ; wrap an XHR -- cat fact
-; now have an observer mutate with-cc, maybe when count mod 3 is zero
 ; display use of _cache, perhaps to sum counts
 ; family-values
 ; wrap local storage

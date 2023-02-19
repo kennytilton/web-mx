@@ -23,9 +23,10 @@
                        baby/ex-just-html
                        baby/ex-and-cljs
                        baby/ex-component-ish
-                       baby/ex-cf-state
+                       baby/ex-custom-state
                        baby/ex-handler-mutation
                        baby/ex-watches
+                       baby/ex-throttle
                        #_ {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
                        #_ {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code}
                        #_ {:title "Reactivity All-In" :builder reactivity-all-in :code reactivity-all-in-code}

@@ -38,7 +38,9 @@
 
 
 ;;; learning
-; TODO sneak in the manifesto somewhere after observers
+; TODO sneak in the manifesto somewhere after observers, demoing all derived current wehn prinetd in observer
+; TODO lazy cells, perhaps after ephemerals to drive home the sophistication
+; TODO talk about client-queue-handler
 ;V just  html--invite abuse/help with JS completeness
 ;V -- explain syntax difference
 ;V -- mention proxy dom
@@ -46,8 +48,8 @@
 ;V put it in functions--components
 ;V ie, without navigating, do a formula
 ;V now do (div {:style (cF {:background (if (> (mget me :temp) 100) ...etc }}
-;             {:temperature 100}
-;             "test   background"))
+;V             {:temperature 100}
+;V             "test   background"))
 ;V now do a logging observer on background
 ;V now have an observer mutate with-cc, maybe when count mod 3 is zero
 

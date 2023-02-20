@@ -19,7 +19,7 @@
     [tiltontec.example.quick-start.baby-steps :as baby]))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo 4
+             :mx-dom (exu/multi-demo 0
                        baby/ex-just-html
                        baby/ex-and-cljs
                        baby/ex-component-ish

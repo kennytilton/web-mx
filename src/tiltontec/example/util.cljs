@@ -6,7 +6,7 @@
              :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fasc fmu fm!] :as md]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
             [tiltontec.web-mx.gen-macro
-             :refer [img section h1 h2 h3 input footer p a
+             :refer [title img section h1 h2 h3 input footer p a
                      span i label ul li div button br pre code]]
             [tiltontec.web-mx.style :refer [make-css-inline]]
             [tiltontec.web-mx.html :refer [tag-dom-create]]))
@@ -33,6 +33,7 @@
                                    (>= start-demo-ix (count demos)) (dec (count demos))
                                    :else start-demo-ix)))
            :demos         demos}
+    (h1 "Does Title Work?")
     (div {:class :toolbar}
       ;;(span "Pick one:")
       (doall (for [{:keys [title] :as clk} (mget (mx-par me) :demos)]

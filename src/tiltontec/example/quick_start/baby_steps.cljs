@@ -175,7 +175,7 @@
   {:title    "Watch Mutation" :builder throttle
    :preamble "Watch functions <i>can</i> alter the Matrix <i>if</i> they defer the alteration.
    <br><br>Try increasing the speed above 55."
-   :code     "(div {:class :intro}\n    (h2 \"The count is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph (cI 42 :watch (fn [slot me new-val prior-val cell]\n                            (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
+   :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (when (> new-val 55)\n                                  (with-cc :speed-governor\n                                    (mset! me :mph 45)))))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :comment  "In our experience of Matrix coding, we frequently spot opportunities where the app could usefully
    update state normally controlled by the user. But watches run during propagation of some original change, and
    DAG updates must run sequentially. The macro <code>(with-cc :my-tag (mset! ...))</code> schedules the mutation for execution
@@ -184,7 +184,10 @@
 (defn ephemeral []
   (div {:class :intro}
     {:name    :roulette
-     :bet     (cI nil :ephemeral? true) ;; <====== ephemeral
+     :bet     (cI nil :ephemeral? true
+                :obs (fn [_ me new-val _ _]
+                            (prn :bet-obs-sees new-val (mget me :bet)
+                              (mget me :spin)(mget me :outcome) (mget me :bet-history)))) ;; <====== ephemeral
      :bet-history (cF (when-let [bet (mget me :bet)]
                         (conj _cache bet))) ;; <====== _cache
      :spin    (cF (when (mget me :bet)

@@ -11,11 +11,7 @@
     [tiltontec.web-mx.gen-macro
      :refer [img section h1 h2 h3 input footer p a
              span i label ul li div button br
-             defexample]]
-    [tiltontec.web-mx.style :refer [make-css-inline]]
-    [tiltontec.example.util :as exu]
-    [cljs-http.client :as client]
-    [cljs.core.async :refer [go <!]]))
+             defexample]]))
 
 
 ;;; --- 1. It's just html -------------------------------------
@@ -39,8 +35,8 @@
    :title    "It's Just HTML and CSS. And SVG."
    :ns       "tiltontec.example.quick-start.lesson/just-html"
    :builder  just-html
-   :preamble "We start simply, just coding with standard HTML and CSS. And SVG."
-   :comment  "Most of the time, <a href=https://developer.mozilla.org/en-US/docs/Web/HTML>Mozilla HTML</a> will be our reference manual."
+   :preamble "To begin, we just code standard HTML and CSS. And SVG."
+   :comment  "We write business logic or...<a href=https://developer.mozilla.org/en-US/docs/Web/HTML>Mozilla HTML</a> is our reference manual."
    :code     "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (button {:class   :push-button\n             :onclick #(js/alert \"Increment Feature Not Yet Implemented\")}\n      \"+\"))"
    :exercise "Feel free to experiment with other HTML tags.<br><br>Where HTML has <code>&lt;tag attributes*> children*&lt;/tag></code><br>...Web/MX has: <code>(tag {attributes*} children*)</code>.<br><br> If you find some HTML that does not translate to Web/MX, please send that example along."})
 
@@ -62,8 +58,8 @@
    :title    "...and CLJS" :builder and-cljs
    :preamble "We just write HTML, but CLJS is welcome, too."
    :code     "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (doall (for [opcode [\"-\" \"=\" \"+\"]]\n             (button {:class   :push-button\n                      :onclick #(js/alert \"Feature Not Yet Implemented\")}\n               opcode))))"
-   :comment  "In fact, all this code is CLJS. For example, DIV is a CLJS macro wrapping a function call.The DIV function returns a
-   proxy \"model\" from which we build the actual DOM. Models are Matrix objects that suppport reactive properties."})
+   :comment  "In fact, all this code is CLJS. For example, DIV is a CLJS macro that returns
+    a Clojure proxy for a DOM DIV."})
 
 ;;; --- components realized --------------------------------
 
@@ -89,18 +85,18 @@
 
 (def ex-component-ish
   {:menu     "Composition"
-   :title    "HTML + Functional Composition"
+   :title    "Functional Composition, for HTML"
    :builder  component-ish
    :preamble "Because it is all CLJS, we can move sub-structure into functions."
    :code     "(defn opcode-button [label onclick]\n  ;; this could be an elaborate component\n  (button {:class   :push-button\n           :onclick onclick}\n    label))\n\n(defn opcode-buttons [& opcodes]\n  (div {:style {:display :flex\n                :gap     \"1em\"}}\n    (mapv (fn [opcode]\n            (opcode-button opcode\n              #(js/alert \"Feature Not Yet Implemented\")))\n      opcodes)))\n\n(defn component-ish []\n  (div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (opcode-buttons \"-\" \"=\" \"+\")))"
-   :comment  "Composing HTML is now as easy as function composition.
-   Think HTML <a href=https://developer.mozilla.org/en-US/docs/Web/Web_Components>\"Web Components\"</a>, built with the power of HLL."})
+   :comment  "Composing HTML is just function composition.
+   Think nested <a href=https://developer.mozilla.org/en-US/docs/Web/Web_Components>\"Web Components\"</a>."})
 
 ;;; --- custom-state ---------------------------------
 
 (defn custom-state []
   (div {:class :intro}
-    (h2 "The count is now...")
+    (h2 "The speed is now...")
     (span {:class :digi-readout}
       {:mph 42}
       (str (mget me :mph) " mph"))))
@@ -109,23 +105,52 @@
   {:menu     "In-place State"
    :title    "\"In-place\", local widget state"
    :builder  custom-state
-   :preamble "An optional second parameter map defines custom widget properties."
-   :comment  "We enjoy the power of the prototype model of objects, in which custom properties can be specified as needed to support a tag's (re-)use.
-   <br><br>Here, <code>{:mph 42}</code> lets us extend the <code>span</code> with useful state.
-   The SPAN reads (<i>mgets</i>) the count to decide its full display.<br><br>
-   Later, we see how \"in-place\" state obviates the need for a separate store."})
+   :preamble ["An optional second parameter map extends generic widgets with custom widget state."]
+   :code "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      {:mph 42}\n      (str (mget me :mph) \" mph\")))"
+   :comment  ["Think \"object prototype model\", supporting object reuse."
+              "Here, <code>{:mph 42}</code> extends a generic <code>span</code> with useful state.
+   The SPAN reads (<i>mgets</i>) the count to generate its full display."
+              "Later, we will see how such \"in-place\" state obviates the need for a separate store."]})
 
 ;;; --- derived state ------------------------------
 
+
 (defn derived-state []
   (div {:class :intro}
-    (h2 "The count is now...")
+    (h2 "The speed is now...")
     (span {:class :digi-readout}
       {:mph 65
        :too-fast? (cF (> (mget me :mph) 55))}
       (str (mget me :mph) " mph"
         (when (mget me :too-fast?) "<br>Slow down?")))))
 
+(def ex-derived-state
+  {:menu     "Derived State"
+   :title    "Derived local widget state"
+   :builder  derived-state
+   :code "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      {:mph 65\n       :too-fast? (cF (> (mget me :mph) 55))}\n      (str (mget me :mph) \" mph\"\n        (when (mget me :too-fast?) \"<br>Slow down?\"))))"
+   :preamble "Values for any property can be expressed as formulas over other model properties."
+   :comment  ["The <code>:too-fast?</code> property is given the reactive formula <code>(cF (> (mget me :mph) 55))</code>"
+              "A one-way DAG emerges naturally from the population of interdependent property formulas."]})
+
+;;; --- DAG Navigation ------------------------------
+
+;(defn dag-navigation []
+;  (div {:class :intro
+;        :style {:display :flex}}
+;    (doall (for [geo-type [:country :city]]
+;             (make-speed-zone geo-type)))))
+;
+;(defn make-speed-zone [geo-type]
+;  (div {:class :intro}
+;    (h2 "The count is now...")
+;    (span {:class :digi-readout}
+;      {:mph 65
+;       :too-fast? (cF (> (mget me :mph) 55))}
+;      (str (mget me :mph) " mph"
+;        (when (mget me :too-fast?) "<br>Slow down?")))))
+
+#_
 (def ex-derived-state
   {:menu     "Derived State"
    :title    "Derived local widget state"
@@ -157,18 +182,17 @@
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
    :preamble ["Event handlers can freely mutate 'input' properties using <code>mswap!</code> or
-   aliases <code>mset!/mreset!</code>."
-              "Derived values keep up."
+   aliases <code>mset!/mreset!</code>. Derived values will keep up."
               "Speed limit is fifty-five, by the way."]
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})\n           :onclick (fn [evt]\n                      (let [me (evt-md evt)]\n                        (mswap! me :mph inc)))}\n      {:mph       (cI 42)\n       :display   (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :exercise "Add custom state <code>:throttled</code>, with a formula that computes <code>true</code> if <code>:mph</code> is
    fifty-five or more. Check <code>:throttled</code> in the <code>:onclick</code> handler before incrementing."
    :comment  "Wrapping <code>:mph</code> in <code>(cI 42)</code> lets us mutate <code>:mph</code> from arbitrary code.
-   <br><br>In the formula <code>(cF (str (mget me :mph) \" mph\"))</code>, simply <i>reading</i> the <code>:mph</code> property via <code>mget</code> transparently establishes
-    the dependency on <code>:mph</code>.
-   No explicit subscription necessary.
+   <br><br>In the formula <code>(cF (str (mget me :mph) \" mph\"))</code>, simply reading the <code>:mph</code> property
+     transparently links <code>:display</code> and <code>:mph</code>.
+   No explicit \"subscribe\" is necessary.
    <br><br>Just changing the <code>:mph</code> property, via <code>mswap!</code>, transparently updates all dependent properties.
-    No pre-defined store transaction necessary."})
+    No pre-defined store update transaction is necessary."})
 
 ;;; --- watches ----------------------------------
 

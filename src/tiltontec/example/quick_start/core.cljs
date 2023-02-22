@@ -5,7 +5,7 @@
     [tiltontec.example.quick-start.lesson :as baby]))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 4
+             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 0
                        baby/ex-just-html
                        baby/ex-and-cljs
                        baby/ex-component-ish

@@ -43,7 +43,7 @@
    :builder  just-html
    :preamble "We start with standard HTML, SVG, and CSS, thinly disguised as CLJS."
    :comment  ["When we are not writing business logic, <a href=https://developer.mozilla.org/en-US/docs/Web/HTML>Mozilla HTML</a> will be our reference."
-              "Web/MX introduces no framework of its own. Aside from CLJS->JS, no preprocessor is involved. Matrix just manages state."]
+              #_ "Web/MX introduces no framework of its own. Aside from CLJS->JS, no preprocessor is involved. Matrix just manages state."]
    :code     "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (svg {:width 64 :height 64 :cursor :pointer\n          :onclick #(js/alert \"Increment Feature Not Yet Implemented\")}\n      (circle {:cx \"50%\" :cy \"50%\" :r \"40%\"\n               :stroke  \"orange\" :stroke-width 5\n               :fill :transparent})\n      (text {:class :heavychar :x \"50%\" :y \"70%\"\n             :text-anchor :middle} \"+\")))"
    :exercise ["Feel free to experiment with other HTML or SVG tags."
               "Where HTML has <code>&lt;tag attributes*> children*&lt;/tag></code><br>...Web/MX has: <code>(tag {attributes*} children*)</code>."
@@ -280,9 +280,11 @@
                               "red" "cyan")})}
     {:mph     (cI 42)
      :time    (cF (js/setInterval
-                    (fn [] (let [mph-now (mget me :mph)]
-                             (mswap! me :mph *
-                               (second (mdv! :throttle :setting)))))
+                    (fn [] (let [mph-now (mget me :mph)
+                                 throttle (fmu :throttle)]
+                             (when throttle
+                               (mswap! me :mph *
+                                 (second (mget throttle :setting))))))
                     1000))
      :display (cF (pp/cl-format nil "~8,1f mph" (mget me :mph)))}
     (mget me :display)))

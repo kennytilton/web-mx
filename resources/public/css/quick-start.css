@@ -37,3 +37,10 @@ div, h1, input {
   font-family: 'Roboto', sans-serif;
   font-size: 20px;
 }
+
+.exercise {
+  font-family: 'Times Roman', serif;
+  font-size: 18px;
+  background: linen;
+  padding: 1em;
+}

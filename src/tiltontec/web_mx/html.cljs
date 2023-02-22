@@ -90,29 +90,33 @@
       (apply concat beef))))
 
 (defn svg-dom-create [me dbg]
-  (let [svg (.createElementNS js/document "http://www.w3.org/2000/svg"
-              (mget me :tag))]
-    ;; todo sort these next two out
-    (rmap-meta-setf [:dom-x me] svg)
-    (rmap-meta-setf [:svg-x me] svg)
-    (.setAttributeNS svg
-      ;; hhack - should this just be "xmlns"?
-      "http://www.w3.org/2000/xmlns/"
-      "xmlns:xlink"
-      "http://www.w3.org/1999/xlink")
-    (doseq [ak (:attr-keys @me)
-            :let [ak$ (name ak)
-                  av (ak @me)]]
-      (if (fn? av)
-        (.addEventListener svg
-          (if (= "on" (subs ak$ 0 2))
-            (subs ak$ 2) ak$)
-          ;; todo add warning
-          av)
-        (.setAttributeNS svg nil ak$ (attr-val$ av))))
-    (doseq [kid (mget me :kids)]
-      (.appendChild svg (svg-dom-create kid dbg)))
-    svg))
+  (cond
+    ; var textNode = document.createTextNode("milind morey");
+    ;
+    (string? me) (.createTextNode js/document me)
+    :else (let [svg (.createElementNS js/document "http://www.w3.org/2000/svg"
+                      (mget me :tag))]
+            ;; todo sort these next two out
+            (rmap-meta-setf [:dom-x me] svg)
+            (rmap-meta-setf [:svg-x me] svg)
+            (.setAttributeNS svg
+              ;; hhack - should this just be "xmlns"?
+              "http://www.w3.org/2000/xmlns/"
+              "xmlns:xlink"
+              "http://www.w3.org/1999/xlink")
+            (doseq [ak (:attr-keys @me)
+                    :let [ak$ (name ak)
+                          av (ak @me)]]
+              (if (fn? av)
+                (.addEventListener svg
+                  (if (= "on" (subs ak$ 0 2))
+                    (subs ak$ 2) ak$)
+                  ;; todo add warning
+                  av)
+                (.setAttributeNS svg nil ak$ (attr-val$ av))))
+            (doseq [kid (mget me :kids)]
+              (.appendChild svg (svg-dom-create kid dbg)))
+            svg)))
 
 (defn tag-dom-create
   ([me] (tag-dom-create me false))
@@ -226,9 +230,9 @@
           gained (set/difference (set newv) (set oldv))
           kept (set/intersection (set newv) (set oldv))]
       (assert pdom)
-      #_ (do (prn :kept!!! kept)
-             (prn :gained!!!!! gained)
-             (prn :lost!!!!!!! lost))
+      #_(do (prn :kept!!! kept)
+            (prn :gained!!!!! gained)
+            (prn :lost!!!!!!! lost))
       (cond
         (and (= (set newv) (set oldv))
           (not (= oldv newv)))
@@ -244,25 +248,25 @@
 
         (empty? gained)
         ;; just lose the lost
-        (do ;; (prn :no-gained-losing-lost (count lost))
-            (doseq [oldk lost]
-              (.removeChild pdom (svg-dom oldk))
-              (when-not (string? oldk)
-                ; (println :obs-tag-kids-dropping (tagfo oldk))
-                (finalize oldk))))
+        (do                                                 ;; (prn :no-gained-losing-lost (count lost))
+          (doseq [oldk lost]
+            (.removeChild pdom (svg-dom oldk))
+            (when-not (string? oldk)
+              ; (println :obs-tag-kids-dropping (tagfo oldk))
+              (finalize oldk))))
 
         (empty? lost)
-        (do ;; (prn :no-lost-adding-gained!!! (count gained))
-            (doseq [newk gained]
-              (let [new-dom (or (svg-dom newk)
-                              (svg-dom-create newk false))]
-                (.appendChild pdom new-dom))))
+        (do                                                 ;; (prn :no-lost-adding-gained!!! (count gained))
+          (doseq [newk gained]
+            (let [new-dom (or (svg-dom newk)
+                            (svg-dom-create newk false))]
+              (.appendChild pdom new-dom))))
 
 
         :default (let [frag (.createDocumentFragment js/document)]
-                   #_ (do (prn :mix-kept!!! kept)
-                          (prn :mix-gained!!!!! gained)
-                          (prn :mix-lost!!!!!!! lost))
+                   #_(do (prn :mix-kept!!! kept)
+                         (prn :mix-gained!!!!! gained)
+                         (prn :mix-lost!!!!!!! lost))
                    ;; GC lost from matrix;
                    ;; move retained kids from pdom into fragment,
                    ;; add all new kids to fragment, and do so preserving
@@ -336,8 +340,8 @@
               ;; (pln :obs-by-type-setAttr-onknown (name slot) (minfo me) newv)
               (.setAttribute dom (name slot) newv))))
 
-        #_#_ (+inline-css+ slot)
-        (throw (js/Error. (str "tiltontec.web-mx obs sees oldskool style: " slot)))))))
+        #_#_(+inline-css+ slot)
+                (throw (js/Error. (str "tiltontec.web-mx obs sees oldskool style: " slot)))))))
 
 (defmethod observe-by-type [:web-mx.base/svg] [slot me newv oldv _]
   (when (not= oldv unbound)

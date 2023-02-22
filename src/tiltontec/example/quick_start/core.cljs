@@ -2,22 +2,29 @@
   (:require
     [tiltontec.model.core :as md]
     [tiltontec.example.util :as exu]
-    [tiltontec.example.quick-start.lesson :as baby]))
+    [tiltontec.example.quick-start.lesson :as lesson]))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 5
-                       baby/ex-just-html
-                       baby/ex-and-cljs
-                       baby/ex-component-ish
-                       baby/ex-custom-state
-                       baby/ex-derived-state
-                       baby/ex-handler-mutation
-                       baby/ex-watches
-                       baby/ex-throttle
+             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 0
+                       ;; todo overall: make each example slick
+                       ;; todo overall: make each example well-motivate
+                       lesson/ex-just-html
+                       lesson/ex-and-cljs
+                       lesson/ex-component-ish
+                       lesson/ex-custom-state
+                       ;; todo sneak in fixed vs cI vs cF
+                       lesson/ex-derived-state
+                       lesson/ex-handler-mutation
+                       ;; todo navigation
+                       lesson/ex-watches
+                       lesson/ex-watch-cc
                        ;; todo the cells manifesto
-                       ;; todo async -- deceleration if foot not on gas
-                       baby/ex-ephemeral
+                       ;; todo async -- deceleration if foot not on gas: accel, maintain, coast, brake, panic
+                       lesson/ex-ephemeral ;; too much?
+                       ;; todo ex-svg
                        #_ {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
                        #_ {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code}
                        #_ {:title "Reactivity All-In" :builder reactivity-all-in :code reactivity-all-in-code}
                        #_  {:title "Mini test" :builder minitest :code minitest-code})))
+
+;; todo merge with lesson.cljs

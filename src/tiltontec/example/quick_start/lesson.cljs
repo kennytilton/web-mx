@@ -11,7 +11,9 @@
     [tiltontec.web-mx.gen-macro
      :refer [img section h1 h2 h3 input footer p a
              span i label ul li div button br
-             defexample]]))
+
+             svg g circle p span div text radialGradient defs stop
+              rect ellipse line polyline path polygon script use]]))
 
 
 ;;; --- 1. It's just html -------------------------------------
@@ -21,9 +23,13 @@
   (div {:class :intro}
     (h2 "The count is now....")
     (span {:class :digi-readout} "42")
-    (button {:class   :push-button
-             :onclick #(js/alert "Increment Feature Not Yet Implemented")}
-      "+")))
+    (svg {:width 64 :height 64 :cursor :pointer
+          :onclick #(js/alert "Increment Feature Not Yet Implemented")}
+      (circle {:cx "50%" :cy "50%" :r "40%"
+               :stroke  "orange" :stroke-width 5
+               :fill :transparent})
+      (text {:class :heavychar :x "50%" :y "70%"
+             :text-anchor :middle} "+"))))
 
 ;;; Where HTML has <tag attributes*> children* </tag>...
 ;;; Web/MX has (tag [HTML-attribute-map [custom-attr-map]] children*)
@@ -31,14 +37,17 @@
 ;;; Otherwise, MDN is your guide.
 
 (def ex-just-html
-  {:menu     "HTML/CSS"
-   :title    "It's Just HTML and CSS. And SVG."
+  {:menu     "Just HTML"
+   :title    "It's Just HTML"
    :ns       "tiltontec.example.quick-start.lesson/just-html"
    :builder  just-html
-   :preamble "To begin, we just code standard HTML and CSS. And SVG."
-   :comment  "We write business logic or...<a href=https://developer.mozilla.org/en-US/docs/Web/HTML>Mozilla HTML</a> is our reference manual."
-   :code     "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (button {:class   :push-button\n             :onclick #(js/alert \"Increment Feature Not Yet Implemented\")}\n      \"+\"))"
-   :exercise "Feel free to experiment with other HTML tags.<br><br>Where HTML has <code>&lt;tag attributes*> children*&lt;/tag></code><br>...Web/MX has: <code>(tag {attributes*} children*)</code>.<br><br> If you find some HTML that does not translate to Web/MX, please send that example along."})
+   :preamble "We start with standard HTML, SVG, and CSS, thinly disguised as CLJS."
+   :comment  ["When we are not writing business logic, <a href=https://developer.mozilla.org/en-US/docs/Web/HTML>Mozilla HTML</a> will be our reference."
+              "Web/MX introduces no framework of its own. Aside from CLJS->JS, no preprocessor is involved. Matrix just manages state."]
+   :code     "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (svg {:width 64 :height 64 :cursor :pointer\n          :onclick #(js/alert \"Increment Feature Not Yet Implemented\")}\n      (circle {:cx \"50%\" :cy \"50%\" :r \"40%\"\n               :stroke  \"orange\" :stroke-width 5\n               :fill :transparent})\n      (text {:class :heavychar :x \"50%\" :y \"70%\"\n             :text-anchor :middle} \"+\")))"
+   :exercise ["Feel free to experiment with other HTML or SVG tags."
+              "Where HTML has <code>&lt;tag attributes*> children*&lt;/tag></code><br>...Web/MX has: <code>(tag {attributes*} children*)</code>."
+              "If you find some HTML that does not translate to Web/MX, please send a failing example along."]})
 
 
 ;;; --- and-cljs --------------------------------------------------------
@@ -58,8 +67,9 @@
    :title    "...and CLJS" :builder and-cljs
    :preamble "We just write HTML, but CLJS is welcome, too."
    :code     "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (doall (for [opcode [\"-\" \"=\" \"+\"]]\n             (button {:class   :push-button\n                      :onclick #(js/alert \"Feature Not Yet Implemented\")}\n               opcode))))"
-   :comment  "In fact, all this code is CLJS. For example, DIV is a CLJS macro that returns
-    a Clojure proxy for a DOM DIV."})
+   :comment  ["In fact, all this code is CLJS. For example, DIV is a CLJS macro that returns
+    a Clojure proxy for a DOM DIV."
+              "Proxies are not VDOM. They are long-lived models that manage their DOM incarnations as events unfold."]})
 
 ;;; --- components realized --------------------------------
 
@@ -219,7 +229,7 @@
 
 ;;; --- throttling watch -------------------
 
-(defn throttle []
+(defn watch-cc []
   (div {:class :intro}
     (h2 "The speed is now...")
     (span {:class   :digi-readout
@@ -232,12 +242,11 @@
       (mget me :display))
     (p "Click display to increment.")))
 
-(def ex-throttle
+(def ex-watch-cc
   {:menu     "Watch Mutation"
    :title    "Matrix state mutation by watches"
-   :builder  throttle
-   :preamble ["Watch functions must operate outside Matrix state flow, but they <i>can</i> indirectly alter the Matrix,
-   by enqueueing a deferred alteration."
+   :builder  watch-cc
+   :preamble ["Watch functions operate only outside Matrix state flow, but <i>can</i> enqueue <i>deferred</i> alterations."
               "Try increasing the speed above 55."]
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (when (> new-val 55)\n                                  (with-cc :speed-governor\n                                    (mset! me :mph 45)))))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :comment  ["In our experience of Matrix coding, we frequently spot opportunities where the app could usefully

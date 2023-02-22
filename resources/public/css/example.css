@@ -51,3 +51,9 @@ body {
     background: black;
     user-select: none;
 }
+
+.heavychar {
+  stroke: black;
+  fill: black;
+  font: bold 48px sans-serif;
+}

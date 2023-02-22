@@ -115,6 +115,26 @@
    The SPAN reads (<i>mgets</i>) the count to decide its full display.<br><br>
    Later, we see how \"in-place\" state obviates the need for a separate store."})
 
+;;; --- derived state ------------------------------
+
+(defn derived-state []
+  (div {:class :intro}
+    (h2 "The count is now...")
+    (span {:class :digi-readout}
+      {:mph 65
+       :too-fast? (cF (> (mget me :mph) 55))}
+      (str (mget me :mph) " mph"
+        (when (mget me :too-fast?) "<br>Slow down?")))))
+
+(def ex-derived-state
+  {:menu     "Derived State"
+   :title    "Derived local widget state"
+   :builder  derived-state
+   :preamble "Values for any property, HTML attribute or custom model state, can be expressed as formulas over other model properties."
+   :comment  ["The <code>:too-fast?</code> property is given the reactive formula <code>(cF (> (mget me :mph) 55))</code>"
+              "All Matrix reactivity is between properties."
+              "Next we will let the user change the speed and see the app keep up."]})
+
 ;;; --- handler mutation -----------------------------
 
 (defn handler-mutation []
@@ -136,10 +156,10 @@
    :title    "State change + Derived state"
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
-   :preamble "Event handlers can freely mutate 'input' properties using <code>mswap!</code> or
-   aliases <code>mset!/mreset!</code>.
-   <br><br>Derived values, wrapped in <code>(cF ...etc...)</code>, re-run as needed.
-   <br><br>Speed limit is fifty-five, by the way."
+   :preamble ["Event handlers can freely mutate 'input' properties using <code>mswap!</code> or
+   aliases <code>mset!/mreset!</code>."
+              "Derived values keep up."
+              "Speed limit is fifty-five, by the way."]
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})\n           :onclick (fn [evt]\n                      (let [me (evt-md evt)]\n                        (mswap! me :mph inc)))}\n      {:mph       (cI 42)\n       :display   (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :exercise "Add custom state <code>:throttled</code>, with a formula that computes <code>true</code> if <code>:mph</code> is
    fifty-five or more. Check <code>:throttled</code> in the <code>:onclick</code> handler before incrementing."

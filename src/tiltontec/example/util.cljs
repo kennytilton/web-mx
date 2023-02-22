@@ -6,8 +6,8 @@
              :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fasc fmu fm!] :as md]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
             [tiltontec.web-mx.gen-macro
-             :refer [title img section h1 h2 h3 input footer p a
-                     span i label ul li div button br pre code]]
+             :refer [title img section h1 h2 h3 input footer p a b h4 u
+                     blockquote span i label ul li div button br pre code]]
             [tiltontec.web-mx.style :refer [make-css-inline]]
             [tiltontec.web-mx.html :refer [tag-dom-create]]))
 
@@ -25,7 +25,28 @@
 ;;; --- sample input ---------------------
 ; [{:title "Manual Clock" :builder manual-clock :code manual-clock-code}
 ;                            {:title "Running Clock" :builder running-clock :code running-clock-code}]
-(defn multi-demo [start-demo-ix & demos]
+
+(defn multi-demo-toolbar []
+  (div {:class :toolbar
+        :style {:flex-direction :column
+                :align-items :start
+                ;:background :pink
+                :justify-content :start
+                }}
+    ;;(span "Pick one:")
+    (doall (for [{:keys [menu title] :as clk} (mget (fasc :demos me) :demos)]
+             (button {:class   :pushbutton
+                      :cursor  :finger
+                      :style   (cF (let [curr-clk (mget (fasc :demos me) :selected-demo)]
+                                     {:min-width "144px"
+                                      :border-color (if (= clk curr-clk)
+                                                      "orange" "white")
+                                      :font-weight  (if (= clk curr-clk)
+                                                      "bold" "normal")}))
+                      :onclick (cF (fn [] (mset! (fmu :demos) :selected-demo clk)))}
+               (or menu title))))))
+
+(defn multi-demo [demo-title start-demo-ix & demos]
   (div {} {:name          :demos
            :selected-demo (cFn (nth (mget me :demos)
                                  (cond
@@ -33,35 +54,55 @@
                                    (>= start-demo-ix (count demos)) (dec (count demos))
                                    :else start-demo-ix)))
            :demos         demos}
-    (h1 "Does Title Work?")
-    (div {:class :toolbar}
-      ;;(span "Pick one:")
-      (doall (for [{:keys [title] :as clk} (mget (mx-par me) :demos)]
-               (button {:class   :pushbutton
-                        :cursor  :finger
-                        :style   (cF (let [curr-clk (mget (fasc :demos me) :selected-demo)]
-                                       {:border-color (if (= clk curr-clk)
-                                                        "orange" "white")
-                                        :font-weight  (if (= clk curr-clk)
-                                                        "bold" "normal")}))
-                        :onclick (cF (fn [] (mset! (fmu :demos) :selected-demo clk)))}
-                 title))))
-    (when-let [clk (mget me :selected-demo)]
-      (div {:style {:display        :flex
-                    :flex-direction :column-reverse
-                    :gap            "1em"
-                    :padding "36px"
+
+    (div {:style {:display :flex
+                  :gap "2em"}}
+      (div {:style {:display :flex
+                    :flex-direction :column
+                    :align-items :center
+                    ;:background :gray
+                    :justify-content :start
+                    :border-right "4mm ridge orange" ;; "rgba(211, 220, 50, .6)"
                     }}
-        (when-let [c (:comment clk)]
-          (p {:class :preamble} c))
-        (pre {:style {:margin-left "96px"}}
-          (code (:code clk)))
-        (div {:style {:border-color "orange"
-                      :border-style "solid"
-                      :border-width "2px"}}
-          ((:builder clk)))
-        (p {:class :preamble}
-          (:preamble clk "No preamble."))))))
+        (span {:style {:font-size "24px"
+                       :margin-bottom "1em"
+                       ;:background "yellow"
+                       :padding-bottom "1em"
+                       :text-align :center}}
+          demo-title)
+
+        (multi-demo-toolbar))
+
+      (when-let [clk (mget (fasc :demos me) :selected-demo)]
+        (div {:style {:display        :flex
+                      :flex-direction :column-reverse
+                      :padding        "6px"}}
+          (when-let [ex (:exercise clk)]
+            (div {:class :preamble
+                         :style {:background :linen :padding "1em"}}
+              (span {:style {:font-size "24px"}}
+                (str "Try this:"))
+              (p (str "Modify " (:ns clk "the code") "."))
+              (p  ex)
+              ))
+          (when-let [c (:comment clk)]
+            (if (string? c)
+              (p {:class :preamble} c)
+              (doall (for [cx (reverse c)]
+                       (p {:class :preamble} cx)))))
+          (pre {:style {:margin-left "96px"}}
+            (code (:code clk)))
+          (div {:style {:border-color "orange"
+                        :border-style "solid"
+                        :border-width "2px"}}
+            ((:builder clk)))
+          (when-let [preamble (:preamble clk)]
+            (if (string? preamble)
+              (p {:class :preamble} preamble)
+              (doall (for [elt (reverse preamble)]
+                       (p {:class :preamble} elt)))))
+
+          (h1 (:title clk)))))))
 
 ;(exu/main #(md/make ::intro
 ;             :mx-dom (multi-demo {:title "Manual Clock" :builder manual-clock :code manual-clock-code}

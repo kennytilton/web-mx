@@ -132,7 +132,7 @@
     (start-stop-button)))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo 0
+             :mx-dom (exu/multi-demo "Clock Demos" 0
                        {:title "Manual Clock" :builder manual-clock :code manual-clock-code}
                        {:title "Running Clock" :builder running-clock :code running-clock-code})))
 

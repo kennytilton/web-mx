@@ -171,7 +171,7 @@
 
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo 99
+             :mx-dom (exu/multi-demo "Counter Demos" 99
                        {:title "Just HTML&trade;" :builder counter-fnyi :code counter-fnyi-code}
                        {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
                        {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code}

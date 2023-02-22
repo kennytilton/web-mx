@@ -81,7 +81,7 @@
           (when-let [preamble (:preamble clk)]
             (if (string? preamble)
               (p {:class :preamble} preamble)
-              (doall (for [elt (reverse preamble)]
+              (doall (for [elt preamble]
                        (p {:class :preamble} elt)))))
           (div {:style {:border-color "orange"
                         :border-style "solid"
@@ -90,7 +90,6 @@
 
           (pre {:style {:margin-left "96px"}}
             (code (:code clk)))
-
 
           (when-let [c (:comment clk)]
             (if (string? c)
@@ -103,8 +102,7 @@
               (if (string? ex)
                 (p  ex)
                 (doall (for [elt ex]
-                         (p  elt))))))
-          )))))
+                         (p  elt)))))))))))
 
 ;(exu/main #(md/make ::intro
 ;             :mx-dom (multi-demo {:title "Manual Clock" :builder manual-clock :code manual-clock-code}

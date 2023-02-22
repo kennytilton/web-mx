@@ -12,7 +12,7 @@
              :refer []]
 
             [tiltontec.model.core :refer [matrix mx-par mget mset! mswap!
-                                          fget mxi-find mxu-find-type
+                                          mxi-find mxu-find-type
                                           kid-values-kids] :as md]
             [tiltontec.web-mx.base :refer [tag-dom]]
             [tiltontec.web-mx.html

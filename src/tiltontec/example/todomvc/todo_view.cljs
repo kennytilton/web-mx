@@ -10,9 +10,7 @@
     [tiltontec.cell.core :refer-macros [cF cF+]]
     [tiltontec.cell.evaluate :refer [finalize]]
 
-    [tiltontec.model.core :refer [matrix mx-par mget mset! ;; mswap!
-                                  ;;fget mxi-find mxu-find-type
-                                  ] :as md]
+    [tiltontec.model.core :refer [matrix mx-par mget mset!] :as md]
 
     [tiltontec.mxxhr.core
      :refer [make-xhr xhr-response]]

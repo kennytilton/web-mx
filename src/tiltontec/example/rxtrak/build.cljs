@@ -15,7 +15,7 @@
             [tiltontec.model.core
              :refer-macros [with-par]
              :refer [matrix mx-par mget mset! mswap!
-                     fget mxi-find mxu-find-type
+                     mxi-find mxu-find-type
                      kid-values-kids] :as md]
             [tiltontec.web-mx.html
              :refer [io-read io-upsert io-clear-storage

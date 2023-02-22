@@ -12,7 +12,7 @@
     [tiltontec.cell.evaluate :refer [finalize finalize-self]]
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
-     :refer [fget mget fasc fm! make mset! backdoor-reset!]
+     :refer [fm-navig mget fasc fm! make mset! backdoor-reset!]
      :as md]
 
     [tiltontec.web-mx.base :refer [kw$ attr-val$ tag-dom *web-mx-trace*]]
@@ -359,7 +359,7 @@
   "Search up the matrix from node 'where' looking for element with class"
   [where class]
   ;; todo is this too expensive? will there be much usage of this?
-  (fget #(when-let [its-class (mget % :class)]
+  (fm-navig #(when-let [its-class (mget % :class)]
            (str/includes? (or (class-to-class-string its-class) "makebetter") (kw$ class)))
     where :me? false :up? true))
 
@@ -367,13 +367,13 @@
   "Search up the matrix from node 'where' looking for element of a certain tag"
   [where tag]
   (let [n (name tag)]
-    (fget #(= n (mget % :tag))
+    (fm-navig #(= n (mget % :tag))
       where :me? false :up? true)))
 
 (defn mxu-find-id
   "Search up the matrix from node 'where' looking for element with a certain :id"
   [where id]
-  (fget #(= (name id) (mget % :id))
+  (fm-navig #(= (name id) (mget % :id))
     where :me? false :up? true))
 
 ;;; --- localStorage io implementation --------------------------------

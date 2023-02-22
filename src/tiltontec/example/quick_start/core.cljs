@@ -5,7 +5,7 @@
     [tiltontec.example.quick-start.lesson :as lesson]))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 9
+             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 10
                        ;; todo overall: make each example slick
                        ;; todo overall: make each example well-motivate
                        lesson/ex-just-html
@@ -20,6 +20,7 @@
                        lesson/ex-watch-cc
                        lesson/ex-data-integrity
                        ;; todo async -- deceleration if foot not on gas: accel, maintain, coast, brake, panic
+                       lesson/ex-async-throttle
                        lesson/ex-ephemeral ;; too much?
                        ;; todo ex-svg
                        #_ {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}

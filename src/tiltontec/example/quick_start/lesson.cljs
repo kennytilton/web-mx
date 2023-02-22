@@ -261,13 +261,58 @@
    encounter opportunities for the app to usefully update state normally controlled by the user. The macro <code>with-cc</code> schedules the <code>mset!</code> mutation for execution
               immediately after the current propagation, when state consistency can be guaranteed."]})
 
+;;; --- async --------------------------------------------------------
+
+(defn throttle-button [[opcode factor :as setting]]
+  (button {:class   :push-button
+           :style   (cF (let [[current-opcode] (mget (fmu :throttle) :setting)]
+                          {:min-width  "96px"
+                           :background (if (= opcode current-opcode)
+                                         "cyan" "linen")
+                           :font-size  "18px"}))
+           :onclick (cF #(mset! (fmu :throttle) :setting setting))}
+    (name opcode)))
+
+(defn speedometer []
+  (span {:class :digi-readout
+         :style (cF {:min-width "5em"
+                     :color (if (> (mget me :mph) 55)
+                              "red" "cyan")})}
+    {:mph     (cI 42)
+     :time    (cF (js/setInterval
+                    (fn [] (let [mph-now (mget me :mph)]
+                             (mswap! me :mph *
+                               (second (mdv! :throttle :setting)))))
+                    1000))
+     :display (cF (pp/cl-format nil "~8,1f mph" (mget me :mph)))}
+    (mget me :display)))
+
+(defn async-throttle []
+  (let [settings [[:maintain 1] [:coast .95] [:brake-gently .8] [:panic-stop .60]
+                  [:speed-up 1.1] [:floor-it 1.3]]]
+    (div {:class :intro}
+      (h2 "The speed is now...")
+      (speedometer)
+      (div {:style {:display :flex
+                    :gap     "1em"}}
+        {:name    :throttle
+         :setting (cI (second settings))}
+        (mapv throttle-button settings)))))
+
+(def ex-async-throttle
+  {:menu     "Async mutation"
+   :title    "Handling async"
+   :builder  async-throttle
+   :preamble "Handling async is just ordinary <code>mset!/mswap!</code> property mutation."
+   :code     "(defn throttle-button [[opcode factor :as setting]]\n  (button {:class   :push-button\n           :style   (cF (let [[current-opcode] (mget (fmu :throttle) :setting)]\n                          {:min-width  \"96px\"\n                           :background (if (= opcode current-opcode)\n                                         \"cyan\" \"linen\")\n                           :font-size  \"18px\"}))\n           :onclick (cF #(mset! (fmu :throttle) :setting setting))}\n    (name opcode)))\n\n(defn speedometer []\n  (span {:class :digi-readout\n         :style (cF {:color (if (> (mget me :mph) 55)\n                              \"red\" \"cyan\")})}\n    {:mph     (cI 42)\n     :time    (cF (js/setInterval\n                    (fn [] (let [mph-now (mget me :mph)]\n                             (mswap! me :mph *\n                               (second (mdv! :throttle :setting)))))\n                    1000))\n     :display (cF (pp/cl-format nil \"~8,1f mph\" (mget me :mph)))}\n    (mget me :display)))\n\n(defn async-throttle []\n  (let [settings [[:maintain 1] [:coast .95] [:brake-gently .8] [:panic-stop .60]\n                  [:speed-up 1.1] [:floor-it 1.3]]]\n    (div {:class :intro}\n      (h2 \"The speed is now...\")\n      (speedometer)\n      (div {:style {:display :flex\n                    :gap     \"1em\"}}\n        {:name    :throttle\n         :setting (cI (second settings))}\n        (mapv throttle-button settings)))))"
+   :comment  ["We handle async events by directing them to input Cells."]})
+
 (def ex-data-integrity
-  {;; :menu     "Data Integrity"
-   :title    "Data Integrity"
+  {:title    "Data Integrity"
    :preamble "Matrix internals automatically identify the DAG implicit in the interfaces we build, dynamically reshapes
    the DAG as the user works, and guarantee a clear set of invariants in the face of DAG mutation. We reprise the prior
    example for the reader's contemplation."
-   :builder watch-cc
+   :builder  watch-cc
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (when (> new-val 55)\n                                  (with-cc :speed-governor\n                                    (mset! me :mph 45)))))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :comment  ["When application code assigns a value to some input cell X, the Matrix engine guarantees:
               <br><br>&nbsp;&bull; recomputation exactly once of all and only state affected by the change to X, directly or indirectly through some intermediate datapoint. Note that if A depends on B, and B depends on X, when B gets recalculated it may come up with the same value as before. In this case A is not considered to have been affected by the change to X and will not be recomputed;
@@ -291,7 +336,7 @@
      :outcome     (cF (when-let [bet (mget me :bet)]
                         (if (= bet (mget me :spin))
                           :win :loss)))}
-    (h2 (str "Faites jeux #" (inc (count (mget (mx-par me) :bet-history)))))
+    (h2 "Faites votre pari, s'il vous plaît")
     (div {:style {:display :flex :gap "1em"}}
       (mapv (fn [color]
               (opcode-button color

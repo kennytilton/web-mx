@@ -5,7 +5,7 @@
     [tiltontec.example.quick-start.lesson :as baby]))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 0
+             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 5
                        baby/ex-just-html
                        baby/ex-and-cljs
                        baby/ex-component-ish
@@ -15,6 +15,7 @@
                        baby/ex-watches
                        baby/ex-throttle
                        ;; todo the cells manifesto
+                       ;; todo async -- deceleration if foot not on gas
                        baby/ex-ephemeral
                        #_ {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
                        #_ {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code}

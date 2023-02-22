@@ -181,18 +181,18 @@
    :title    "State change + Derived state"
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
-   :preamble ["Event handlers can freely mutate 'input' properties using <code>mswap!</code> or
-   aliases <code>mset!/mreset!</code>. Derived values will keep up."
+   :preamble ["Event handlers can freely mutate 'input' properties. Derived values will keep up."
               "Speed limit is fifty-five, by the way."]
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})\n           :onclick (fn [evt]\n                      (let [me (evt-md evt)]\n                        (mswap! me :mph inc)))}\n      {:mph       (cI 42)\n       :display   (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :exercise "Add custom state <code>:throttled</code>, with a formula that computes <code>true</code> if <code>:mph</code> is
    fifty-five or more. Check <code>:throttled</code> in the <code>:onclick</code> handler before incrementing."
-   :comment  "Wrapping <code>:mph</code> in <code>(cI 42)</code> lets us mutate <code>:mph</code> from arbitrary code.
-   <br><br>In the formula <code>(cF (str (mget me :mph) \" mph\"))</code>, simply reading the <code>:mph</code> property
+   :comment  ["Wrapping <code>:mph</code> in <code>(cI 42)</code> lets us mutate <code>:mph</code> imperatively, here
+   in an event handler."
+              "In the formula <code>(cF (str (mget me :mph) \" mph\"))</code>, simply reading the <code>:mph</code> property
      transparently links <code>:display</code> and <code>:mph</code>.
-   No explicit \"subscribe\" is necessary.
-   <br><br>Just changing the <code>:mph</code> property, via <code>mswap!</code>, transparently updates all dependent properties.
-    No pre-defined store update transaction is necessary."})
+   No explicit \"subscribe\" is necessary."
+              "Just changing the <code>:mph</code> property, via <code>mswap!</code>, transparently updates all dependent properties.
+    No pre-defined store update transaction is necessary."]})
 
 ;;; --- watches ----------------------------------
 

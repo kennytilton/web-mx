@@ -57,3 +57,11 @@ body {
   fill: black;
   font: bold 48px sans-serif;
 }
+
+.cat-chat {
+  display: flex;
+  flex-direction: column;
+  min-width: 20em;
+  max-width: 20em;
+  min-height: 8em;
+}

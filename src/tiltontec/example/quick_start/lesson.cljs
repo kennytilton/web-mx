@@ -102,14 +102,14 @@
     (math-keypad "-" "=" "+")))
 
 (def ex-html-composition
-  {:menu     "Widget Composition"
-   :title    "Functional Composition, for HTML"
+  {:menu     "Composable<br>Widgets"
+   :title    "Functional GUI Composition"
    :builder  html-composition
    :preamble "Because it is all CLJS, we can move sub-structure into functions."
    :code     "(defn opcode-button [label onclick]\n  (button {:class   :push-button\n           :onclick onclick}\n    label))\n\n(defn math-keypad [& opcodes]\n  (div {:style {:display :flex\n                :gap     \"1em\"}}\n    (mapv (fn [opcode]\n            (opcode-button opcode\n              #(js/alert \"Feature Not Yet Implemented\")))\n      opcodes)))\n\n(defn html-composition []\n  (div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (math-keypad \"-\" \"=\" \"+\")))"
-   :comment  ["HTML composition becomes function composition. As the app scales, with custom named functions increasingly blended with direct HTML-generators,
-   the application stands out, while DOM concerns recede."
-   "From here on, the application is the D/X focus, with HTML as afterthought."]})
+   :comment  ["HTML composition becomes function composition. Always nice."
+              "Even better, as the app scales, with custom named functions increasingly blended with direct HTML-generators,
+   the application stands out lexically, while DOM concerns recede."]})
 
 ;;; --- custom-state ---------------------------------
 
@@ -121,16 +121,15 @@
       (str (mget me :mph) " mph"))))
 
 (def ex-custom-state
-  {:menu     "In-place State"
+  {:menu     "In-place<br>State"
    :title    "\"In-place\", local widget state"
    :builder  custom-state
-   :preamble "Components define their own, \"in-place\" local state."
+   :preamble "Widgets define their own local state as needed to fulfill their functionality."
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      {:mph 42}\n      (str (mget me :mph) \" mph\")))"
-   :comment  ["Tag macros such as <code>DIV</code> take an optional second parameter map of custom widget state.
-   Here, <code>{:mph 42}</code> extends a generic <code>span</code> with state, which
-       we will put to use shortly."
+   :comment  ["Tag macros such as <code>DIV</code> take an optional second map of custom widget state.
+   Here, <code>{:mph 42}</code> extends a generic <code>span</code>, with state, we will put to use shortly."
               "Matrix follows the <a href=https://en.wikipedia.org/wiki/Prototype-based_programming target=\"_blank\">prototype model</a>,\n
-                     so generics like DIV can be re-used without subclassing."]})
+                     so generic tags can be re-used without subclassing."]})
 
 ;;; --- derived state ------------------------------
 
@@ -146,15 +145,17 @@
       (mget me :speedo-text))))
 
 (def ex-derived-state
-  {:menu     "Derived Properties"
-   :title    "Derived state forms a DAG"
+  {:menu     "Functional<br>State DAG"
+   :title    "Functional state forms a DAG"
    :builder  derived-state
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      {:mph       65\n       :too-fast? (cF (> (mget me :mph) 55))\n       :speedo-text (cF (str (mget me :mph) \" mph\"\n                          (when (mget me :too-fast?) \"<br>Slow down?\")))}\n      (mget me :speedo-text)))"
-   :preamble "A property can be expressed as a function of other model properties."
-   :comment  ["Colloquially, we call these functions \"formulas\", after the familiar spreadsheet usage.
-    The <code>:too-fast?</code> property is fed by the reactive formula <code>(cF (> (mget me :mph) 55))</code>.
-    When <code>:mph</code> changes, <code>:too-fast?</code> will be recomputed."
-              "A one-way DAG emerges naturally from the set of inter-dependent properties."]})
+   :preamble "A property can be expressed as a function, or \"formula\" of other widget properties."
+   :comment  ["The <code>too-fast?</code> property is fed by the reactive formula <code>(cF (> (mget me :mph) 55))</code>.
+    When <code>mph</code> changes, <code>too-fast?</code> will be recomputed, then <code>speedo-text</code>."
+              "Matrix transparently records a formula's property access, and uses the emergent DAG to
+              propagate state change."
+              "Note that different instances can have different formulas for the same property,
+              extending the \"prototype\" reusability win."]})
 
 ;;; --- Navigation ------------------------------
 
@@ -178,15 +179,16 @@
         (when (mget me :too-fast?) "<br>Slow down")))))
 
 (def ex-navigation
-  {:menu     "Global State"
-   :title    "Global state access"
+  {:menu     "Random State<br>Access"
+   :title    "Random state access"
    :builder  navigation
    :preamble "A widget property can retrieve state as needed from any other component."
    :code     "(div {:class :intro}\n    {:name :speed-zone\n     :speed-limit 55}\n    (h2 {}\n      {:text (cF (let [limit (mget (fm-navig :speed-zone me) :speed-limit)\n                       speed (mget (fm-navig :speedo me) :mph)]\n                   (str \"The speed is now \"\n                     (- speed limit) \" mph over the speed limit.\")))}\n      (mget me :text))\n    (span {:class :digi-readout}\n      {:name :speedo\n       :mph 60\n       :too-fast? (cF (> (mget me :mph)\n                        (mget (fmu :speed-zone) :speed-limit)))}\n      (str (mget me :mph) \" mph\"\n        (when (mget me :too-fast?) \"<br>Slow down\"))))"
-   :comment  ["The headline needs the speed limit and current speed. The speedometer readout also needs
-     the speed limit. We retrieve them from where they naturally reside, using app navigation utilities
-     such as <code>fm-navig, fmu, and fasc</code> to reach specific other nodes in the Matrix."
-              ]})
+   :comment  ["The headline needs the speed limit and current speed for its text. The speedometer readout needs
+     the speed limit, to decide its text color. We retrieve values from named other widgets."
+              "Navigation by widget name decouples such look-ups from the specific layout, so they generally survive
+              layout refactoring. Other navigations are supported, and users can write their own."
+              "The D/X is unlimited state access, given deliberate \"in-place\" state organization. "]})
 
 ;;; --- handler mutation -----------------------------
 
@@ -205,8 +207,8 @@
     (p "Click the readout to speed up. Speed limit is 55.")))
 
 (def ex-handler-mutation
-  {:menu     "Global State Change"
-   :title    "Changing DAG state"
+  {:menu     "Global State<br>Change"
+   :title    "Global state change"
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
    :preamble ["A widget event handler can mutate any property of any widget, if that
@@ -214,10 +216,9 @@
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})\n           :onclick (fn [evt]\n                      (let [me (evt-md evt)]\n                        (mswap! me :mph inc)))}\n      {:mph       (cI 42)\n       :display   (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :exercise "Add custom state <code>:throttled</code>, with a formula that computes <code>true</code> if <code>:mph</code> is
    fifty-five or more. Check <code>:throttled</code> in the <code>:onclick</code> handler before allowing increment."
-   :comment  ["<code>cI</code> stands for \"cell Input\". <code>cF</code> stands for \"cell Formula\". Wrapping <code>:mph</code> in <code>(cI 42)</code> lets us mutate <code>:mph</code> imperatively, here
-   in an event handler. "
-              "In the formula <code>(cF (str (mget me :mph) \" mph\"))</code>, simply reading the <code>:mph</code> property
-     transparently links <code>:display</code> and <code>:mph</code>.
+   :comment  ["<code>cI</code> stands for \"cell Input\". Wrapping <code>mph</code> value in <code>(cI 42)</code> lets us mutate <code>mph</code> imperatively, here
+   from an event handler. In the formula <code>(cF (str (mget me :mph) \" mph\"))</code>, simply reading the <code>mph</code> property
+     transparently links <code>display</code> and <code>mph</code>.
    No explicit \"subscribe\" is necessary."
               "Just changing the <code>:mph</code> property, via <code>mswap!</code>, transparently updates all dependent properties.
     No pre-defined store update transaction is necessary."]})
@@ -236,7 +237,7 @@
     (p "Click display to increment.")))
 
 (def ex-watches
-  {:menu     "Watch Functions"
+  {:menu     "Watch<br>Functions"
    :title    "\"On-change\" watch functions"
    :builder  watches
    :preamble "Any input or computed cell can be assigned a 'watch' function."

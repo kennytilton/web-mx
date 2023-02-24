@@ -19,7 +19,11 @@ div, h1, input {
     justify-content: start;
     gap: 1em;
 }
-
+.lesson-code {
+    background: whitesmoke;
+    padding: 12px;
+    margin: 12px 48px 0px 48px;
+}
 
 /* the + button */
 .push-button {
@@ -30,6 +34,7 @@ div, h1, input {
   cursor: pointer;
   font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 64px;
+  min-width: 1em;
   text-align: center;
 }
 

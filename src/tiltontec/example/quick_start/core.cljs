@@ -5,12 +5,12 @@
     [tiltontec.example.quick-start.lesson :as lesson]))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 5
+             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 2
                        ;; todo overall: make each example slick
                        ;; todo overall: make each example well-motivate
                        lesson/ex-just-html
                        lesson/ex-and-cljs
-                       lesson/ex-component-ish
+                       lesson/ex-html-composition
                        lesson/ex-custom-state
                        ;; todo sneak in fixed vs cI vs cF
                        lesson/ex-derived-state
@@ -21,7 +21,7 @@
                        lesson/ex-data-integrity
                        lesson/ex-async-throttle
                        lesson/ex-ajax-cat
-                       lesson/ex-ephemeral ;; too much?
+                       ;;lesson/ex-ephemeral ;; too much?
                        ;; todo ex-svg
                        #_ {:title "Counter Omniscient" :builder counter-omniscience :code counter-omniscience-code}
                        #_ {:title "Counter Omnipotent" :builder counter-omnipotent :code counter-omnipotent-code}

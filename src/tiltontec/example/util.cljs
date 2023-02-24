@@ -88,7 +88,7 @@
                         :border-width "2px"}}
             ((:builder clk)))
 
-          (pre {:style {:margin-left "96px"}}
+          (pre {:class :lesson-code}
             (code (:code clk)))
 
           (when-let [c (:comment clk)]

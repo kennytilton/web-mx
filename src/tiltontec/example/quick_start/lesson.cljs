@@ -194,19 +194,27 @@
 
 ;;; --- handler mutation -----------------------------
 
+(defn speed-plus [onclick]
+  (svg {:width   64 :height 64 :cursor :pointer
+        :onclick onclick}
+    (circle {:cx     "50%" :cy "50%" :r "40%"
+             :stroke "orange" :stroke-width 5
+             :fill   :transparent})
+    (text {:class       :heavychar :x "50%" :y "70%"
+           :text-anchor :middle} "+")))
+
 (defn handler-mutation []
   (div {:class :intro}
-    (h2 "The speed is now...")
+    (h2 "The speed limit is 55mph. Your speed is now...")
     (span {:class   :digi-readout
            :style   (cF {:color (if (> (mget me :mph) 55)
-                                  "red" "cyan")})
-           :onclick (fn [evt]
-                      (let [me (evt-md evt)]
-                        (mswap! me :mph inc)))}
-      {:mph     (cI 42)
+                                  "red" "cyan")})}
+      {:name :speedometer
+       :mph     (cI 42)
        :display (cF (str (mget me :mph) " mph"))}
       (mget me :display))
-    (p "Click the readout to speed up. Speed limit is 55.")))
+    (speed-plus (fn [evt]
+                (mswap! (fmu :speedometer (evt-md evt)) :mph inc)))))
 
 (def ex-handler-mutation
   {:menu     "Random DAG<br>Mutation"
@@ -214,11 +222,14 @@
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
    :preamble ["A widget event handler can mutate any property of any widget. "]
-   :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})\n           :onclick (fn [evt]\n                      (let [me (evt-md evt)]\n                        (mswap! me :mph inc)))}\n      {:mph       (cI 42)\n       :display   (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
+   :code     "(div {:class :intro}\n    (h2 \"The speed limit is 55mph. Your speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})}\n      {:name :speedometer\n       :mph     (cI 42)\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (svg-plus (fn [evt]\n                (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))"
    :exercise "Add custom state <code>throttled</code>, with a formula that computes <code>true</code> if <code>mph</code> is
    fifty-five or more. Check <code>throttled</code> in the <code>onclick</code> handler before allowing increment."
    :comment  ["Wrapping <code>mph</code> value in <code>(cI 42)</code>, <code>cI</code> for \"cell Input\",
-    lets us mutate <code>mph</code> imperatively, here by an event handler."]})
+    lets us mutate <code>mph</code> imperatively, here from an event handler that uses navigation
+    utility <code>fmu</code> (search \"family up\") to find the speedometer widget."
+              "The D/X win is, again, unfettered expressiveness and, again, not having to work through
+              an intermediary separate store."]})
 
 ;;; --- watches ----------------------------------
 

@@ -59,6 +59,9 @@ code {
   stroke: black;
   fill: black;
   font: bold 48px sans-serif;
+  user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
 .cat-chat {

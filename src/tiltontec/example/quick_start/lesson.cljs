@@ -152,10 +152,12 @@
    :preamble "A property can be expressed as a function, or \"formula\" of other widget properties."
    :comment  ["The <code>too-fast?</code> property is fed by the reactive formula <code>(cF (> (mget me :mph) 55))</code>.
     When <code>mph</code> changes, <code>too-fast?</code> will be recomputed, then <code>speedo-text</code>."
-              "Matrix transparently records a formula's property access, and uses the emergent DAG to
-              propagate state change."
-              "Note that different instances can have different formulas for the same property,
-              extending the \"prototype\" reusability win."]})
+              "Matrix transparently records a formula's property access, using the emergent DAG to
+              keep state consistent when we get to change examples."
+              "Some D/X observations: <li>transparent dependency detection means no \"subscribe\" to code;</li>
+              <li>property-to-property dependency means no Flux-pattern separate store; and</li>
+              <li>different instances can have different formulas for the same property,
+              extending the \"prototype\" reusability win.</li>"]})
 
 ;;; --- Navigation ------------------------------
 
@@ -179,7 +181,7 @@
         (when (mget me :too-fast?) "<br>Slow down")))))
 
 (def ex-navigation
-  {:menu     "Random State<br>Access"
+  {:menu     "Random DAG<br>Access"
    :title    "Random state access"
    :builder  navigation
    :preamble "A widget property can retrieve state as needed from any other component."
@@ -188,7 +190,7 @@
      the speed limit, to decide its text color. We retrieve values from named other widgets."
               "Navigation by widget name decouples such look-ups from the specific layout, so they generally survive
               layout refactoring. Other navigations are supported, and users can write their own."
-              "The D/X is unlimited state access, given deliberate \"in-place\" state organization. "]})
+              "The D/X: unlimited state access, given deliberate \"in-place\" state organization."]})
 
 ;;; --- handler mutation -----------------------------
 
@@ -207,21 +209,16 @@
     (p "Click the readout to speed up. Speed limit is 55.")))
 
 (def ex-handler-mutation
-  {:menu     "Global State<br>Change"
-   :title    "Global state change"
+  {:menu     "Random DAG<br>Mutation"
+   :title    "Random state DAG change"
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
-   :preamble ["A widget event handler can mutate any property of any widget, if that
-   property has been designated as an \"input\"."]
+   :preamble ["A widget event handler can mutate any property of any widget. "]
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})\n           :onclick (fn [evt]\n                      (let [me (evt-md evt)]\n                        (mswap! me :mph inc)))}\n      {:mph       (cI 42)\n       :display   (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
-   :exercise "Add custom state <code>:throttled</code>, with a formula that computes <code>true</code> if <code>:mph</code> is
-   fifty-five or more. Check <code>:throttled</code> in the <code>:onclick</code> handler before allowing increment."
-   :comment  ["<code>cI</code> stands for \"cell Input\". Wrapping <code>mph</code> value in <code>(cI 42)</code> lets us mutate <code>mph</code> imperatively, here
-   from an event handler. In the formula <code>(cF (str (mget me :mph) \" mph\"))</code>, simply reading the <code>mph</code> property
-     transparently links <code>display</code> and <code>mph</code>.
-   No explicit \"subscribe\" is necessary."
-              "Just changing the <code>:mph</code> property, via <code>mswap!</code>, transparently updates all dependent properties.
-    No pre-defined store update transaction is necessary."]})
+   :exercise "Add custom state <code>throttled</code>, with a formula that computes <code>true</code> if <code>mph</code> is
+   fifty-five or more. Check <code>throttled</code> in the <code>onclick</code> handler before allowing increment."
+   :comment  ["Wrapping <code>mph</code> value in <code>(cI 42)</code>, <code>cI</code> for \"cell Input\",
+    lets us mutate <code>mph</code> imperatively, here by an event handler."]})
 
 ;;; --- watches ----------------------------------
 

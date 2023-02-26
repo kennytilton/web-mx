@@ -214,7 +214,7 @@
                   (mswap! (fmu :speedometer (evt-md evt)) :mph inc)))))
 
 (def ex-handler-mutation
-  {:menu     "Random DAG<br>Mutation"
+  {:menu     "Random State<br>Mutation"
    :title    "Random state DAG change"
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
@@ -243,14 +243,14 @@
                   (mswap! (fmu :speedometer (evt-md evt)) :mph inc)))))
 
 (def ex-watches
-  {:menu     "Watch<br>Functions"
+  {:menu     "State Watch<br>Functions"
    :title    "\"On-change\" watch functions"
    :builder  watches
    :preamble "Any input or computed cell can specify an on-change 'watch' function to execute side-effects outside Matrix dataflow."
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (speed-plus (fn [evt]\n                  (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))"
    :comment  ["A watch function fires when a cell value is initialized, and if the value changes. Watches are used to
    dispatch actions outside the Matrix, if only for logging/debugging, as here. (See the browser console.)"
-              "The watch function in this example simply logs the new value. Other watches write to
+              "The watch function in this example simply logs the new value. Other watches could write to
               localStorage or dispatch XHR requests. Web/MX does all its dynamic DOM maintenance in watch functions."]})
 
 ;;; --- throttling watch -------------------
@@ -272,11 +272,11 @@
                   (mswap! (fmu :speedometer (evt-md evt)) :mph inc)))))
 
 (def ex-watch-cc
-  {:menu     "Watch Function<br>DAG Mutation"
-   :title    "Exception: watches mutating the DAG"
+  {:menu     "Watch State<br>Mutation"
+   :title    "Exception: how watches can mutate state"
    :builder  watch-cc
-   :preamble "Watch functions must operate outside Matrix state flow, but they <i>can</i> enqueue alterations
-    of Matrix state for execution after the current alteration completes."
+   :preamble "Watch functions must operate outside Matrix state flow, but <i>can</i> enqueue alterations
+    of Matrix state for execution."
    :code     "(div {:class :intro}\n    (h2 \"The speed limit is 55 mph. Your speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:name :speedometer\n       :mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (when (> new-val 55)\n                                  (js/alert \"Your speed as triggered the governor; resetting to 45 mph.\")\n                                  (with-cc :speed-governor\n                                    (mset! me :mph 45)))))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (speed-plus (fn [evt]\n                  (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))"
    :comment  ["Try increasing the speed above 55. A watch function will intervene."
               "In our experience coding with Matrix, we frequently
@@ -335,17 +335,17 @@
 
 (def ex-data-integrity
   {:title    "Data Integrity"
-   :preamble ["Matrix silently maintains an explicit DAG at run time, by noting when a property formula reads
+   :preamble ["Matrix silently maintains an internal DAG at run time by noting when one property formula reads
     another property. When a property is modified, Matrix uses the derived DAG to ensure
-    that the \"data integrity\" invariants below are maintained."]
+     the \"data integrity\" invariants listed below."]
    :builder  watch-cc
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (when (> new-val 55)\n                                  (with-cc :speed-governor\n                                    (mset! me :mph 45)))))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (p \"Click display to increment.\"))"
    :comment  ["<h3>The Data Integrity Contract</h3> When application code assigns a value to some input cell X, the Matrix engine guarantees:
               <br><br>&nbsp;&bull; recomputation exactly once of all and only state affected by the change to X, directly or indirectly through some intermediate datapoint. Note that if A depends on B, and B depends on X, when B gets recalculated it may come up with the same value as before. In this case A is not considered to have been affected by the change to X and will not be recomputed;
-              <br><br>&nbsp;&bull; recomputations, when they read other datapoints, must see only values current with the new value of X. Example: if A depends on B and X, and B depends on X, when X changes and A reads B and X to compute a new value, B must return a value recomputed from the new value of X;
-              <br><br>&nbsp;&bull; similarly, client observer callbacks must see only values current with the new value of X;
-              <br><br>&nbsp;&bull; a corollary: should a client observer MSET! a datapoint Y, all the above must happen with values current with not just X, but also with the value of Y prior to the change to Y; and
-              <br><br>&nbsp;&bull; deferred “client” code must see only values current with X and not any values current with some subsequent change to Y enqueued by an observer."]})
+              <br><br>&nbsp;&bull; recomputations, when they read other datapoints, will see only values current with the new value of X. Example: if A depends on B and X, and B depends on X, when X changes and A reads B and X to compute a new value, B must return a value recomputed from the new value of X;
+              <br><br>&nbsp;&bull; similarly, client observer callbacks will see only values current with the new value of X;
+              <br><br>&nbsp;&bull; a corollary: should a client observer MSET! a datapoint Y, all the above will happen with values current with not just X, but also with the value of Y prior to the change to Y; and
+              <br><br>&nbsp;&bull; deferred “client” code will see only values current with X and not any values current with some subsequent change to Y enqueued by an observer."]})
 
 ;;; --- ajax cats ---------------------------------------------------
 
@@ -380,7 +380,10 @@
    :builder  ajax-cat
    :preamble "Async events become mutations of \"input\" properties created to handle said events."
    :code     "(div {:class \"intro\"}\n    (span {:class :push-button}\n      \"Cat Chat\")\n    (speed-plus #(mset! (fmu :cat-fact (evt-md %)) :get-new-fact? true))\n    (div {:class :cat-chat}\n      {:name :cat-fact\n       :get-new-fact? (cI false :ephemeral? true)\n       :cat-request   (cF+ [:watch (fn [_ me response-chan _ _]\n                                     (when response-chan\n                                       (go (let [response (&lt;! response-chan)]\n                                             (with-cc :set-cat\n                                               (mset! me :cat-response response))))))]\n                        (when (mget me :get-new-fact?)\n                          (client/get cat-fact-uri {:with-credentials? false})))\n       :cat-response  (cI nil)}\n      (if-let [response (mget me :cat-response)]\n        (if (:success response)\n          (span (get-in response [:body :fact]))\n          (str \"Error>  \" (:error-code response)\n            \": \" (:error-text response)))\n        \"Click (+) to see a chat fact.\")))"
-   :comment  ["We handle async events by directing them to input Cells."]})
+   :comment  ["The <code>cat-request</code> property creates and dispatches an XHR via <code>client/get</code>, producing a core.async channel
+   to receive the response. Its watch function awaits the async response and feeds it into a conventional input property."
+              "We handle async events by directing them to input Cells purpose-created to receive their output, where
+              Matrix handles them like any other input."]})
 
 ;;; --- ephemeral roulette ------------------------------------------
 

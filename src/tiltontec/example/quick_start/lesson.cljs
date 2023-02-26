@@ -13,13 +13,12 @@
     [tiltontec.web-mx.gen-macro
      :refer [img section h1 h2 h3 input footer p a
              span i label ul li div button br
-
+             jso-map
              svg g circle p span div text radialGradient defs stop
              rect ellipse line polyline path polygon script use]]))
 
 
 ;;; --- 1. It's just html -------------------------------------
-;;; We still program HTML. Please find detailed notes following the code.
 
 (defn just-html []
   (div {:class :intro}
@@ -33,25 +32,16 @@
       (text {:class       :heavychar :x "50%" :y "70%"
              :text-anchor :middle} "+"))))
 
-;;; Where HTML has <tag attributes*> children* </tag>...
-;;; Web/MX has (tag [HTML-attribute-map [custom-attr-map]] children*)
-;;; Keywords become strings in HTML.
-;;; Otherwise, MDN is your guide.
-
 (def ex-just-html
   {:menu     "Just HTML"
    :title    "It's Just HTML"
    :ns       "tiltontec.example.quick-start.lesson/just-html"
    :builder  just-html
    :preamble "To begin with, we just write HTML, SVG, and CSS, each thinly disguised as CLJS."
-   :comment  ["Nothing exciting or novel in this, but we call it out because it does guide the design of any
-   GUI architecture we wrap in Matrix."
-              "When we are not writing business logic, we want <a href=https://developer.mozilla.org/en-US/docs/Web/HTML>Mozilla HTML</a>
-   to be our reference. We want the things that browsers support to work, whether we planned for them or not.
-   We want third-party things to Just Work&trade; because we did not step on their toes. When things break, we want to worry
-   only about our application logic and mastery of HTML."
-              "Web/MX introduces no framework of its own. Aside from CLJS->JS, no preprocessor is involved.
-              Matrix just manages state. Web/MX just maintains the DOM, with fine-grained DOM manipulation."]
+   :comment  ["Web/MX introduces no framework of its own, it just manages the DOM.
+    Aside from CLJS->JS, no preprocessor is involved, and the stability of CLJS makes this one exception
+    a net win."
+              "Matrix just manages the state."]
    :code     "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (svg {:width 64 :height 64 :cursor :pointer\n          :onclick #(js/alert \"Increment Feature Not Yet Implemented\")}\n      (circle {:cx \"50%\" :cy \"50%\" :r \"40%\"\n               :stroke  \"orange\" :stroke-width 5\n               :fill :transparent})\n      (text {:class :heavychar :x \"50%\" :y \"70%\"\n             :text-anchor :middle} \"+\")))"
    :exercise ["Feel free to experiment with other HTML or SVG tags."
               "Where HTML has <code>&lt;tag attributes*> children*&lt;/tag></code><br>...Web/MX has: <code>(tag {attributes*} children*)</code>."
@@ -59,6 +49,7 @@
 
 
 ;;; --- and-cljs --------------------------------------------------------
+
 (defn and-cljs []
   (div {:class :intro}
     (h2 "The count is now...")
@@ -82,7 +73,6 @@
 ;;; --- components realized --------------------------------
 
 (defn opcode-button [label onclick]
-  ;; this could be an elaborate component
   (button {:class   :push-button
            :onclick onclick}
     label))
@@ -107,9 +97,7 @@
    :builder  html-composition
    :preamble "Because it is all CLJS, we can move sub-structure into functions."
    :code     "(defn opcode-button [label onclick]\n  (button {:class   :push-button\n           :onclick onclick}\n    label))\n\n(defn math-keypad [& opcodes]\n  (div {:style {:display :flex\n                :gap     \"1em\"}}\n    (mapv (fn [opcode]\n            (opcode-button opcode\n              #(js/alert \"Feature Not Yet Implemented\")))\n      opcodes)))\n\n(defn html-composition []\n  (div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (math-keypad \"-\" \"=\" \"+\")))"
-   :comment  ["HTML composition becomes function composition. Always nice."
-              "Even better, as the app scales, with custom named functions increasingly blended with direct HTML-generators,
-   the application stands out lexically, while DOM concerns recede."]})
+   :comment  ["HTML composition becomes function composition. Always nice."]})
 
 ;;; --- custom-state ---------------------------------
 
@@ -117,17 +105,19 @@
   (div {:class :intro}
     (h2 "The speed is now...")
     (span {:class :digi-readout}
-      {:mph 42}
+      {:name :speedometer
+       :mph  42}
       (str (mget me :mph) " mph"))))
 
 (def ex-custom-state
   {:menu     "In-place<br>State"
-   :title    "\"In-place\", local widget state"
+   :title    "\"In-place\" widget state, property by property"
    :builder  custom-state
-   :preamble "Widgets define their own local state as needed to fulfill their functionality."
-   :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      {:mph 42}\n      (str (mget me :mph) \" mph\")))"
-   :comment  ["Tag macros such as <code>DIV</code> take an optional second map of custom widget state.
-   Here, <code>{:mph 42}</code> extends a generic <code>span</code>, with state, we will put to use shortly."
+   :preamble "Widgets define local state as needed."
+   :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      {:name :speedometer\n       :mph 42}\n      (str (mget me :mph) \" mph\")))"
+   :comment  ["Tag macros take an optional second map of custom widget state.
+   Here, a generic <code>span</code> embodying a speedometer thinks it might usefully have a <code>{:mph 42}</code> property.
+   We will put that to use next."
               "Matrix follows the <a href=https://en.wikipedia.org/wiki/Prototype-based_programming target=\"_blank\">prototype model</a>,\n
                      so generic tags can be re-used without subclassing."]})
 
@@ -141,22 +131,20 @@
       {:mph         65
        :too-fast?   (cF (> (mget me :mph) 55))
        :speedo-text (cF (str (mget me :mph) " mph"
-                          (when (mget me :too-fast?) "<br>Slow down?")))}
+                          (when (mget me :too-fast?) "<br>Slow down")))}
       (mget me :speedo-text))))
 
 (def ex-derived-state
-  {:menu     "Functional<br>State DAG"
-   :title    "Functional state forms a DAG"
+  {:menu     "Functional<br>Properties"
+   :title    "Functional, computed, reactive properties"
    :builder  derived-state
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      {:mph       65\n       :too-fast? (cF (> (mget me :mph) 55))\n       :speedo-text (cF (str (mget me :mph) \" mph\"\n                          (when (mget me :too-fast?) \"<br>Slow down?\")))}\n      (mget me :speedo-text)))"
-   :preamble "A property can be expressed as a function, or \"formula\", of other widget properties."
+   :preamble "A property can be expressed as a function, or \"formula\", of other properties."
    :comment  ["The <code>too-fast?</code> property is fed by the reactive formula <code>(cF (> (mget me :mph) 55))</code>.
     When <code>mph</code> changes, <code>too-fast?</code> will be recomputed, then <code>speedo-text</code>."
-              "Matrix transparently records a formula's property access, using the emergent DAG to
-              keep state consistent when we get to change examples."
-              "Some D/X observations: <li>transparent dependency detection means no \"subscribe\" to code;</li>
-              <li>property-to-property dependency means no Flux-pattern separate store; and</li>
-              <li>different instances can have different formulas for the same property,
+              "Interdependent properties form the same coherent, one-way graph (DAG) as found in Flux derivatives,
+              but without us doing anything; Matrix internals identify the DAG for us."
+              "D/X note: different instances can have different formulas for the same property,
               extending the \"prototype\" reusability win.</li>"]})
 
 ;;; --- Navigation ------------------------------
@@ -181,16 +169,15 @@
         (when (mget me :too-fast?) "<br>Slow down")))))
 
 (def ex-navigation
-  {:menu     "Random DAG<br>Access"
+  {:menu     "Random State<br>Access"
    :title    "Random state access"
    :builder  navigation
    :preamble "A widget property can retrieve state as needed from any other component."
    :code     "(div {:class :intro}\n    {:name :speed-zone\n     :speed-limit 55}\n    (h2 {}\n      {:text (cF (let [limit (mget (fm-navig :speed-zone me) :speed-limit)\n                       speed (mget (fm-navig :speedo me) :mph)]\n                   (str \"The speed is now \"\n                     (- speed limit) \" mph over the speed limit.\")))}\n      (mget me :text))\n    (span {:class :digi-readout}\n      {:name :speedo\n       :mph 60\n       :too-fast? (cF (> (mget me :mph)\n                        (mget (fmu :speed-zone) :speed-limit)))}\n      (str (mget me :mph) \" mph\"\n        (when (mget me :too-fast?) \"<br>Slow down\"))))"
    :comment  ["The headline needs the speed limit and current speed for its text. The speedometer readout needs
-     the speed limit, to decide its text color. We retrieve values from named other widgets."
-              "Navigation by widget name decouples such look-ups from the specific layout, so they generally survive
-              layout refactoring. Other navigations are supported, and users can write their own."
-              "The D/X: unlimited state access, given deliberate \"in-place\" state organization."]})
+     the speed limit, to decide its text color."
+              "We retrieve values from named other widgets, using navigation
+     utilities such as <code>fm-navig</code> and <code>fmu</code> to avoid hard-coding paths."]})
 
 ;;; --- handler mutation -----------------------------
 
@@ -206,30 +193,39 @@
 (defn handler-mutation []
   (div {:class :intro}
     (h2 "The speed limit is 55 mph. Your speed is now...")
-    (span {:class   :digi-readout
-           :style   (cF {:color (if (> (mget me :mph) 55)
-                                  "red" "cyan")})}
-      {:name :speedometer
+    (span {:class :digi-readout
+           :style (cF {:color (if (> (mget me :mph) 55)
+                                "red" "cyan")})}
+      {:name    :speedometer
        :mph     (cI 42)
        :display (cF (str (mget me :mph) " mph"))}
       (mget me :display))
     (speed-plus (fn [evt]
-                (mswap! (fmu :speedometer (evt-md evt)) :mph inc)))))
+                  ;(prn :app!!!!! (.getElementById js/document "app2"))
+                  ;(prn :gapp!! (goog.dom/getElement "app"))
+                  ;(prn :gappar!! (.-parentNode (goog.dom/getElement "app2")))
+                  ;(let [app (.getElementById js/document "app2")
+                  ;      app2par (goog.dom/getParentElement app)]
+                  ; ;; (prn :keeeys (goog.object/getKeys app))
+                  ;  (prn :ariaa!!! (.-ariaHidden app))
+                  ;  (prn :ariaa!!! (.-ariaHidden app))
+                  ;  (prn :ariaapar!!! (goog.object/get app2par "ariaHidden"))
+                  ;  #_ (prn :apppp!!!! (jso-map app)))
+                  (mswap! (fmu :speedometer (evt-md evt)) :mph inc)))))
 
 (def ex-handler-mutation
   {:menu     "Random DAG<br>Mutation"
    :title    "Random state DAG change"
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
-   :preamble ["A widget event handler can mutate any property of any widget. "]
+   :preamble ["A widget event handler can mutate any property of any widget. (This button works.)"]
    :code     "(div {:class :intro}\n    (h2 \"The speed limit is 55mph. Your speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})}\n      {:name :speedometer\n       :mph     (cI 42)\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (svg-plus (fn [evt]\n                (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))"
    :exercise "Add custom state <code>throttled</code>, with a formula that computes <code>true</code> if <code>mph</code> is
    fifty-five or more. Check <code>throttled</code> in the <code>onclick</code> handler before allowing increment."
    :comment  ["Wrapping <code>mph</code> value in <code>(cI 42)</code>, <code>cI</code> for \"cell Input\",
-    lets us mutate <code>mph</code> imperatively, here from an event handler that uses navigation
-    utility <code>fmu</code> (search \"family up\") to find the speedometer widget."
-              "The D/X win is, again, unfettered expressiveness and, again, not having to work through
-              an intermediary separate store."]})
+    lets us mutate <code>mph</code> imperatively."
+              "Here, an event handler navigates via
+    utility <code>fmu</code> (search \"family up\") to the speedometer widget and mutates it."]})
 
 ;;; --- watches ----------------------------------
 
@@ -238,7 +234,7 @@
     (h2 "The speed is now...")
     (span {:class   :digi-readout
            :onclick #(mswap! (evt-md %) :mph inc)}
-      {:name :speedometer
+      {:name    :speedometer
        :mph     (cI 42 :watch (fn [slot me new-val prior-val cell]
                                 (prn :watch slot new-val)))
        :display (cF (str (mget me :mph) " mph"))}
@@ -250,10 +246,12 @@
   {:menu     "Watch<br>Functions"
    :title    "\"On-change\" watch functions"
    :builder  watches
-   :preamble "Any input or computed cell can be assigned a 'watch' function."
+   :preamble "Any input or computed cell can specify an on-change 'watch' function to execute side-effects outside Matrix dataflow."
    :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (speed-plus (fn [evt]\n                  (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))"
-   :comment  ["Open the browser console to see the 'watch' output. A 'watch' function fires when a cell value is initialized, and if it changes. They are used to
-   dispatch actions outside the Matrix, if only for logging/debugging, as here."]})
+   :comment  ["A watch function fires when a cell value is initialized, and if the value changes. Watches are used to
+   dispatch actions outside the Matrix, if only for logging/debugging, as here. (See the browser console.)"
+              "The watch function in this example simply logs the new value. Other watches write to
+              localStorage or dispatch XHR requests. Web/MX does all its dynamic DOM maintenance in watch functions."]})
 
 ;;; --- throttling watch -------------------
 
@@ -262,10 +260,10 @@
     (h2 "The speed limit is 55 mph. Your speed is now...")
     (span {:class   :digi-readout
            :onclick #(mswap! (evt-md %) :mph inc)}
-      {:name :speedometer
+      {:name    :speedometer
        :mph     (cI 42 :watch (fn [slot me new-val prior-val cell]
                                 (when (> new-val 55)
-                                  (js/alert "Your speed as triggered the governor; resetting to 45 mph.")
+                                  (js/alert "You have triggered the speed governor; auto-resetting to 45 mph.")
                                   (with-cc :speed-governor
                                     (mset! me :mph 45)))))
        :display (cF (str (mget me :mph) " mph"))}
@@ -300,8 +298,8 @@
 (defn speedometer []
   (span {:class :digi-readout
          :style (cF {:min-width "5em"
-                     :color (if (> (mget me :mph) 55)
-                              "red" "cyan")})}
+                     :color     (if (> (mget me :mph) 55)
+                                  "red" "cyan")})}
     {:mph     (cI 42)
      :time    (cF (js/setInterval
                     (fn [] (let [mph-now (mget me :mph)
@@ -359,7 +357,7 @@
       "Cat Chat")
     (speed-plus #(mset! (fmu :cat-fact (evt-md %)) :get-new-fact? true))
     (div {:class :cat-chat}
-      {:name :cat-fact
+      {:name          :cat-fact
        :get-new-fact? (cI false :ephemeral? true)
        :cat-request   (cF+ [:watch (fn [_ me response-chan _ _]
                                      (when response-chan
@@ -429,21 +427,27 @@
 (defn in-review []
   (div {:class :intro}
     (h2 (let [excess (- (mget (fmu :speedometer) :mph) 55)]
-          (str "The speed is "
-            (Math/abs excess) " mph " (if (neg? excess) "under" "over") " the speed limit.")))
-    (span {:class   :digi-readout
-           :style   (cF {:color (if (> (mget me :mph) 55)
-                                  "red" "cyan")})}
-      {:name :speedometer
-       :mph     (cI 42)
+          (pp/cl-format nil "The speed is ~8,1f mph ~:[over~;under~] the speed limit."
+            (Math/abs excess) (neg? excess))))
+    (span {:class :digi-readout
+           :style (cF {:color (if (> (mget me :mph) 55)
+                                "red" "cyan")})}
+      {:name     :speedometer
+       :mph      (cI 42)
        :air-drag (cF (js/setInterval
-                       #(mswap! me :mph * 0.95) 1000))}
-      (pp/cl-format nil  "~8,1f mph" (mget me :mph)))
+                       #(mswap! me :mph * 0.98) 1000))}
+      (pp/cl-format nil "~8,1f mph" (mget me :mph)))
     (speed-plus #(mswap! (fmu :speedometer (evt-md %)) :mph inc))))
 
 (def ex-in-review
   {:title    "Review"
-   :builder in-review
-   :preamble "In review..."
-   :code     "(div {:class :intro}\n    (h2 \"The speed limit is 55 mph. Your speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})}\n      {:name :speedometer\n       :mph     (cI 42)}\n      (str (mget me :mph) \" mph\"))\n    (speed-plus #(mswap! (fmu :speedometer (evt-md %)) :mph inc)))"
-   :comment  "rsn"})
+   :builder  in-review
+   :preamble "Our closing example reprises all the keyWeb/MX features."
+   :code     "(div {:class :intro}\n    (h2 (let [excess (- (mget (fmu :speedometer) :mph) 55)]\n          (pp/cl-format nil \"The speed is ~8,1f mph ~:[over~;under~] the speed limit.\"\n            (Math/abs excess)  (neg? excess) )))\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})}\n      {:name :speedometer\n       :mph     (cI 42)\n       :air-drag (cF (js/setInterval\n                       #(mswap! me :mph * 0.98) 1000))}\n      (pp/cl-format nil  \"~8,1f mph\" (mget me :mph)))\n    (speed-plus #(mswap! (fmu :speedometer (evt-md %)) :mph inc)))"
+   :comment  "
+   <li>it looks and works like standard HTML, SVG, CSS, and CLJS;</li>
+   <li>all state dependencies are property to property;</li>
+   <li>the <code>H2</code> computes its text by navigating to the speedometer widget to read the <code>mph</code> value;</li>
+   <li>the <code>(speed-plus ...)</code> button navigates to the speedometer to mutate <code>mph</code> value;</li>
+   <li>the <code>air-drag</code> async interval mutates the DAG, reducing the <code>mph</code>;</li>
+   <li>function <code>speed-plus</code> demonstrates reusable composition.</li>"})

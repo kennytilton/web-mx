@@ -96,7 +96,7 @@
               (p {:class :preamble} c)
               (doall (for [cx c]
                        (p {:class :preamble} cx)))))
-          (when-let [ex (:exercise clk)]
+          #_ (when-let [ex (:exercise clk)]
             (blockquote {:class :exercise}
               (p (str "Give it a try. Modify <i>" (:ns clk "the code") "</i>."))
               (if (string? ex)

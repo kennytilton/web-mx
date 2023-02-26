@@ -20,7 +20,7 @@ div, h1, input {
     gap: 1em;
 }
 .lesson-code {
-    background: whitesmoke;
+    background: #eef;
     padding: 12px;
     margin: 12px 48px 0px 48px;
 }

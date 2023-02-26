@@ -55,6 +55,7 @@
     (td-upsert
       (apply md/make (flatten (into [] net-slots))))))
 
+
 ;;; --------------------------------------------------------
 ;;; --- handy accessors to hide mget etc ------------------
 ;;; look for a macro RSN to auto-generate these

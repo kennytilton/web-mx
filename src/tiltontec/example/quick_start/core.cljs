@@ -5,18 +5,20 @@
     [tiltontec.example.quick-start.lesson :as lesson]))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 99
+             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 7
                        lesson/ex-just-html
                        lesson/ex-and-cljs
                        lesson/ex-html-composition
                        lesson/ex-custom-state
                        lesson/ex-derived-state
+
                        lesson/ex-navigation
                        lesson/ex-handler-mutation
                        lesson/ex-watches
                        lesson/ex-watch-cc
                        ;; lesson/ex-async-throttle
                        lesson/ex-ajax-cat
+
                        lesson/ex-data-integrity
                        lesson/ex-in-review
                        ;;lesson/ex-ephemeral ;; too much?

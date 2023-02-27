@@ -154,13 +154,13 @@
     {:name        :speed-zone
      :speed-limit 55}
     (h2 {}
-      {:text (cF (let [limit (mget (fm-navig :speed-zone me) :speed-limit)
-                       speed (mget (fm-navig :speedo me) :mph)]
-                   (str "The speed is now "
-                     (- speed limit) " mph over the speed limit.")))}
+      {:text (cF (let [zone (fm-navig :speed-zone me)
+                       speedo (fm-navig :speedometer me)]
+                   (pp/cl-format nil "The speed is now ~a mph over the speed limit."
+                     (- (mget speedo :mph) (mget zone :speed-limit)))))}
       (mget me :text))
     (span {:class :digi-readout}
-      {:name      :speedo
+      {:name      :speedometer
        :mph       60
        :too-fast? (cF (> (mget me :mph)
                         #_(mdv! :speed-zone :speed-limit)
@@ -327,7 +327,7 @@
   {:menu     "Async mutation"
    :title    "Handling async"
    :builder  async-throttle
-   :preamble "Async events become mutations of \"input\" properties created to handle said events."
+   :preamble "Async processing can be challenging, but in Matrix are just mutations of normal \"input\" properties."
    :code     "(defn throttle-button [[opcode factor :as setting]]\n  (button {:class   :push-button\n           :style   (cF (let [[current-opcode] (mget (fmu :throttle) :setting)]\n                          {:min-width  \"96px\"\n                           :background (if (= opcode current-opcode)\n                                         \"cyan\" \"linen\")\n                           :font-size  \"18px\"}))\n           :onclick (cF #(mset! (fmu :throttle) :setting setting))}\n    (name opcode)))\n\n(defn speedometer []\n  (span {:class :digi-readout\n         :style (cF {:color (if (> (mget me :mph) 55)\n                              \"red\" \"cyan\")})}\n    {:mph     (cI 42)\n     :time    (cF (js/setInterval\n                    (fn [] (let [mph-now (mget me :mph)]\n                             (mswap! me :mph *\n                               (second (mdv! :throttle :setting)))))\n                    1000))\n     :display (cF (pp/cl-format nil \"~8,1f mph\" (mget me :mph)))}\n    (mget me :display)))\n\n(defn async-throttle []\n  (let [settings [[:maintain 1] [:coast .95] [:brake-gently .8] [:panic-stop .60]\n                  [:speed-up 1.1] [:floor-it 1.3]]]\n    (div {:class :intro}\n      (h2 \"The speed is now...\")\n      (speedometer)\n      (div {:style {:display :flex\n                    :gap     \"1em\"}}\n        {:name    :throttle\n         :setting (cI (second settings))}\n        (mapv throttle-button settings)))))"
    :comment  ["We handle async events by directing them to input Cells."]})
 
@@ -351,7 +351,7 @@
 
 (def cat-fact-uri "https://catfact.ninja/fact")
 
-(defn ajax-cat []
+(defn async-cat []
   (div {:class "intro"}
     (span {:class :push-button}
       "Cat Chat")
@@ -374,11 +374,11 @@
             ": " (:error-text response)))
         "Click (+) to see a chat fact."))))
 
-(def ex-ajax-cat
+(def ex-async-cat
   {:menu     "Async"
    :title    "Async event processing"
-   :builder  ajax-cat
-   :preamble "Async events become mutations of \"input\" properties created to handle said events."
+   :builder  async-cat
+   :preamble "Async processing can be a challenge, but in Matrix an async response is just another \"input\" property mutation."
    :code     "(div {:class \"intro\"}\n    (span {:class :push-button}\n      \"Cat Chat\")\n    (speed-plus #(mset! (fmu :cat-fact (evt-md %)) :get-new-fact? true))\n    (div {:class :cat-chat}\n      {:name :cat-fact\n       :get-new-fact? (cI false :ephemeral? true)\n       :cat-request   (cF+ [:watch (fn [_ me response-chan _ _]\n                                     (when response-chan\n                                       (go (let [response (&lt;! response-chan)]\n                                             (with-cc :set-cat\n                                               (mset! me :cat-response response))))))]\n                        (when (mget me :get-new-fact?)\n                          (client/get cat-fact-uri {:with-credentials? false})))\n       :cat-response  (cI nil)}\n      (if-let [response (mget me :cat-response)]\n        (if (:success response)\n          (span (get-in response [:body :fact]))\n          (str \"Error>  \" (:error-code response)\n            \": \" (:error-text response)))\n        \"Click (+) to see a chat fact.\")))"
    :comment  ["The <code>cat-request</code> property creates and dispatches an XHR via <code>client/get</code>, producing a core.async channel
    to receive the response. Its watch function awaits the async response and feeds it into a conventional input property."

@@ -23,6 +23,8 @@ To begin with, we just write HTML, SVG, and CSS, each thinly disguised as CLJS.
       (text {:class :heavychar :x "50%" :y "70%"
              :text-anchor :middle} "+")))
 ```
+![It's Just HTML](src/tiltontec/example/quick_start/image/just-html.png)
+
 Web/MX introduces no framework of its own, it just manages the DOM. Aside from CLJS->JS, no preprocessor is involved, and the stability of CLJS makes this one exception a net win.
 
 Matrix just manages the state.

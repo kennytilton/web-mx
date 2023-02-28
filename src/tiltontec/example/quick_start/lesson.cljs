@@ -173,7 +173,7 @@
    :title    "Random state access"
    :builder  navigation
    :preamble "A widget property can retrieve state as needed from any other component."
-   :code     "(div {:class :intro}\n    {:name :speed-zone\n     :speed-limit 55}\n    (h2 {}\n      {:text (cF (let [limit (mget (fm-navig :speed-zone me) :speed-limit)\n                       speed (mget (fm-navig :speedo me) :mph)]\n                   (str \"The speed is now \"\n                     (- speed limit) \" mph over the speed limit.\")))}\n      (mget me :text))\n    (span {:class :digi-readout}\n      {:name :speedo\n       :mph 60\n       :too-fast? (cF (> (mget me :mph)\n                        (mget (fmu :speed-zone) :speed-limit)))}\n      (str (mget me :mph) \" mph\"\n        (when (mget me :too-fast?) \"<br>Slow down\"))))"
+   :code     "(div {:class :intro}\n    {:name        :speed-zone\n     :speed-limit 55}\n    (h2 {}\n      {:text (cF (let [zone (fm-navig :speed-zone me)\n                       speedo (fm-navig :speedometer me)]\n                   (pp/cl-format nil \"The speed is now ~a mph over the speed limit.\"\n                     (- (mget speedo :mph) (mget zone :speed-limit)))))}\n      (mget me :text))\n    (span {:class :digi-readout}\n      {:name      :speedometer\n       :mph       60\n       :too-fast? (cF (> (mget me :mph)\n                        #_(mdv! :speed-zone :speed-limit)\n                        (mget (fmu :speed-zone) :speed-limit)))}\n      (str (mget me :mph) \" mph\"\n        (when (mget me :too-fast?) \"<br>Slow down\"))))"
    :comment  ["The headline needs the speed limit and current speed for its text. The speedometer readout needs
      the speed limit, to decide its text color."
               "We retrieve values from named other widgets, using navigation
@@ -201,16 +201,6 @@
        :display (cF (str (mget me :mph) " mph"))}
       (mget me :display))
     (speed-plus (fn [evt]
-                  ;(prn :app!!!!! (.getElementById js/document "app2"))
-                  ;(prn :gapp!! (goog.dom/getElement "app"))
-                  ;(prn :gappar!! (.-parentNode (goog.dom/getElement "app2")))
-                  ;(let [app (.getElementById js/document "app2")
-                  ;      app2par (goog.dom/getParentElement app)]
-                  ; ;; (prn :keeeys (goog.object/getKeys app))
-                  ;  (prn :ariaa!!! (.-ariaHidden app))
-                  ;  (prn :ariaa!!! (.-ariaHidden app))
-                  ;  (prn :ariaapar!!! (goog.object/get app2par "ariaHidden"))
-                  ;  #_ (prn :apppp!!!! (jso-map app)))
                   (mswap! (fmu :speedometer (evt-md evt)) :mph inc)))))
 
 (def ex-handler-mutation

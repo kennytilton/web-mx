@@ -114,22 +114,23 @@ A widget property can retrieve state as needed from any other component.
 
 ```clojure
 (div {:class :intro}
-    {:name :speed-zone
-     :speed-limit 55}
-    (h2 {}
-      {:text (cF (let [limit (mget (fm-navig :speed-zone me) :speed-limit)
-                       speed (mget (fm-navig :speedo me) :mph)]
-                   (str "The speed is now "
-                     (- speed limit) " mph over the speed limit.")))}
-      (mget me :text))
-    (span {:class :digi-readout}
-      {:name :speedo
-       :mph 60
-       :too-fast? (cF (> (mget me :mph)
-                        (mget (fmu :speed-zone) :speed-limit)))}
-      (str (mget me :mph) " mph"
-        (when (mget me :too-fast?)
-          "Slow down"))))
+  {:name        :speed-zone
+   :speed-limit 55}
+  (h2 {}
+    {:text (cF (let [zone (fm-navig :speed-zone me)
+                     speedo (fm-navig :speedometer me)]
+                 (pp/cl-format nil "The speed is now ~a mph over the speed limit."
+                   (- (mget speedo :mph) (mget zone :speed-limit)))))}
+    (mget me :text))
+  (span {:class :digi-readout}
+    {:name      :speedometer
+     :mph       60
+     :too-fast? (cF (> (mget me :mph)
+                      #_(mdv! :speed-zone :speed-limit)
+                      (mget (fmu :speed-zone) :speed-limit)))}
+    (str (mget me :mph) " mph"
+      (when (mget me :too-fast?) "
+Slow down"))))
 ```
 The headline needs the speed limit and current speed for its text. The speedometer readout needs the speed limit, to decide its text color.
 
@@ -192,7 +193,7 @@ Watch functions must operate outside Matrix state flow, but _can_ enqueue altera
     (speed-plus (fn [evt]
                   (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))
 ```
-Try increasing the speed above 55. A watch function will intervene.
+If we increase the speed above 55 mph, a watch function will jump in and lower to 45 mph automatically.
 
 In our experience coding with Matrix, we frequently encounter opportunities for the app to usefully update state normally controlled by the user. The macro `with-cc` schedules the `mset!` mutation for execution immediately after the current propagation, when state consistency can be guaranteed.
 

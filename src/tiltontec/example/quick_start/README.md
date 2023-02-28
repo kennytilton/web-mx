@@ -3,11 +3,13 @@ Web/MX works different. But in some ways, it works the same. Nothing is unique t
 
 Below, we quickly touch on a dozen essential Web/MX mechanisms that cover everything we need to know about Web/MX and the developer experience, or D/X, it supports.
 
-The same content can be viewed in an executable fashion by running the code alongside this README file:
+The same content can be viewed in an executable fashion by running the example with these two steps:
 ```bash
 cd web-mx
 clojure -M -m figwheel.main --build quick-start --repl
 ```
+Now watch for the app/commentary to appear in your browser at [localhost:9500](http://localhost:9500/quick-start.html).
+
 For those to content to read...
 ## It Is Just HTML
 To begin with, we just write HTML, SVG, and CSS, each thinly disguised as CLJS.
@@ -80,9 +82,9 @@ Widgets define local state as needed.
        :mph 42}
       (str (mget me :mph) " mph")))
 ```
-Tag macros take an optional second map of custom widget state. Here, a generic span embodying a speedometer thinks it might usefully have a `:mph 42` property, and the `:name :speedometer` so other app widgets can find it. We will put that to use next.
+Tag macros such as `span` take an optional second map of custom widget state. Here, a generic `span` embodying a speedometer thinks it might usefully have a `:mph 42` property, and the `:name :speedometer` so other app widgets can find it. We will put that to use next.
 
-The reader may recognize custom state as the [OO prototype model](https://en.wikipedia.org/wiki/Prototype-based_programming), which promotes code re-use by extending object capabilities without subclassing.
+The reader may recognize custom state as the [OO prototype model](https://en.wikipedia.org/wiki/Prototype-based_programming), which promotes code re-use by extending object capabilities without subclassing. React hooks are another analog.
 
 ## Functional, computed, reactive properties
 A property can be expressed as a function, or "formula", of other properties.
@@ -91,18 +93,18 @@ A property can be expressed as a function, or "formula", of other properties.
 (div {:class :intro}
     (h2 "The speed is now...")
     (span {:class :digi-readout}
-      {:mph       65
+      {:name :speedometer
+       :mph       65
        :too-fast? (cF (> (mget me :mph) 55))
        :speedo-text (cF (str (mget me :mph) " mph"
-                          (when (mget me :too-fast?) "
-Slow down?")))}
+                          (when (mget me :too-fast?) "Slow down?")))}
       (mget me :speedo-text)))
 ```
 The `too-fast?` property is fed by the reactive formula `(cF (> (mget me :mph) 55))`. When `mph` changes, `too-fast?` will be recomputed, then `speedo-text`.
 
-Matrix properties form the same one-way graph (DAG) as found in the Flux pattern, but without us doing anything: Matrix internals detect the DAG for us by transparently recording dependencies.
+Matrix properties, behind the scenes, form the same one-way graph (DAG) as found in the Flux pattern, but without us doing anything: Matrix internals detect the DAG automatically and transparently.
 
-Aside: different instances can have different formulas for the same property, further extending the "prototype" reusability win.
+Side note: different instances can have different formulas for the same property, further extending the "prototype" reusability win.
 
 ## Random state access
 A widget property can retrieve state as needed from any other component.

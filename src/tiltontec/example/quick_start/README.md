@@ -63,11 +63,10 @@ Because it is all CLJS, we can move sub-structure into functions.
               #(js/alert "Feature Not Yet Implemented")))
       opcodes)))
 
-(defn html-composition []
-  (div {:class :intro}
-    (h2 "The count is now....")
-    (span {:class :digi-readout} "42")
-    (math-keypad "-" "=" "+")))
+(div {:class :intro}
+  (h2 "The count is now....")
+  (span {:class :digi-readout} "42")
+  (math-keypad "-" "=" "+"))
 ```
 HTML composition becomes function composition. Always nice.
 
@@ -81,9 +80,9 @@ Widgets define local state as needed.
        :mph 42}
       (str (mget me :mph) " mph")))
 ```
-Tag macros take an optional second map of custom widget state. Here, a generic span embodying a speedometer thinks it might usefully have a {:mph 42} property. We will put that to use next.
+Tag macros take an optional second map of custom widget state. Here, a generic span embodying a speedometer thinks it might usefully have a `:mph 42` property, and the `:name :speedometer` so other app widgets can find it. We will put that to use next.
 
-Matrix follows the [prototype model](https://en.wikipedia.org/wiki/Prototype-based_programming), so generic tags can be re-used without subclassing.
+The reader may recognize custom state as the [OO prototype model](https://en.wikipedia.org/wiki/Prototype-based_programming), which promotes code re-use by extending object capabilities without subclassing.
 
 ## Functional, computed, reactive properties
 A property can be expressed as a function, or "formula", of other properties.
@@ -101,12 +100,14 @@ Slow down?")))}
 ```
 The `too-fast?` property is fed by the reactive formula `(cF (> (mget me :mph) 55))`. When `mph` changes, `too-fast?` will be recomputed, then `speedo-text`.
 
-Interdependent properties form the same coherent, one-way graph (DAG) as found in Flux derivatives, but without us doing anything: Matrix internals identify the DAG for us.
+Matrix properties form the same one-way graph (DAG) as found in the Flux pattern, but without us doing anything: Matrix internals detect the DAG for us by transparently recording dependencies.
 
-D/X note: different instances can have different formulas for the same property, extending the "prototype" reusability win.
+Aside: different instances can have different formulas for the same property, further extending the "prototype" reusability win.
 
 ## Random state access
 A widget property can retrieve state as needed from any other component.
+![Random state access](image/random-state.png)
+
 ```clojure
 (div {:class :intro}
     {:name :speed-zone
@@ -128,7 +129,7 @@ A widget property can retrieve state as needed from any other component.
 ```
 The headline needs the speed limit and current speed for its text. The speedometer readout needs the speed limit, to decide its text color.
 
-We retrieve values from named other widgets, using navigation utilities such as `fm-navig` and `fmu` to avoid hard-coding paths.
+We retrieve values from named other widgets, using navigation utilities such as `fm-navig` and `fmu` to avoid hard-coding parent/child paths. Where a Flux-based view function subscribes to a named property, an MX property transparently depends on another widget's property; an MX app is its own database/DAG.
 
 ## Random state change
 A widget event handler can mutate any property of any widget.
@@ -147,7 +148,7 @@ A widget event handler can mutate any property of any widget.
 ```
 Wrapping the `mph` value in `(cI 42)`, `cI` for "cell Input", lets us mutate `mph` imperatively.
 
-Here, an event handler navigates via utility `fmu` (search "family up") to the speedometer widget and mutates it.
+Here, an event handler navigates via utility `fmu` (search "family up") to the speedometer widget and mutates it. The same parallel then exists with Flux-based code dispatching transactions. 
 
 ## "On-change" watch functions
 Any input or computed cell can specify an on-change 'watch' function to execute side-effects outside Matrix dataflow.
@@ -166,7 +167,7 @@ Any input or computed cell can specify an on-change 'watch' function to execute 
 ```
 A watch function fires when a cell is initialized, and if its value changes. Watches are used to dispatch actions outside the Matrix, if only for logging/debugging, as here. (See the browser console.)
 
-The watch function in this example simply logs the new value. Other watches could write to localStorage or dispatch XHR requests. Web/MX does all its dynamic DOM maintenance in watch functions.
+The watch function in this example simply logs the new value. Other watches could write to localStorage or dispatch XHR requests. Web/MX, as a hefty example, does all its dynamic DOM maintenance in watch functions.
 
 ## Watch state mutation
 Watch functions must operate outside Matrix state flow, but _can_ enqueue alterations of Matrix state for execution after the _observed_ change finishes propagation.
@@ -189,7 +190,7 @@ Watch functions must operate outside Matrix state flow, but _can_ enqueue altera
 ```
 Try increasing the speed above 55. A watch function will intervene.
 
-In our experience coding with Matrix, we frequently encounter opportunities for the app to usefully update state normally controlled by the user. The macro with-cc schedules the mset! mutation for execution immediately after the current propagation, when state consistency can be guaranteed.
+In our experience coding with Matrix, we frequently encounter opportunities for the app to usefully update state normally controlled by the user. The macro `with-cc` schedules the `mset!` mutation for execution immediately after the current propagation, when state consistency can be guaranteed.
 
 ## Async event processing
 An async response is just another "input" property mutation.
@@ -205,11 +206,11 @@ An async response is just another "input" property mutation.
        :cat-request   (cF+ [:watch (fn [_ me response-chan _ _]
                                      (when response-chan
                                        (go (let [response (<! response-chan)]
-                                             (with-cc :set-cat
-                                               (mset! me :cat-response response))))))]
+                                             (with-cc :set-cat ;; <==== necessary if watch functions want to mutate
+                                               (mset! me :cat-response response))))))] ;; the mutation
                         (when (mget me :get-new-fact?)
                           (client/get cat-fact-uri {:with-credentials? false})))
-       :cat-response  (cI nil)}
+       :cat-response  (cI nil)} ;; <======== the XHR response will land here
       (if-let [response (mget me :cat-response)]
         (if (:success response)
           (span (get-in response [:body :fact]))
@@ -217,12 +218,12 @@ An async response is just another "input" property mutation.
             ": " (:error-text response)))
         "Click (+) to see a chat fact.")))
 ```
-The cat-request property creates and dispatches an XHR via client/get, producing a core.async channel to receive the response. Its watch function awaits the async response and feeds it into a conventional input property.
+The `cat-request` property creates and dispatches an XHR via `client/get`, producing a core.async channel to receive the response. Its watch function awaits the async response and feeds it into a conventional input property.
 
-We handle async events by directing them to input Cells purpose-created to receive their output, where Matrix handles them like any other input.
+We handle async events by directing them to input Cells purpose-created to receive their output, where Matrix handles them like any other input. 
 
 ## Data integrity
-Matrix silently maintains an internal DAG at run time by noting when one property formula reads another property. When a property is modified, Matrix uses the derived DAG to ensure the "data integrity" invariants listed below.
+The surface simplicity of Web/MX code relies crucially on Matrix state management, so we pause now to go a little deeper into its technology. Matrix silently maintains an internal DAG at run time by noting when one property formula reads another property. When a property is modified, Matrix uses the derived DAG to ensure the "data integrity" invariants listed below.
 
 ### The Data Integrity Contract
 When application code assigns a value to some input cell X, the Matrix engine guarantees:
@@ -236,6 +237,8 @@ When application code assigns a value to some input cell X, the Matrix engine gu
 * a corollary: should a client observer MSET! a datapoint Y, all the above will happen with values current with not just X, but also with the value of Y prior to the change to Y; and
 
 * deferred “client” code will see only values current with X and not any values current with some subsequent change to Y enqueued by an observer.
+
+Those guarantees together are why, for one, async events get handled as a matter of course by Matrix.
 
 ## Review
 Our closing example reprises all key Web/MX features.
@@ -256,8 +259,7 @@ Our closing example reprises all key Web/MX features.
     (speed-plus #(mswap! (fmu :speedometer (evt-md %)) :mph inc)))
 ```
 * it looks and works like standard HTML, SVG, CSS, and CLJS;
-* all state dependencies are property to property;
-* the `H2` computes its text by navigating to the speedometer widget to read the `mph` value;
-* the `(speed-plus ...)` button navigates to the speedometer to mutate `mph` value;
-* the `air-drag` async interval mutates the DAG, reducing the `mph`;
-* function `speed-plus` demonstrates reusable composition.
+* unlimited state access: the `H2` element navigates to the speedometer to read its `mph`;
+* unlimited mutation: the `(speed-plus ...)` button navigates to the speedometer to mutate its `mph`;
+* aysnc handling: the `air-drag` async interval mutates the DAG, reducing the `mph`; and
+* the function `speed-plus` demonstrates reusable composition.

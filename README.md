@@ -6,7 +6,7 @@ Web/MX: Web programming powered by the [Matrix](https://github.com/kennytilton/m
 
 ### Overview
 
-Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_, without a separate store.This new, [hands-on](https://github.com/kennytilton/web-mx/blob/main/doc/intro-clock.md) introduction will explain the vital "why" behind these fundamental architectural differences. It is strongly recommended to newcomers and tire-kickers.
+Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_, without a separate store. Here is a cursory ["quick start"](https://github.com/kennytilton/web-mx/blob/main/src/tiltontec/example/quick_start/README.md) overview, and this [hands-on](https://github.com/kennytilton/web-mx/blob/main/doc/intro-clock.md) introduction will explain the vital "why" behind these fundamental architectural differences. It is strongly recommended to newcomers and tire-kickers.
 
 > Related work: [Javascript/MX](https://github.com/kennytilton/matrix/tree/main/js/matrix) drives this [AskHN "Who's Hiring?" browser](https://kennytilton.github.io/whoishiring/). Work on React/MX and RN/MX has reached POC, but we have shifted focus to [Flutter/MX](https://github.com/kennytilton/flutter-mx/blob/main/README.md). 
 
@@ -27,7 +27,7 @@ Other examples, besides `ticktock`, are `todomvc` and `rxtrak`.
 ### Other Working Examples
 The classic, [TodoMVC](https://github.com/kennytilton/mxtodomvc) with some tutorial doc.
 
-[rxTrak](https://github.com/kennytilton/matrix/tree/master/cljs/rxtrak) takes [TodoMVC](https://todomvc.com/) to a new level by incorporating an AJAX lookup of each "to-do", now rX prescription, on the [FDA Drug database](https://open.fda.gov/apis/) looking adverse events with that drug. 
+[rxTrak](https://github.com/kennytilton/matrix/tree/master/cljc/rxtrak) takes [TodoMVC](https://todomvc.com/) to a new level by incorporating an AJAX lookup of each "to-do", now rX prescription, on the [FDA Drug database](https://open.fda.gov/apis/) looking adverse events with that drug. 
 
 A full [Web/MX "Who's Hiring?"](https://github.com/kennytilton/matrix/tree/main/cljc/whoshiring) app
 

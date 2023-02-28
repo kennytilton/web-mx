@@ -1,7 +1,7 @@
 # The Web/MX&trade; Quick Start
 Web/MX works different. But in some ways, it works the same. Nothing is unique to Web/MX, but the same things are executed differently, and to a different degree.
 
-_tl;dr:_ Web/MX code is declarative and reactive "all the way down", right out to the color property of the style attribute. Reactivity is achieved transparently, by simply reading other properties. No separate store, but the same global access to state for derivation and mutation. Other than HTML, SVG, and CSS, we just need to learn the Matrix API for reading and writing state: `mget`, `mset!`, and `mswap!`.
+> tl;dr: Web/MX code is declarative and reactive "all the way down", right out to the color property of the style attribute. Glitch-free reactivity is had transparently, by simply reading other properties. No separate store must be constructed, but we get the same global access to state for derivation and mutation. Other than HTML, SVG, and CSS, we just need to learn the Matrix API for reading and writing state: `mget`, `mset!`, and `mswap!`.
 
 Below, we quickly touch on a dozen essential Web/MX mechanisms that cover everything we need to know about Web/MX and the developer experience, or D/X, it supports.
 

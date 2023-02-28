@@ -193,6 +193,7 @@ In our experience coding with Matrix, we frequently encounter opportunities for 
 
 ## Async event processing
 An async response is just another "input" property mutation.
+![Cat Chat](image/cat-chat.png)
 ```clojure
 (div {:class "intro"}
     (span {:class :push-button}
@@ -237,7 +238,8 @@ When application code assigns a value to some input cell X, the Matrix engine gu
 * deferred “client” code will see only values current with X and not any values current with some subsequent change to Y enqueued by an observer.
 
 ## Review
-Our closing example reprises all the keyWeb/MX features.
+Our closing example reprises all key Web/MX features.
+![Review](image/review.png)
 ```clojure
 (div {:class :intro}
     (h2 (let [excess (- (mget (fmu :speedometer) :mph) 55)]

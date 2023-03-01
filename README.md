@@ -18,11 +18,11 @@ To run the current example, just:
 ```bash
 git clone https://github.com/kennytilton/web-mx.git
 cd web-mx
-clojure -M -m figwheel.main --build ticktock --repl
+clojure -M -m figwheel.main --build quick-start --repl
 ```
-After a minute or so the `ticktock` example should appear in your browser at `http://localhost:9500/ticktock.html`, leaving a CLJS REPL in the original terminal.
+After a minute or so the `quick-start` example should appear in your browser at `http://localhost:9500/quick-start.html`, leaving a CLJS REPL in the original terminal.
 
-Other examples, besides `ticktock`, are `todomvc` and `rxtrak`.
+Other examples are `ticktock`, `todomvc`, and `rxtrak`.
 
 ### Other Working Examples
 The classic, [TodoMVC](https://github.com/kennytilton/mxtodomvc) with some tutorial doc.

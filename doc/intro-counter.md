@@ -1,4 +1,4 @@
-# Web/MX&trade; In a Nutshell
+# Web/MX In a Nutshell
 _Or, building a counter app._
 
 Here is `Web/MX` in a tl;dr nutshell:

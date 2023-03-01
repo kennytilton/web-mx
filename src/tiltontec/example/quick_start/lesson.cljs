@@ -4,7 +4,6 @@
     [clojure.pprint :as pp]
     [cljs.core.async :refer [go <!]]
     [cljs-http.client :as client]
-    [tiltontec.cell.base :refer [minfo]]
     [tiltontec.cell.core :refer [cF cF+ cFonce cI cf-freeze]]
     [tiltontec.cell.integrity :refer [with-cc]]
     [tiltontec.model.core
@@ -22,14 +21,23 @@
 
 (defn just-html []
   (div {:class :intro}
+    ;; <b>^^ if the first argument to any tag is a literal map, the key-values</b>
+    ;; <b>become HTML element attribute-values, with keywords => strings</b>
+
     (h2 "The count is now....")
     (span {:class :digi-readout} "42")
-    (svg {:width   64 :height 64 :cursor :pointer
+    ;; <b>^^ arguments following the optional maps become children, or text content</b>
+    ;; <b>`svg` coverage is new; please report any issues!</b>
+
+    (svg {:width   64 :height 64
+          ;; <b> ^^^ numbers get string-ified for the DOM constructors</b>
+          :cursor :pointer
           :onclick #(js/alert "Increment Feature Not Yet Implemented")}
       (circle {:cx     "50%" :cy "50%" :r "40%"
                :stroke "orange" :stroke-width 5
                :fill   :transparent})
-      (text {:class       :heavychar :x "50%" :y "70%"
+      (text {:class       :heavychar
+             :x "50%" :y "70%"
              :text-anchor :middle} "+"))))
 
 (def ex-just-html
@@ -42,7 +50,7 @@
     Aside from CLJS->JS, no preprocessor is involved, and the stability of CLJS makes this one exception
     a net win."
               "Matrix just manages the state."]
-   :code     "(div {:class :intro}\n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    (svg {:width 64 :height 64 :cursor :pointer\n          :onclick #(js/alert \"Increment Feature Not Yet Implemented\")}\n      (circle {:cx \"50%\" :cy \"50%\" :r \"40%\"\n               :stroke  \"orange\" :stroke-width 5\n               :fill :transparent})\n      (text {:class :heavychar :x \"50%\" :y \"70%\"\n             :text-anchor :middle} \"+\")))"
+   :code     "(div {:class :intro}\n    ;; <b>^^ if the first argument to any tag is a literal map, the key-values</b>\n    ;; <b>become HTML element attribute-values, with keywords => strings</b>\n    \n    (h2 \"The count is now....\")\n    (span {:class :digi-readout} \"42\")\n    ;; <b>^^ arguments following the optional maps become children, or text content</b>\n    ;; <b>`svg` coverage is new; please report any issues!</b>\n    \n    (svg {:width   64 :height 64\n          ;; <b> ^^^ numbers get string-ified for the DOM constructors</b>\n          :cursor :pointer\n          :onclick #(js/alert \"Increment Feature Not Yet Implemented\")}\n      (circle {:cx     \"50%\" :cy \"50%\" :r \"40%\"\n               :stroke \"orange\" :stroke-width 5\n               :fill   :transparent})\n      (text {:class       :heavychar\n             :x \"50%\" :y \"70%\"\n             :text-anchor :middle} \"+\")))"
    :exercise ["Feel free to experiment with other HTML or SVG tags."
               "Where HTML has <code>&lt;tag attributes*> children*&lt;/tag></code><br>...Web/MX has: <code>(tag {attributes*} children*)</code>."
               "If you find some HTML that does not translate to Web/MX, please send a failing example along."]})
@@ -105,8 +113,12 @@
   (div {:class :intro}
     (h2 "The speed is now...")
     (span {:class :digi-readout}
-      {:name :speedometer
-       :mph  42}
+      ;; <b>an optional second map is for custom state</b>
+      {:mph  42}
+
+      ;; <b>below: mget, short for "model-get", is the MX "getter" for model (object) properties</b>
+      ;; <b>mget can be used anywhere; inside a formula, it transparently subscribes to the property read</b>
+      ;; <b>n.b. Tag children, even plain strings, always start out in an auto-genned formula.</b>
       (str (mget me :mph) " mph"))))
 
 (def ex-custom-state
@@ -114,7 +126,7 @@
    :title    "\"In-place\" widget state, property by property"
    :builder  custom-state
    :preamble "Widgets define local state as needed."
-   :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      {:name :speedometer\n       :mph 42}\n      (str (mget me :mph) \" mph\")))"
+   :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class :digi-readout}\n      ;; <b>an optional second map is for custom state</b>\n      {:mph  42}\n\n      ;; <b>below: mget, short for \"model-get\", is the MX \"getter\" for model (object) properties</b>\n      ;; <b>mget can be used anywhere; inside a formula, it transparently subscribes to the property read</b>\n      ;; <b>n.b. Tag children, even plain strings, always start out in an auto-genned formula.</b>\n      (str (mget me :mph) \" mph\")))"
    :comment  ["Tag macros take an optional second map of custom widget state.
    Here, a generic <code>span</code> embodying a speedometer thinks it might usefully have a <code>{:mph 42}</code> property.
    We will put that to use next."
@@ -128,7 +140,8 @@
   (div {:class :intro}
     (h2 "The speed is now...")
     (span {:class :digi-readout}
-      {:mph         65
+      {:name :speedometer
+       :mph         65
        :too-fast?   (cF (> (mget me :mph) 55))
        :speedo-text (cF (str (mget me :mph) " mph"
                           (when (mget me :too-fast?) "<br>Slow down")))}
@@ -209,7 +222,7 @@
    :ns       "tiltontec.example.quick-start.lesson/handler-mutation"
    :builder  handler-mutation
    :preamble ["A widget event handler can mutate any property of any widget. (This button works.)"]
-   :code     "(div {:class :intro}\n    (h2 \"The speed limit is 55mph. Your speed is now...\")\n    (span {:class   :digi-readout\n           :style   (cF {:color (if (> (mget me :mph) 55)\n                                  \"red\" \"cyan\")})}\n      {:name :speedometer\n       :mph     (cI 42)\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (svg-plus (fn [evt]\n                (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))"
+   :code     "(defn speed-plus [onclick]\n  (svg {:width   64 :height 64 :cursor :pointer\n        :onclick onclick}\n    (circle {:cx     \"50%\" :cy \"50%\" :r \"40%\"\n             :stroke \"orange\" :stroke-width 5\n             :fill   :transparent})\n    (text {:class       :heavychar :x \"50%\" :y \"70%\"\n           :text-anchor :middle} \"+\")))\n\n(defn handler-mutation []\n  (div {:class :intro}\n    (h2 \"The speed limit is 55 mph. Your speed is now...\")\n    (span {:class :digi-readout\n           :style (cF {:color (if (> (mget me :mph) 55)\n                                \"red\" \"cyan\")})}\n      {:name    :speedometer\n       :mph     (cI 42)\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (speed-plus (fn [evt]\n                  (mswap! (fmu :speedometer (evt-md evt)) :mph inc)))))"
    :exercise "Add custom state <code>throttled</code>, with a formula that computes <code>true</code> if <code>mph</code> is
    fifty-five or more. Check <code>throttled</code> in the <code>onclick</code> handler before allowing increment."
    :comment  ["Wrapping <code>mph</code> value in <code>(cI 42)</code>, <code>cI</code> for \"cell Input\",
@@ -237,7 +250,7 @@
    :title    "\"On-change\" watch functions"
    :builder  watches
    :preamble "Any input or computed cell can specify an on-change 'watch' function to execute side-effects outside Matrix dataflow."
-   :code     "(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (speed-plus (fn [evt]\n                  (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))"
+   :code     "(defn speed-plus [onclick]\n  (svg {:width   64 :height 64 :cursor :pointer\n        :onclick onclick}\n    (circle {:cx     \"50%\" :cy \"50%\" :r \"40%\"\n             :stroke \"orange\" :stroke-width 5\n             :fill   :transparent})\n    (text {:class       :heavychar :x \"50%\" :y \"70%\"\n           :text-anchor :middle} \"+\")))\n\n(div {:class :intro}\n    (h2 \"The speed is now...\")\n    (span {:class   :digi-readout\n           :onclick #(mswap! (evt-md %) :mph inc)}\n      {:mph     (cI 42 :watch (fn [slot me new-val prior-val cell]\n                                (prn :watch slot new-val)))\n       :display (cF (str (mget me :mph) \" mph\"))}\n      (mget me :display))\n    (speed-plus (fn [evt]\n                  (mswap! (fmu :speedometer (evt-md evt)) :mph inc))))"
    :comment  ["A watch function fires when a cell value is initialized, and if the value changes. Watches are used to
    dispatch actions outside the Matrix, if only for logging/debugging, as here. (See the browser console.)"
               "The watch function in this example simply logs the new value. Other watches could write to

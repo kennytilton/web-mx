@@ -89,7 +89,8 @@
             ((:builder clk)))
 
           (pre {:class :lesson-code}
-            (code (:code clk)))
+            (code {:style {:font-size "16px"}}
+              (:code clk)))
 
           (when-let [c (:comment clk)]
             (if (string? c)

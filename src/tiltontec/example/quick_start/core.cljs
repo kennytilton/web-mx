@@ -5,7 +5,7 @@
     [tiltontec.example.quick-start.lesson :as lesson]))
 
 (exu/main #(md/make ::intro
-             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 3
+             :mx-dom (exu/multi-demo "Web/MX&trade;<br>Quick Start" 9
                        lesson/ex-just-html
                        lesson/ex-and-cljs
                        lesson/ex-html-composition

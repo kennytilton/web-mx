@@ -71,7 +71,6 @@
                        :padding-bottom "1em"
                        :text-align     :center}}
           demo-title)
-
         (multi-demo-toolbar))
 
       (when-let [clk (mget (fasc :demos me) :selected-demo)]
@@ -93,82 +92,11 @@
             (code {:style {:font-size "16px"}}
               (:code clk)))
 
-          (div {:style {:display :flex
-                        :flex-direction :row
-                        :gap "6px"
-                        :margin-top "9px"}}
-            {:name :glossary}
-            (span {:class :pushbutton
-                   :onclick #(mswap! (fasc :demos (evt-md %)) :show-glossary? not)}
-              "Glossary")
-            (div {:style (cF (str "display:" (if (mget (fasc :demos me) :show-glossary?)
-                                                "block" "none")))}
-              (table
-                (tr
-                  (th "Symbol")
-                  (th "Parameters")
-                  (th "Comments"))
-                (tr
-                  (td "mget")
-                  (td "(model property)")
-                  (td "mx getter"))
-                (tr
-                  (td "mset!")
-                  (td "(model property value)")
-                  (td "mx setter; alias mreset!"))
-                (tr
-                  (td "mswap!")
-                  (td "(md prop fn & args)")
-                  (td "mx swap!"))
-                (tr
-                  (td "with-cc")
-                  (td "(tag & body)")
-                  (td "Marks a property as mutable."))
-                (tr
-                  (td "cI")
-                  (td "(value & option-values)")
-                  (td "Marks a property as mutable."))
-                (tr
-                  (td "cF")
-                  (td "(& body)")
-                  (td "Derives a value using hidden parameter 'me' and arbitrary code."))
-                (tr
-                  (td "cF+")
-                  (td "([& option-values] & body)")
-                  (td "Derives a value using hidden parameter 'me' and arbitrary code, with options."))
-                (tr
-                  (td "cFn")
-                  (td "(& body)")
-                  (td "Run initially then behave like input cell."))
-                (tr
-                  (td "cFonce")
-                  (td "(& body)")
-                  (td "Run once then behave as immutable."))
-                (tr
-                  (td "fm-navig")
-                  (td "()")
-                  (td ""))
-                (tr
-                  (td "fmu")
-                  (td "()")
-                  (td ""))
-                (tr
-                  (td "fasc")
-                  (td "()")
-                  (td "")))))
-
           (when-let [c (:comment clk)]
             (if (string? c)
               (p {:class :preamble} c)
               (doall (for [cx c]
-                       (p {:class :preamble} cx)))))
-          #_ (when-let [ex (:exercise clk)]
-            (blockquote {:class :exercise}
-              (p (str "Give it a try. Modify <i>" (:ns clk "the code") "</i>."))
-              (if (string? ex)
-                (p  ex)
-                (doall (for [elt ex]
-                         (p  elt)))))))))))
+                       (p {:class :preamble} cx))))))))))
 
 ;(exu/main #(md/make ::intro
 ;             :mx-dom (multi-demo {:title "Manual Clock" :builder manual-clock :code manual-clock-code}

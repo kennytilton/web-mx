@@ -1,7 +1,7 @@
 (ns tiltontec.example.ticktock
   (:require [clojure.pprint :as pp]
             [clojure.string :as str]
-            [tiltontec.cell.core :refer-macros [cF cFonce] :refer [cI]]
+            [tiltontec.cell.core :refer-macros [cF cF+ cFonce] :refer [cI]]
             [tiltontec.model.core
              :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
@@ -37,7 +37,16 @@
                        "*checking*"))}
     {:tick   (cI nil)
      ;; todo finalize handling
-     :ticker (cF (js/setInterval #(mset! me :tick (js/Date.)) 1000))}))
+     :ticker (cF+ [:watch (fn [prop-name me new-value prior-value cell]
+                            ;; -- any cell can have an "on-change" callback we call "observers" or "watches".
+                            (when (integer? prior-value)
+                              (js/clearInterval prior-value)))]
+               (js/setInterval
+                 ;; nice unexpected benefit of a system that manages state change
+                 ;; automatically is that asynch is no problem; just have a normal
+                 ;; input variable where the asynch result can be mset!
+                 #(mset! me :tick (js/Date.))
+                 1000))}))
 
 (defn color-input [initial-color]
   (div {:class "color-input"} {:name :color-inpt}
@@ -79,7 +88,7 @@
                 ; generating children with collections and conditionals. And we can get children
                 ; by calling functions such as 'lawerence-welk' and 'color-input'.
                 (h1 "Hello, world.")
-                (when false (h2 "Hi, Mom!"))
+                
                 (when (mget me :ticking)
                   [(h2 "The time is now....")
                    (lawrence-welk 2)
@@ -88,7 +97,10 @@
                 (button
                   {:class   "button-2"
                    :style   {:margin-top "16px"}
-                   :onclick #(mswap! (fmu :app (evt-md %)) :ticking not)}
+                   :onclick #(let [app (fmu :app (evt-md %))]
+                               (prn :app!!! app)
+                               (assert app "app not found!!!!!!!!")
+                               (mswap! app :ticking not))}
                   (if (mget (fmu :app) :ticking)
                     "Stop" "Start"))))))
 

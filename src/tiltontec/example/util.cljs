@@ -3,10 +3,10 @@
             [tiltontec.cell.core :refer [cF cF+ cFn cFonce cI cf-freeze]]
             [tiltontec.cell.integrity :refer [with-cc]]
             [tiltontec.model.core
-             :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fasc fmu fm!] :as md]
+             :refer [mx-par mpar mget mset! mswap! mset! mxi-find mxu-find-name fasc fmu fm!] :as md]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
             [tiltontec.web-mx.gen-macro
-             :refer [title img section h1 h2 h3 input footer p a b h4 u
+             :refer [title img section h1 h2 h3 input footer p a b h4 u table th tr td
                      blockquote span i label ul li div button br pre code]]
             [tiltontec.web-mx.style :refer [make-css-inline]]
             [tiltontec.web-mx.html :refer [tag-dom-create]]))
@@ -53,7 +53,8 @@
                                    (neg? start-demo-ix) 0
                                    (>= start-demo-ix (count demos)) (dec (count demos))
                                    :else start-demo-ix)))
-           :demos         demos}
+           :demos         demos
+           :show-glossary? (cI false)}
 
     (div {:style {:display :flex
                   :gap     "2em"}}
@@ -91,6 +92,70 @@
           (pre {:class :lesson-code}
             (code {:style {:font-size "16px"}}
               (:code clk)))
+
+          (div {:style {:display :flex
+                        :flex-direction :row
+                        :gap "6px"
+                        :margin-top "9px"}}
+            {:name :glossary}
+            (span {:class :pushbutton
+                   :onclick #(mswap! (fasc :demos (evt-md %)) :show-glossary? not)}
+              "Glossary")
+            (div {:style (cF (str "display:" (if (mget (fasc :demos me) :show-glossary?)
+                                                "block" "none")))}
+              (table
+                (tr
+                  (th "Symbol")
+                  (th "Parameters")
+                  (th "Comments"))
+                (tr
+                  (td "mget")
+                  (td "(model property)")
+                  (td "mx getter"))
+                (tr
+                  (td "mset!")
+                  (td "(model property value)")
+                  (td "mx setter; alias mreset!"))
+                (tr
+                  (td "mswap!")
+                  (td "(md prop fn & args)")
+                  (td "mx swap!"))
+                (tr
+                  (td "with-cc")
+                  (td "(tag & body)")
+                  (td "Marks a property as mutable."))
+                (tr
+                  (td "cI")
+                  (td "(value & option-values)")
+                  (td "Marks a property as mutable."))
+                (tr
+                  (td "cF")
+                  (td "(& body)")
+                  (td "Derives a value using hidden parameter 'me' and arbitrary code."))
+                (tr
+                  (td "cF+")
+                  (td "([& option-values] & body)")
+                  (td "Derives a value using hidden parameter 'me' and arbitrary code, with options."))
+                (tr
+                  (td "cFn")
+                  (td "(& body)")
+                  (td "Run initially then behave like input cell."))
+                (tr
+                  (td "cFonce")
+                  (td "(& body)")
+                  (td "Run once then behave as immutable."))
+                (tr
+                  (td "fm-navig")
+                  (td "()")
+                  (td ""))
+                (tr
+                  (td "fmu")
+                  (td "()")
+                  (td ""))
+                (tr
+                  (td "fasc")
+                  (td "()")
+                  (td "")))))
 
           (when-let [c (:comment clk)]
             (if (string? c)

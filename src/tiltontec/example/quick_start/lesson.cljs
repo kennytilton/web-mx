@@ -195,7 +195,19 @@
    :comment  ["The headline needs the speed limit and current speed for its text. The speedometer readout needs
      the speed limit, to decide its text color."
               "We retrieve values from named other widgets, using navigation
-     utilities such as <code>fasc</code> and <code>fmu</code> to avoid hard-coding paths."]})
+     utilities such as <code>fasc</code> and <code>fmu</code> to avoid hard-coding paths."
+              "About navigation: MX models are like the DOM; every element but the root has one parent and knows that parent as a fixed property,
+               and everyone has zero or more children. So should any convoluted organization need to be navigated, a dev can write their own
+                bespoke navigation code."
+              "Second, the provided fm-navig utility takes a \"test\" function as its first parameter, which by default
+              tests the :name of every node for a match with the sought name. Here again a dev can write a test function
+              of arbitrary complexity if needed."
+              "Just to fill in the navigation picture a bit, <code>fm-navig</code> by default does a depth-first, left-right
+               search starting at the provided start node, recursing up to the start's parent if necessary. So search for
+               a name benefits from a natural scoping, and duplicate names arising from a row of similar components works out fine."
+              "A cautionary note on navigation: a formula computing a widget's children has to use the option that tells
+               fm-navig to search \"up only\", because otherwise it will ask for the children being computed and
+               a \"cyclic dependency\" exception will be thrown."]})
 
 ;;; --- handler mutation -----------------------------
 

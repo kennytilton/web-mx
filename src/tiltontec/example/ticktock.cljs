@@ -88,7 +88,7 @@
                 ; generating children with collections and conditionals. And we can get children
                 ; by calling functions such as 'lawerence-welk' and 'color-input'.
                 (h1 "Hello, world.")
-                
+
                 (when (mget me :ticking)
                   [(h2 "The time is now....")
                    (lawrence-welk 2)

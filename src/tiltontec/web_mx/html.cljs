@@ -24,9 +24,7 @@
     [goog.html.sanitizer.HtmlSanitizer :as sanitizer]
     [goog.editor.focus :as focus]
     [goog.dom.selection :as selection]
-    [goog.dom.forms :as form]
-
-    [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]))
+    [goog.dom.forms :as form]))
 
 (defn tagfo [me]
   (if (string? me)

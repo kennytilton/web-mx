@@ -18,7 +18,7 @@
     ;;[tiltontec.example.testing :as app]
     ;;[tiltontec.example.todomvc :as app]
     ;;[tiltontec.example.gentle-intro :as app]
-    [tiltontec.example.ticktock :as app] ;; use ticktock.html to get css
+    [tiltontec.example.simpleclock :as app] ;; use ticktock.html to get css
     ;;[tiltontec.example.pipeline.core :as app] ;; use pipeline.html to get css
     ;;[tiltontec.example.startwatch :as app] ;; use startwatch.html to get css
     ;[tiltontec.example.flux-challenge :as app]

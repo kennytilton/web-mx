@@ -3,7 +3,7 @@
             [tiltontec.cell.core :refer [cF cF+ cFn cFonce cI cf-freeze]]
             [tiltontec.cell.integrity :refer [with-cc]]
             [tiltontec.model.core
-             :refer [mx-par mpar mget mset! mswap! mset! mxi-find mxu-find-name fasc fmu fm!] :as md]
+             :refer [  mget mset! mswap! mset! mxi-find mxu-find-name fasc fmu fm!] :as md]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
             [tiltontec.web-mx.gen-macro
              :refer [title img section h1 h2 h3 input footer p a b h4 u table th tr td

@@ -6,7 +6,7 @@
 
     [tiltontec.model.core
      :refer-macros [with-par]
-     :refer [matrix mx-par mget mset! mswap!
+     :refer [matrix mpar mget mset! mswap!
              mxi-find mxu-find-type
              kid-values-kids] :as md]
 
@@ -28,7 +28,7 @@
                :onchange                (fn [e]
                                           (event/preventDefault e) ;; else browser messes with checked, which we handle
                                           (mswap! me :on? #(not %)))
-               :checked                 (cF (mget (mx-par me) :on?))})
+               :checked                 (cF (mget (mpar me) :on?))})
 
        (when label-text
          (label {:for     (str id "box")

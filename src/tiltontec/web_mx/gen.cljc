@@ -8,7 +8,7 @@
     #?(:clj  [clojure.pprint :refer :all]
        :cljs [cljs.pprint :refer [pprint cl-format]])
     [tiltontec.cell.base :refer [md-ref? ia-type unbound]]
-    [tiltontec.cell.evaluate :refer [finalize finalize-self]]
+    [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
     [tiltontec.model.core :refer [make mget] :as md]
     ))
 
@@ -65,20 +65,20 @@
     (swap! tag-by-id assoc tag-id mx-tag)
     mx-tag))
 
-(defmethod finalize [:web-mx.base/tag] [me]
+(defmethod md-quiesce [:web-mx.base/tag] [me]
   ;; todo: worry about leaks
-  ;; (println :finalize-tiltontec.web-mx!!! (tagfo me))
+  ;; (println :md-quiesce-tiltontec.web-mx!!! (tagfo me))
 
   (when-let [style (:style @me)]
     (when (md-ref? style)
       ;;(println :popping-style style)
-      (finalize style)))
+      (md-quiesce style)))
 
   (doseq [k (:kids @me)]
     (when (md-ref? k)
-      (finalize k)))
+      (md-quiesce k)))
   (swap! tag-by-id dissoc (mget me :id))
-  (finalize-self me))
+  (md-quiesce-self me))
 
 ;;; --- SVG --------------------------------------------------
 
@@ -111,18 +111,18 @@
      (swap! tag-by-id assoc svg-id mx-svg)
      mx-svg)))
 
-(defmethod finalize [:web-mx.base/svg] [me]
+(defmethod md-quiesce [:web-mx.base/svg] [me]
   ;; todo: worry about leaks
   (when-let [style (:style @me)]
     (when (md-ref? style)
-      (finalize style)))
+      (md-quiesce style)))
 
   (doseq [k (:kids @me)]
     (when (md-ref? k)
-      (finalize k)))
+      (md-quiesce k)))
 
   (swap! tag-by-id dissoc (mget me :id))
-  (finalize-self me))
+  (md-quiesce-self me))
 
 ;;; --- event conveniences -------------------
 

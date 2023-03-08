@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [tiltontec.cell.core :refer [cF cF+ cFonce cI]]
             [tiltontec.model.core
-             :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
+             :refer [ mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
             [tiltontec.web-mx.gen-macro
              :refer [img section h1 h2 h3 input footer p a

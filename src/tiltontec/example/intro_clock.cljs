@@ -6,7 +6,7 @@
     [tiltontec.cell.core :refer [cF cF+ cFonce cFn cI]]
     [tiltontec.cell.integrity :refer [with-cc]]
     [tiltontec.model.core
-     :refer [mx-par mget mset! mswap! mset! mxi-find mxu-find-name fmu fasc] :as md]
+     :refer [ mget mset! mswap! mset! mxi-find mxu-find-name fmu fasc] :as md]
     [tiltontec.web-mx.gen :refer [evt-md target-value]]
     [tiltontec.web-mx.gen-macro
      :refer [img section h1 h2 h3 input footer p a

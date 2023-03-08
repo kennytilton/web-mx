@@ -9,10 +9,10 @@
     [tiltontec.util.base :refer [type-cljc]]
     [tiltontec.cell.base :refer [md-ref? ia-type unbound minfo]]
     [tiltontec.cell.observer :refer [observe observe-by-type]]
-    [tiltontec.cell.evaluate :refer [finalize finalize-self]]
+    [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
     [tiltontec.model.core
      :refer-macros [the-kids mdv!]
-     :refer [fm-navig mget fasc fm! make mset! backdoor-reset!]
+     :refer [fm-navig mget mget? fasc fm! make mset! backdoor-reset!]
      :as md]
 
     [tiltontec.web-mx.base :refer [kw$ attr-val$ tag-dom *web-mx-trace*]]
@@ -134,7 +134,7 @@
                    (tag-properties me)
                    (concat
                      (map #(tag-dom-create % dbg) (mget me :kids))
-                     (when-let [c (mget me :content)]
+                     (when-let [c (mget? me :content)]
                        [(tag-dom-create c)])))]
          (rmap-meta-setf [:dom-x me] dom)
          (when (some #{:list} (:attr-keys @me))
@@ -198,9 +198,9 @@
               (when-not (string? oldk)
                 ;; (println :obs-tag-kids-dropping (tagfo oldk))
                 (try
-                  (finalize oldk)
+                  (md-quiesce oldk)
                   (catch js/Error e
-                    (println "An finalize-error occurred:" e)
+                    (println "An md-quiesce-error occurred:" e)
                     false))
                 )))
 
@@ -208,7 +208,7 @@
                      (doseq [oldk lost]
                        (when-not (string? oldk)
                          ;; no need to remove dom, all children replaced below.
-                         (finalize oldk)))
+                         (md-quiesce oldk)))
                      (doseq [newk newv]
                        (dom/appendChild frag
                          (if (some #{newk} oldv)
@@ -251,7 +251,7 @@
             (.removeChild pdom (svg-dom oldk))
             (when-not (string? oldk)
               ; (println :obs-tag-kids-dropping (tagfo oldk))
-              (finalize oldk))))
+              (md-quiesce oldk))))
 
         (empty? lost)
         (do                                                 ;; (prn :no-lost-adding-gained!!! (count gained))
@@ -272,8 +272,8 @@
                    (doseq [oldk lost]
                      (when-not (string? oldk)
                        ;; no need to remove dom, all children replaced below.
-                       ;;(prn :finalize!!!!! oldk)
-                       (finalize oldk)))
+                       ;;(prn :md-quiesce!!!!! oldk)
+                       (md-quiesce oldk)))
 
                    (doseq [newk newv]
                      ;;(prn :adding-newk newk)

@@ -6,7 +6,7 @@
             [tiltontec.cell.base :refer [unbound] :as cbase]
             [tiltontec.cell.core :refer-macros [cF cF+ cI cFn cFonce] :refer [cI]]
             [tiltontec.model.core
-             :refer [cFkids fmu matrix mx-par mget mget mset! mset! mswap! mxi-find mxu-find-name] :as md]
+             :refer [cFkids fmu matrix mpar mget mget mset! mset! mswap! mxi-find mxu-find-name] :as md]
             [tiltontec.web-mx.base :as wbase]
             [tiltontec.web-mx.gen :refer [evt-md target-value make-svg]]
             [tiltontec.web-mx.gen-macro
@@ -162,7 +162,7 @@
                  :fill         (cI :cyan)
                  :onclick      (cF (fn [evt]
                                      (if (.-shiftKey evt)
-                                       (mset! (mx-par me) :include-other? false)
+                                       (mset! (mpar me) :include-other? false)
                                        (mset! me :fill :yellow))))
                  :stroke       (cF (if (even? (mget (fmu :clock) :tick)) :green :brown))}
           {:name :used-circle})))))
@@ -177,10 +177,10 @@
       (cFkids
         (circle {:id      "myCircle" :cx 5 :cy 5 :r 4 :stroke-width 1
                  :fill    (cI :black)
-                 :stroke  (cF (if (mget (mx-par me) :include-other?) :orange :yellow))
+                 :stroke  (cF (if (mget (mpar me) :include-other?) :orange :yellow))
                  :onclick (cF (fn [evt]
                                 (if (not (.-shiftKey evt))
-                                  (mswap! (mx-par me) :include-other? not)
+                                  (mswap! (mpar me) :include-other? not)
                                   (mset! me :fill :yellow))))})
         (g {:id "the-G"}
           (circle {:id     "fixedCircle" :cx 15 :cy 5 :r 2 :stroke-width 2 :fill :cyan

@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [tiltontec.cell.core :refer [cF cF+ cFonce cI]]
             [tiltontec.model.core
-             :refer [ mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
+             :refer [mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
             [tiltontec.web-mx.gen-macro
              :refer [img section h1 h2 h3 input footer p a
@@ -96,7 +96,23 @@
               (div {:class "ticktock"}
                 (h2 "The time is now....")
                 (clock)
-                (color-input "57a8a4")))))
+                (color-input "57a8a4")
+                (div {:style   {:display        :flex
+                                :flex-direction :row
+                                :flex-wrap      :wrap
+                                :background     :yellow
+                                :max-width      "200px"}
+                      :onclick (cF (fn []
+                                     (mswap! me :kid-values conj (+ 10 (rand-int 500)))))}
+                  {
+                   :kid-values  (cI (range 10))
+                   :kid-factory (fn [parent fake-id]
+                                  (span {:style {:padding "4px"}}
+                                    {:fake-id fake-id}
+                                    (str fake-id)))
+                   :kid-key     (fn [k]
+                                  (:fake-id @k))}
+                  (md/kid-values-kids me _cache))))))
 
 (ex-util/main matrix-build!)
 

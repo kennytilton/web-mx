@@ -100,7 +100,6 @@
                 (div {:style   {:display        :flex
                                 :flex-direction :row
                                 :flex-wrap      :wrap
-                                :background     :yellow
                                 :max-width      "200px"}
                       :onclick (cF (fn []
                                      (mswap! me :kid-values conj (+ 10 (rand-int 500)))))}

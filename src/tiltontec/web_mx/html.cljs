@@ -112,7 +112,7 @@
                   ;; todo add warning
                   av)
                 (.setAttributeNS svg nil ak$ (attr-val$ av))))
-            (doseq [kid (mget me :kids)]
+            (doseq [kid (mget? me :kids)]
               (.appendChild svg (svg-dom-create kid dbg)))
             svg)))
 
@@ -133,7 +133,7 @@
        (let [dom (apply dom/createDom (mget me :tag)
                    (tag-properties me)
                    (concat
-                     (map #(tag-dom-create % dbg) (mget me :kids))
+                     (map #(tag-dom-create % dbg) (mget? me :kids))
                      (when-let [c (mget? me :content)]
                        [(tag-dom-create c)])))]
          (rmap-meta-setf [:dom-x me] dom)
@@ -141,7 +141,7 @@
            ;; if offered as property to createDom we get:
            ;; Cannot set property "list" of #<HTMLInputElement> which has only a getter
            ;; which is misleading: we /can/ set the attribute.
-           (when-let [list-id (mget me :list)]
+           (when-let [list-id (mget? me :list)]
              (.setAttribute dom "list" (attr-val$ list-id))))
          (doseq [attr-key (:attr-keys @me)]
            (when (str/includes? (name attr-key) "-")
@@ -158,7 +158,7 @@
     (kw$ keyword)))
 
 (defn tag [me]
-  (mget me :tag))
+  (mget? me :tag))
 
 (defn tag? [me]
   (= (type-cljc me) :web-mx.base/tag))
@@ -357,7 +357,7 @@
   "Search up the matrix from node 'where' looking for element with class"
   [where class]
   ;; todo is this too expensive? will there be much usage of this?
-  (fm-navig #(when-let [its-class (mget % :class)]
+  (fm-navig #(when-let [its-class (mget? % :class)]
            (str/includes? (or (class-to-class-string its-class) "makebetter") (kw$ class)))
     where :me? false :up? true))
 
@@ -365,13 +365,13 @@
   "Search up the matrix from node 'where' looking for element of a certain tag"
   [where tag]
   (let [n (name tag)]
-    (fm-navig #(= n (mget % :tag))
+    (fm-navig #(= n (mget? % :tag))
       where :me? false :up? true)))
 
 (defn mxu-find-id
   "Search up the matrix from node 'where' looking for element with a certain :id"
   [where id]
-  (fm-navig #(= (name id) (mget % :id))
+  (fm-navig #(= (name id) (mget? % :id))
     where :me? false :up? true))
 
 ;;; --- localStorage io implementation --------------------------------

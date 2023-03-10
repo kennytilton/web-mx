@@ -52,7 +52,7 @@
 (defn color-input [initial-color]
   (div {:class "color-input"} {:name :color-inpt}
     "Hex Time Color #&nbsp"
-    (input {:tag/type  "text"
+    (input {:type  "text"
             ;; Below we bind an input cell (cI) to the value so it can be changed by the user.
             ;; Without that, we would get a runtime error when we try to change it.
             ;; Values that can be changed from outside the system must be flagged as such
@@ -102,7 +102,10 @@
                                 :flex-wrap      :wrap
                                 :max-width      "200px"}
                       :onclick (cF (fn []
-                                     (mswap! me :kid-values conj (+ 10 (rand-int 500)))))}
+                                     (let [new-n (+ 10 (rand-int 50000))]
+                                       ;; todo this fails if we come up with a duplicate
+                                       (prn :new-n!!! (+ 10 new-n) :known (some #{new-n} (mget me :kid-values)))
+                                       (mswap! me :kid-values conj (+ 10 new-n)))))}
                   {
                    :kid-values  (cI (range 10))
                    :kid-factory (fn [parent fake-id]

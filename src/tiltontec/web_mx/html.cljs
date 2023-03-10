@@ -6,8 +6,8 @@
     [cljs.pprint :as pp]
     [tiltontec.util.core
      :refer [any-ref? rmap-setf err rmap-meta-setf set-ify pln]]
-    [tiltontec.util.base :refer [type-cljc]]
-    [tiltontec.cell.base :refer [md-ref? ia-type unbound minfo]]
+    [tiltontec.util.base :refer [mx-type]]
+    [tiltontec.cell.base :refer [md-ref?  unbound minfo]]
     [tiltontec.cell.observer :refer [observe observe-by-type]]
     [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
     [tiltontec.model.core
@@ -79,6 +79,9 @@
                (for [k (:attr-keys @mx)]
                  (when-let [v (when-not (some #{k} [:list])
                                 ;; :list gets set via setAttribute; cannot be set as property
+                                (when-not (contains? @mx k)
+                                  (prn :so-sign-of-attr-key k :in @mx)
+                                  (assert (contains? @mx k)))
                                 (mget mx k))]
                    [(kw$ k) (case k
                               :style (tagcss/style-string v)
@@ -150,18 +153,8 @@
                (.setAttribute dom (name attr-key) (attr-val$ attr-val)))))
          dom)))))
 
-(def +true-html+ {::type "type"})
-
-(defn true-html [keyword]
-  (prn :true-h-naming? keyword)
-  (or (keyword +true-html+)
-    (kw$ keyword)))
-
 (defn tag [me]
   (mget? me :tag))
-
-(defn tag? [me]
-  (= (type-cljc me) :web-mx.base/tag))
 
 (defmethod observe [:kids :web-mx.base/tag] [_ me newv oldv _]
   (when (not= oldv unbound)

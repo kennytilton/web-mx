@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as str]
     [goog.dom :as dom]
-    [tiltontec.util.base :refer [type-cljc]]
+    [tiltontec.util.base :refer [mx-type]]
     [tiltontec.model.core
      :refer [mget fasc fm! make mset! backdoor-reset!]
      :as md]))
@@ -24,7 +24,7 @@
 (def ^:dynamic *web-mx-trace* false)
 
 (defn tag? [me]
-  (= (type-cljc me) :web-mx.base/tag))
+  (= (mx-type me) :web-mx.base/tag))
 
 (defn kw$ [kw]
   ;; use this wherever we might want to allow a keyword instead of an

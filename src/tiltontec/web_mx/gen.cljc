@@ -7,7 +7,7 @@
        )
     #?(:clj  [clojure.pprint :refer :all]
        :cljs [cljs.pprint :refer [pprint cl-format]])
-    [tiltontec.cell.base :refer [md-ref? ia-type unbound]]
+    [tiltontec.cell.base :refer [md-ref? unbound]]
     [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
     [tiltontec.model.core :refer [make mget] :as md]
     ))
@@ -54,7 +54,7 @@
                  (attr-val$ id)
                  (str tag "-" (swap! +tag-sid+ inc)))
         mx-tag (apply make
-                 :type :web-mx.base/tag
+                 :mx-type :web-mx.base/tag
                  :tag tag
                  :id tag-id
                  :attr-keys (distinct (conj (keys attrs) :id))
@@ -96,7 +96,7 @@
                   ;; we'll piggyback some of the tag infrastructure
                   (str svg "-" (swap! +tag-sid+ inc)))
          mx-svg (apply make
-                  :type :web-mx.base/svg
+                  :mx-type :web-mx.base/svg
                   :tag (cond
                          (keyword? svg) (name svg)
                          (string? svg) (if (= \: (first svg))

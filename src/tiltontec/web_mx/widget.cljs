@@ -1,15 +1,8 @@
 (ns tiltontec.web-mx.widget
   (:require
     [goog.events.Event :as event]
-
-    [tiltontec.cell.core :refer-macros [cF cF+ cFn cF+n cFonce] :refer [cI]]
-
-    [tiltontec.model.core
-     :refer-macros [with-par]
-     :refer [matrix mpar mget mset! mswap!
-             mxi-find mxu-find-type
-             kid-values-kids] :as md]
-
+    [tiltontec.matrix.api
+     :refer [cF cI with-par matrix mpar mget mset! mswap!] :as md]
     [tiltontec.web-mx.gen-macro
      :refer-macros [section header h1 input footer p a span label ul li div button br]]
     [tiltontec.web-mx.gen

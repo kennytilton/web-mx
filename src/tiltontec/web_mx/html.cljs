@@ -4,16 +4,13 @@
     [clojure.walk :refer [stringify-keys]]
     [clojure.set :as set]
     [cljs.pprint :as pp]
-    [tiltontec.util.core
-     :refer [any-ref? rmap-setf err rmap-meta-setf set-ify pln]]
-    [tiltontec.util.base :refer [mx-type]]
-    [tiltontec.cell.base :refer [md-ref?  unbound minfo]]
-    [tiltontec.cell.observer :refer [observe observe-by-type]]
-    [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
-    [tiltontec.model.core
-     :refer-macros [the-kids mdv!]
-     :refer [fm-navig mget mget? fasc fm! make mset! backdoor-reset!]
-     :as md]
+
+    [tiltontec.cell.poly :refer [watch watch-by-type
+                                 md-quiesce md-quiesce-self] :as cw]
+    [tiltontec.matrix.api :refer
+     [minfo md-ref? unbound make mget
+      the-kids mdv! any-ref? rmap-meta-setf
+      fm-navig mget mget? fasc fm! mset! backdoor-reset!]]
 
     [tiltontec.web-mx.base :refer [kw$ attr-val$ tag-dom *web-mx-trace*]]
     [tiltontec.web-mx.style
@@ -156,15 +153,15 @@
 (defn tag [me]
   (mget? me :tag))
 
-(defmethod observe [:kids :web-mx.base/tag] [_ me newv oldv _]
+(defmethod watch [:kids :web-mx.base/tag] [_ me newv oldv _]
   (when (not= oldv unbound)
     ;; oldv unbound means initial build and this incremental add/remove
     ;; is needed only when kids change post initial creation
-    #_(println :obstagkids!!!!! (tagfo me)
+    #_(println :watchtagkids!!!!! (tagfo me)
         :counts-new-old (count newv) (count oldv)
         :same-kids (= oldv newv)
         :same-kid-set (= (set newv) (set oldv)))
-    (do                                                     ;; p ::observe-kids
+    (do                                                     ;; p ::watch-kids
       (let [pdom (tag-dom me)
             lost (clojure.set/difference (set oldv) (set newv))
             gained (clojure.set/difference (set newv) (set oldv))]
@@ -189,7 +186,7 @@
             (doseq [oldk lost]
               (.removeChild pdom (tag-dom oldk))
               (when-not (string? oldk)
-                ;; (println :obs-tag-kids-dropping (tagfo oldk))
+                ;; (println :watch-tag-kids-dropping (tagfo oldk))
                 (try
                   (md-quiesce oldk)
                   (catch js/Error e
@@ -213,7 +210,7 @@
 (defn svg-dom [me]
   (:dom-x (meta me)))
 
-(defmethod observe [:kids :web-mx.base/svg] [_ me newv oldv _]
+(defmethod watch [:kids :web-mx.base/svg] [_ me newv oldv _]
   (when (not= oldv unbound)
     ;; (prn :svkids-change!!!!!! (count newv) (count oldv))
     (let [pdom (svg-dom me)
@@ -243,7 +240,7 @@
           (doseq [oldk lost]
             (.removeChild pdom (svg-dom oldk))
             (when-not (string? oldk)
-              ; (println :obs-tag-kids-dropping (tagfo oldk))
+              ; (println :watch-tag-kids-dropping (tagfo oldk))
               (md-quiesce oldk))))
 
         (empty? lost)
@@ -273,7 +270,7 @@
                      (let [new-dom (if (some #{newk} oldv)
                                      (.removeChild pdom (svg-dom newk))
                                      (do
-                                       ;; (println :obs-tag-kids-building-new-dom (tagfo newk))
+                                       ;; (println :watch-tag-kids-building-new-dom (tagfo newk))
                                        (svg-dom-create newk false)))]
                        (dom/appendChild frag new-dom)))
 
@@ -294,12 +291,12 @@
     :else [(or (:name @me) :anon)
            (:state (meta me))]))
 
-(defmethod observe-by-type [:web-mx.base/tag] [slot me newv oldv _]
+(defmethod watch-by-type [:web-mx.base/tag] [slot me newv oldv _]
   (when (not= oldv unbound)
     (when-let [dom (tag-dom me)]
       #_(when *web-mx-trace*
           (when-not (some #{slot} [:tick])
-            (pln :observing-tagtype (tagfo me) slot newv oldv)))
+            (pln :watcherving-tagtype (tagfo me) slot newv oldv)))
 
       (cond
         (= slot :content)
@@ -315,7 +312,7 @@
           ;;(pln :dom-hit-attr!!!! (tagfo me) slot newv oldv)
           (case slot
             :style (do
-                     ;;(prn :obs-style (style-string newv))
+                     ;;(prn :watch-style (style-string newv))
                      (set! (.-style dom) (style-string newv)))
 
             :hidden (set! (.-hidden dom) newv)
@@ -328,13 +325,13 @@
             ;; todo cleanup
             :stroke (do (prn :ignore-stroke newv))
             (do
-              ;; (pln :obs-by-type-setAttr-onknown (name slot) (minfo me) newv)
+              ;; (pln :watch-by-type-setAttr-onknown (name slot) (minfo me) newv)
               (.setAttribute dom (name slot) newv))))
 
         #_#_(+inline-css+ slot)
                 (throw (js/Error. (str "tiltontec.web-mx obs sees oldskool style: " slot)))))))
 
-(defmethod observe-by-type [:web-mx.base/svg] [slot me newv oldv _]
+(defmethod watch-by-type [:web-mx.base/svg] [slot me newv oldv _]
   (when (not= oldv unbound)
     (cond
       (some #{slot} (:attr-keys @me))

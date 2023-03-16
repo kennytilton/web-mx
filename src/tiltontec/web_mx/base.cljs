@@ -2,10 +2,8 @@
   (:require
     [clojure.string :as str]
     [goog.dom :as dom]
-    [tiltontec.util.base :refer [mx-type]]
-    [tiltontec.model.core
-     :refer [mget fasc fm! make mset! backdoor-reset!]
-     :as md]))
+    [tiltontec.matrix.api
+     :refer [mget fasc fm! make mset! backdoor-reset! mx-type]]))
 
 (defonce js-intervals (atom nil))
 

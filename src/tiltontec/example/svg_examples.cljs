@@ -23,7 +23,7 @@
                        "*checks watch*"))}
     {:name   :clock
      :tick   (cI (.getSeconds (js/Date.)))
-     :ticker (cF+ [:obs (fn [_ _ nv ov c]
+     :ticker (cF+ [:watch (fn [_ _ nv ov c]
                           (when (not= ov unbound)
                             (js/clearInterval ov)))]
                (wbase/js-interval-register

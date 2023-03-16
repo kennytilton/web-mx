@@ -6,7 +6,7 @@
     ;[cljs-time.coerce :refer [from-long to-string] :as tmc]
 
 
-    [tiltontec.model.core :as md]
+    [tiltontec.matrix.api :refer [mget]]
 
     [goog.dom :as dom]
     [tiltontec.web-mx.base :refer [ *web-mx-trace*]]
@@ -32,10 +32,10 @@
       app-matrix (app/matrix-build!)
       app-dom (binding [*web-mx-trace* nil]                  ;; <-- set to nil if console too noisy
                 (tag-dom-create
-                  (md/mget app-matrix :mx-dom)))]
+                  (mget app-matrix :mx-dom)))]
 
   (set! (.-innerHTML root) nil)
   (dom/appendChild root app-dom)
-  (when-let [route-starter (md/mget app-matrix :router-starter)]
+  (when-let [route-starter (mget app-matrix :router-starter)]
     ;; (prn :starting-router)
     (route-starter)))

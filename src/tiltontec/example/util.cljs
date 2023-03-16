@@ -37,13 +37,13 @@
     (doall (for [{:keys [menu title] :as clk} (mget (fasc :demos me) :demos)]
              (button {:class   :pushbutton
                       :cursor  :finger
-                      :style   (cF (let [curr-clk (mget (fasc :demos me) :selected-demo)]
+                      :style   (cF (let [curr-clk (mget (fasc :demos me  :must? true) :selected-demo)]
                                      {:min-width    "144px"
                                       :border-color (if (= clk curr-clk)
                                                       "orange" "white")
                                       :font-weight  (if (= clk curr-clk)
                                                       "bold" "normal")}))
-                      :onclick (cF (fn [] (mset! (fmu :demos) :selected-demo clk)))}
+                      :onclick (cF (fn [] (mset! (fasc :demos me  :must? true) :selected-demo clk)))}
                (or menu title))))))
 
 (defn multi-demo [demo-title start-demo-ix & demos]
@@ -73,7 +73,7 @@
           demo-title)
         (multi-demo-toolbar))
 
-      (when-let [clk (mget (fasc :demos me) :selected-demo)]
+      (when-let [clk (mget (fasc :demos me :must? true) :selected-demo)]
         (div {:style {:display        :flex
                       :flex-direction :column
                       :padding        "6px"}}

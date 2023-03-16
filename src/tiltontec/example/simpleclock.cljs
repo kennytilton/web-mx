@@ -39,7 +39,7 @@
      (cI nil)
 
      :ticker (cF+ [:watch (fn [prop-name me new-value prior-value cell]
-                            ;; -- any cell can have an "on-change" callback we call "observers" or "watches".
+                            ;; -- any cell can have an "on-change" callback we call "watches".
                             (when (integer? prior-value)
                               (js/clearInterval prior-value)))]
                (js/setInterval

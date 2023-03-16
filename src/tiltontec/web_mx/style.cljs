@@ -1,14 +1,11 @@
 (ns tiltontec.web-mx.style
   (:require
-    [tiltontec.util.base :refer [mx-type]]
-    [tiltontec.util.core :refer [pln]]
-    [tiltontec.cell.base :refer [md-ref?  unbound minfo]]
-    [tiltontec.cell.observer :refer [observe observe-by-type]]
-    [tiltontec.cell.evaluate :refer [md-quiesce md-quiesce-self]]
-    [tiltontec.model.core
-     :refer-macros [the-kids mdv!]
-     :refer [mget fasc fm! make mset! backdoor-reset!]
-     :as md]
+    [tiltontec.cell.poly :refer [watch watch-by-type
+                                 md-quiesce md-quiesce-self] :as cw]
+    [tiltontec.matrix.api :refer
+     [minfo md-ref? unbound make mget mget?
+      the-kids mdv! any-ref? rmap-meta-setf mx-type
+      fm-navig mget mget? fasc fm! mset! backdoor-reset!]]
     [tiltontec.web-mx.base :refer [tag? kw$ tag-dom]]
     [goog.dom.classlist :as classlist]
     [goog.style :as gstyle]
@@ -19,8 +16,8 @@
 (defn make-css-inline [tag & stylings]
   (assert (tag? tag) (str "make-css-inline> tag param not a tag "
                        (mx-type tag) :meta (meta tag)))
-  #_ (prn :mkcss-sees tag (for [[k _] (partition 2 stylings)] k)
-    stylings)
+  #_(prn :mkcss-sees tag (for [[k _] (partition 2 stylings)] k)
+      stylings)
   (apply make
     :name :inline-css
     :mx-type :web-mx.css/css
@@ -44,12 +41,12 @@
 
              :default
              (do
-               (pln :ss-unknown s (type s))
+               (prn :ss-unknown s (type s))
                ""))]
     ;; (pln :mxw-gens-ss ss)
     ss))
 
-(defmethod observe-by-type [:web-mx.css/css] [slot me newv oldv _]
+(defmethod watch-by-type [:web-mx.css/css] [slot me newv oldv _]
   (when (not= oldv unbound)
     (let [dom (tag-dom (mget me :tag))]
       (gstyle/setStyle dom (name slot) (kw$ newv)))))

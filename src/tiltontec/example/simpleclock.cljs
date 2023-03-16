@@ -1,9 +1,11 @@
 (ns tiltontec.example.simpleclock
   (:require [clojure.pprint :as pp]
             [clojure.string :as str]
-            [tiltontec.cell.core :refer [cF cF+ cFonce cI]]
-            [tiltontec.model.core
-             :refer [mget mset! mswap! mset! mxi-find mxu-find-name fmu] :as md]
+            [tiltontec.matrix.api
+             :refer [make kid-values-kids
+                     cF cF+ cFn cFonce cI cf-freeze
+                     mpar mget mset! mswap! mset! with-cc
+                     fasc fmu fm! minfo]]
             [tiltontec.web-mx.gen :refer [evt-md target-value]]
             [tiltontec.web-mx.gen-macro
              :refer [img section h1 h2 h3 input footer p a
@@ -19,7 +21,7 @@
         :style   (cF (str "color:#"
                        ;; Next, mget transparently subscribes to the value of
                        ;; the widget named :timecolor.
-                       (mget (mxu-find-name me :timecolor) :value)))
+                       (mget (fmu :timecolor) :value)))
         :content (cF (if-let [tick (mget me :now)]
                        ;; Reading :now via mget also transparently subscribes
                        ;; so each time the interval mset!'s :now, this content gets rebuilt.
@@ -91,7 +93,7 @@
                            :else :invalid)))})))
 
 (defn matrix-build! []
-  (md/make ::simpleclock
+  (make ::simpleclock
     :mx-dom (cFonce
               (div {:class "ticktock"}
                 (h2 "The time is now....")
@@ -114,7 +116,7 @@
                                     (str fake-id)))
                    :kid-key     (fn [k]
                                   (:fake-id @k))}
-                  (md/kid-values-kids me _cache))))))
+                  (kid-values-kids me _cache))))))
 
 (ex-util/main matrix-build!)
 

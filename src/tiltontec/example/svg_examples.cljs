@@ -3,10 +3,12 @@
             [clojure.walk :as walk]
             [goog.dom :as gdom]
             [goog.object :as gobj]
-            [tiltontec.cell.base :refer [unbound] :as cbase]
-            [tiltontec.cell.core :refer-macros [cF cF+ cI cFn cFonce] :refer [cI]]
-            [tiltontec.model.core
-             :refer [cFkids fmu matrix mpar mget mget mset! mset! mswap! mxi-find mxu-find-name] :as md]
+
+            [tiltontec.matrix.api
+             :refer [matrix unbound make kid-values-kids
+                     cF cF+ cFn cFkids cFonce cI cf-freeze with-par
+                     mpar mget mset! mswap! mset! with-cc
+                     fasc fmu fm! minfo]]
             [tiltontec.web-mx.base :as wbase]
             [tiltontec.web-mx.gen :refer [evt-md target-value make-svg]]
             [tiltontec.web-mx.gen-macro
@@ -193,8 +195,8 @@
 
 (defn matrix-build! []
   (reset! matrix
-    (md/make
-      :mx-dom (cFonce (md/with-par me
+    (make
+      :mx-dom (cFonce (with-par me
                         (div
                           (wall-clock)
                           (div {:style {:background-color "cyan"}}

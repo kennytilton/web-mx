@@ -1,19 +1,15 @@
 (ns tiltontec.example.intro-clock
   (:require
     [clojure.string :as str]
-    [clojure.pprint :as pp]
-    [tiltontec.cell.base :refer [minfo]]
-    [tiltontec.cell.core :refer [cF cF+ cFonce cFn cI]]
-    [tiltontec.cell.integrity :refer [with-cc]]
-    [tiltontec.model.core
-     :refer [ mget mset! mswap! mset! mxi-find mxu-find-name fmu fasc] :as md]
+    [tiltontec.matrix.api
+     :refer [make cF cF+ cFn cFonce cI cf-freeze
+             mpar mget mset! mswap! mset! with-cc
+             fasc fmu fm! minfo]]
     [tiltontec.web-mx.gen :refer [evt-md target-value]]
     [tiltontec.web-mx.gen-macro
      :refer [img section h1 h2 h3 input footer p a
              span i label ul li div button code pre]]
-    [tiltontec.web-mx.style :refer [make-css-inline]]
-    [tiltontec.example.util :as exu]
-    #_ [tiltontec.example.demo-driver :refer [multi-demo]]))
+    [tiltontec.example.util :as exu]))
 
 ;;; --- intro clock starter code -----------------------------------
 
@@ -131,39 +127,11 @@
                      (js/setInterval #(mset! me :now (js/Date.)) 1000)))})
     (start-stop-button)))
 
-(exu/main #(md/make ::intro
+(exu/main #(make ::intro
              :mx-dom (exu/multi-demo "Clock Demos" 0
                        {:title "Manual Clock" :builder manual-clock :code manual-clock-code}
                        {:title "Running Clock" :builder running-clock :code running-clock-code})))
 
-
-
-#_(defn nyc-std-clock [interval]
-    (div {:class   "intro-clock"
-          :style   "background:black"
-          :content (cF (str (mget me :elapsed))
-                     #_(let [c (mget me :elapsed)
-                             ts (str (.toTimeString
-                                       (js/Date. c)))]
-                         (if (= interval 1000)
-                           ts
-                           (str (subs ts 0 8)
-                             "."
-                             (pp/cl-format nil "~3'0d" (mod c 1000))
-                             ))))}
-      {:name     :the-clock
-       :ticking? (cI false)
-       :ticker   (cF+ [:watch (fn [_ _ _ prior-value _]
-                                (when (integer? prior-value)
-                                  (js/clearInterval prior-value)))]
-                   (when (mget me :ticking?)
-                     (js/setInterval #(mset! me :elapsed (js/Date.)) interval)))
-       :now      (cI nil)
-       :start    (cI nil)
-       :elapsed  (cF (if-let [start (mget me :start)]
-                       (- (.getTime (js/Date.)) (.getTime start))
-                       0))
-       }))
 #_(defn stop-watch []
     (div {:class [:intro :ticktock]}
       (h2 "On your mark..get set...")

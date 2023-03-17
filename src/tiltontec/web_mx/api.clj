@@ -1,4 +1,4 @@
-(ns tiltontec.web-mx.gen-macro
+(ns tiltontec.web-mx.api
   (:refer-clojure :exclude [map meta time filter set symbol use])
   (:require
     [tiltontec.web-mx.gen :refer [make-tag]]))
@@ -46,22 +46,22 @@
        (let [~svg-name (str '~svg)]
          (cond
            (nil? ~vargs)
-           `(tiltontec.web-mx.gen/make-svg ~~svg-name {} {} nil)
+           `(tiltontec.web-mx.api/make-svg ~~svg-name {} {} nil)
 
            (map? (first ~vargs))
            (cond
              (map? (second ~vargs))
-             `(tiltontec.web-mx.gen/make-svg ~~svg-name ~(first ~vargs) ~(second ~vargs)
+             `(tiltontec.web-mx.api/make-svg ~~svg-name ~(first ~vargs) ~(second ~vargs)
                 ~(when-let [~kids (seq (nthrest ~vargs 2))]
                    `(tiltontec.model.core/cFkids ~@~kids)))
 
-             :default `(tiltontec.web-mx.gen/make-svg
+             :default `(tiltontec.web-mx.api/make-svg
                          ~~svg-name ~(first ~vargs)
                          {}
                          ~(when-let [~kids (seq (nthrest ~vargs 1))]
                             `(tiltontec.model.core/cFkids ~@~kids))))
 
-           :default `(tiltontec.web-mx.gen/make-svg
+           :default `(tiltontec.web-mx.api/make-svg
                        ~~svg-name {} {}
                        (tiltontec.model.core/cFkids ~@~vargs)))))))
 

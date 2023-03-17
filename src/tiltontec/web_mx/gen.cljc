@@ -81,34 +81,7 @@
 
 ;;; --- SVG --------------------------------------------------
 
-(defn make-svg
-  ([svg]
-   (make-svg svg {}))
-  ([svg attrs]
-   (make-svg svg attrs {}))
-  ([svg attrs custom-props]
-   (make-svg svg attrs custom-props nil))
-  ([svg attrs aux cFkids]
-   ;; (prn :make-svg svg :attrs (keys attrs) :aux (keys aux))
-   (let [svg-id (if-let [id (:id attrs)]
-                  (attr-val$ id)
-                  ;; we'll piggyback some of the tag infrastructure
-                  (str svg "-" (swap! +tag-sid+ inc)))
-         mx-svg (apply make
-                  :mx-type :web-mx.base/svg
-                  :tag (cond
-                         (keyword? svg) (name svg)
-                         (string? svg) (if (= \: (first svg))
-                                         (subs svg 1) svg)
-                         :else (str svg))
-                  :id svg-id
-                  :attr-keys (distinct (conj (keys attrs) :id))
-                  :kids cFkids
-                  (concat (vec (apply concat (seq (dissoc attrs :id))))
-                    (vec (apply concat (seq aux)))))]
-     ;;(println :made-tiltontec.web-mx!! tiltontec.web-mx-id (keys @mx-tiltontec.web-mx))
-     (swap! tag-by-id assoc svg-id mx-svg)
-     mx-svg)))
+
 
 (defmethod md-quiesce [:web-mx.base/svg] [me]
   ;; todo: worry about leaks
@@ -124,7 +97,7 @@
   (md-quiesce-self me))
 
 ;;; --- event conveniences -------------------
-
+;
 (defn evt-mx [e]
   ;; deprecated. "md" for "model" is better
   (dom-tag (.-target e)))

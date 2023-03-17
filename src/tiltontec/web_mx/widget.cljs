@@ -3,7 +3,7 @@
     [goog.events.Event :as event]
     [tiltontec.matrix.api
      :refer [cF cI with-par matrix mpar mget mset! mswap!] :as md]
-    [tiltontec.web-mx.gen-macro
+    [tiltontec.web-mx.api
      :refer-macros [section header h1 input footer p a span label ul li div button br]]
     [tiltontec.web-mx.gen
      :refer [make-tag evt-md]]))

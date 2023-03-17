@@ -5,9 +5,8 @@
      :refer [make cF cF+ cFn cFonce cI cf-freeze
              mpar mget mset! mswap! mset! with-cc
              fasc fmu fm! minfo]]
-    [tiltontec.web-mx.gen :refer [evt-md target-value]]
-    [tiltontec.web-mx.gen-macro
-     :refer [img section h1 h2 h3 input footer p a
+    [tiltontec.web-mx.api
+     :refer [evt-md target-value img section h1 h2 h3 input footer p a
              span i label ul li div button code pre]]
     [tiltontec.example.util :as exu]))
 

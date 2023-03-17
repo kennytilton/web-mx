@@ -9,12 +9,19 @@
                      cF cF+ cFn cFkids cFonce cI cf-freeze with-par
                      mpar mget mset! mswap! mset! with-cc
                      fasc fmu fm! minfo]]
-            [tiltontec.web-mx.base :as wbase]
-            [tiltontec.web-mx.gen :refer [evt-md target-value make-svg]]
-            [tiltontec.web-mx.gen-macro
+           ; [tiltontec.web-mx.base :as wbase]
+            ;[tiltontec.web-mx.gen :refer [ make-svg]]
+            #_ [tiltontec.web-mx.api
              :refer [jso-map]
              :refer-macros [svg g circle p span div text radialGradient defs stop
                             rect ellipse line polyline path polygon script use]]
+            [tiltontec.web-mx.api
+             :refer [evt-md target-value make-css-inline js-interval-register jso-map
+                     make-svg svg g circle p span div text radialGradient defs stop
+                     rect ellipse line polyline path polygon script use
+                     img section h1 h2 h3 input footer p a
+                     span i label ul li div button br
+                     svg g circle p span div]]
             [tiltontec.example.util :as ex-util]))
 
 (defn wall-clock []
@@ -28,7 +35,7 @@
      :ticker (cF+ [:watch (fn [_ _ nv ov c]
                           (when (not= ov unbound)
                             (js/clearInterval ov)))]
-               (wbase/js-interval-register
+               (js-interval-register
                  ;; needed during development so hot reload does not pile up intervals
                  (js/setInterval #(mset! me :tick (.getSeconds (js/Date.))) 1000)))}))
 

@@ -6,12 +6,11 @@
                      cF cF+ cFn cFonce cI cf-freeze
                      mpar mget mset! mswap! mset! with-cc
                      fasc fmu fm! minfo]]
-            [tiltontec.web-mx.gen :refer [evt-md target-value]]
-            [tiltontec.web-mx.gen-macro
-             :refer [img section h1 h2 h3 input footer p a
+            [tiltontec.web-mx.api
+             :refer [evt-md target-value make-css-inline
+                     img section h1 h2 h3 input footer p a
                      span i label ul li div button br
                      svg g circle p span div]]
-            [tiltontec.web-mx.style :refer [make-css-inline]]
             [tiltontec.example.util :as ex-util]))
 
 ;;; --- Simple Clock ----------------------------------------------------

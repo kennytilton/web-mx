@@ -1,7 +1,6 @@
 (ns tiltontec.example.svg-examples
   (:require [clojure.string :as str]
-            [clojure.walk :as walk
-
+            [clojure.walk :as walk]
             [tiltontec.matrix.api
              :refer [matrix unbound make kid-values-kids
                      cF cF+ cFn cFkids cFonce cI cf-freeze with-par

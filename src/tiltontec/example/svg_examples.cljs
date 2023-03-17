@@ -1,20 +1,13 @@
 (ns tiltontec.example.svg-examples
   (:require [clojure.string :as str]
-            [clojure.walk :as walk]
-            [goog.dom :as gdom]
-            [goog.object :as gobj]
+            [clojure.walk :as walk
 
             [tiltontec.matrix.api
              :refer [matrix unbound make kid-values-kids
                      cF cF+ cFn cFkids cFonce cI cf-freeze with-par
                      mpar mget mset! mswap! mset! with-cc
                      fasc fmu fm! minfo]]
-           ; [tiltontec.web-mx.base :as wbase]
-            ;[tiltontec.web-mx.gen :refer [ make-svg]]
-            #_ [tiltontec.web-mx.api
-             :refer [jso-map]
-             :refer-macros [svg g circle p span div text radialGradient defs stop
-                            rect ellipse line polyline path polygon script use]]
+
             [tiltontec.web-mx.api
              :refer [evt-md target-value make-css-inline js-interval-register jso-map
                      make-svg svg g circle p span div text radialGradient defs stop

@@ -1,7 +1,7 @@
 (ns tiltontec.web-mx.html
   (:require
     [clojure.string :as str]
-    [clojure.walk :refer [stringify-keys]]
+
     [clojure.set :as set]
     [cljs.pprint :as pp]
 
@@ -48,29 +48,6 @@
     (str/join " " (map kw$ c))
     (kw$ c)))
 
-;; goog.dom.setProperties = function(element, properties) {
-;  goog.object.forEach(properties, function(val, key) {
-;    if (val && val.implementsGoogStringTypedString) {
-;      val = val.getTypedStringValue();
-;    }
-;    if (key == 'style') {
-;      element.style.cssText = val;
-;    } else if (key == 'class') {
-;      element.className = val;
-;    } else if (key == 'for') {
-;      element.htmlFor = val;
-;    } else if (goog.dom.DIRECT_ATTRIBUTE_MAP_.hasOwnProperty(key)) {
-;      element.setAttribute(goog.dom.DIRECT_ATTRIBUTE_MAP_[key], val);
-;    } else if (
-;        goog.string.startsWith(key, 'aria-') ||
-;        goog.string.startsWith(key, 'data-')) {
-;      element.setAttribute(key, val);
-;    } else {
-;      element[key] = val;
-;    }
-;  });
-;};
-
 (defn tag-properties [mx]
   (let [beef (remove nil?
                (for [k (:attr-keys @mx)]
@@ -108,8 +85,9 @@
               (if (fn? av)
                 (.addEventListener svg
                   (if (= "on" (subs ak$ 0 2))
-                    (subs ak$ 2) ak$)
-                  ;; todo add warning
+                    (subs ak$ 2)
+                    (do (prn :WARNING!-SVG-handler-event-looks-wrong ak$)
+                        ak$))
                   av)
                 (.setAttributeNS svg nil ak$ (attr-val$ av))))
             (doseq [kid (mget? me :kids)]
@@ -322,8 +300,6 @@
             :class (classlist/set dom (class-to-class-string newv))
             :checked (set! (.-checked dom) newv)
             :value (.setAttribute dom "value" (str newv))   ;; eg, progress indicator
-            ;; todo cleanup
-            :stroke (do (prn :ignore-stroke newv))
             (do
               ;; (pln :watch-by-type-setAttr-onknown (name slot) (minfo me) newv)
               (.setAttribute dom (name slot) newv))))
@@ -346,7 +322,6 @@
 (defn mxu-find-class
   "Search up the matrix from node 'where' looking for element with class"
   [where class]
-  ;; todo is this too expensive? will there be much usage of this?
   (fm-navig #(when-let [its-class (mget? % :class)]
            (str/includes? (or (class-to-class-string its-class) "makebetter") (kw$ class)))
     where :me? false :up? true))
@@ -398,9 +373,3 @@
 
 ;;; ---- tiltontec.web-mx-specific utilities ----------------------------------------------
 
-(defn input-editing-start [dom initial-value]
-  (form/setValue dom initial-value)
-  (focus/focusInputField dom)
-  ;; a lost bit of sound U/X: select all text when starting edit of a populated field...
-  (selection/setStart dom 0)
-  (selection/setEnd dom (count initial-value)))

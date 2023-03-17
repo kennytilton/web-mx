@@ -98,15 +98,17 @@
                 (h2 "The time is now....")
                 (clock)
                 (color-input "57a8a4")
+                (p "Click for more:")
                 (div {:style   {:display        :flex
                                 :flex-direction :row
                                 :flex-wrap      :wrap
-                                :max-width      "200px"}
+                                :max-width      "400px"}
                       :onclick (cF (fn []
-                                     (let [new-n (+ 10 (rand-int 50000))]
-                                       ;; todo this fails if we come up with a duplicate
-                                       (prn :new-n!!! (+ 10 new-n) :known (some #{new-n} (mget me :kid-values)))
-                                       (mswap! me :kid-values conj (+ 10 new-n)))))}
+                                     (loop []
+                                       (let [new-n (+ 10 (rand-int 50000))]
+                                         (cond
+                                           (some #{new-n} (mget me :kid-values)) (recur)
+                                           :else (mswap! me :kid-values conj new-n))))))}
                   {
                    :kid-values  (cI (range 10))
                    :kid-factory (fn [parent fake-id]

@@ -8,7 +8,7 @@
                      fasc fmu fm! minfo]]
 
             [tiltontec.web-mx.api
-             :refer [evt-md target-value make-css-inline js-interval-register jso-map
+             :refer [evt-md target-value make-css-inline js-interval-register js-obj->map
                      make-svg svg g circle p span div text radialGradient defs stop
                      rect ellipse line polyline path polygon script use
                      img section h1 h2 h3 input footer p a
@@ -131,7 +131,7 @@
                :fill         (cI :black)
                :onclick      (cF (fn [evt]
                                    (let [e (walk/keywordize-keys
-                                             (jso-map evt))]
+                                             (js-obj->map evt))]
                                      ;; check that it was not a "use" clone that got clicked.
                                      (when (= (domx me) (:target e))
                                        (prn :onclick-circle-original)

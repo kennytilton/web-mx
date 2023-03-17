@@ -3,9 +3,12 @@
   (:require [clojure.walk :as walk]
             [cljs.pprint :as pp]
             [clojure.string :as str]
+            [clojure.set :as set]
+
             [goog.object :as gobj]
             [goog.dom.forms :as form]
             [goog.style :as gstyle]
+
             [tiltontec.matrix.api :refer
              [minfo md-ref? unbound make mget mget?
               the-kids mdv! any-ref? rmap-meta-setf mx-type
@@ -13,8 +16,20 @@
             [tiltontec.cell.poly :refer [watch watch-by-type
                                          md-quiesce md-quiesce-self] :as cw]
             [tiltontec.web-mx.base :refer [tag? kw$ tag-dom] :as wbase]
-            [tiltontec.web-mx.gen :refer [make-tag dom-tag +tag-sid+ tag-by-id]])
+            [tiltontec.web-mx.html :as html]
+            [tiltontec.web-mx.gen :refer [make-tag dom-tag +tag-sid+ tag-by-id]]
+            [goog.dom :as dom]
+            [goog.dom.classlist :as classlist]
+            [goog.html.sanitizer.HtmlSanitizer :as sanitizer]
+            [goog.editor.focus :as focus]
+            [goog.dom.selection :as selection]
+            [goog.dom.forms :as form])
   (:require-macros [tiltontec.web-mx.api]))
+
+(defn tag-dom-create
+  ([me] (html/tag-dom-create me false))
+  ([me dbg]
+   (html/tag-dom-create me dbg)))
 
 (defn make-svg
   ([svg]
@@ -51,8 +66,6 @@
 (defn make-css-inline [tag & stylings]
   (assert (tag? tag) (str "make-css-inline> tag param not a tag "
                        (mx-type tag) :tag tag))
-  #_(prn :mkcss-sees tag (for [[k _] (partition 2 stylings)] k)
-      stylings)
   (apply make
     :name :inline-css
     :mx-type :web-mx.css/css
@@ -81,23 +94,23 @@
     ;; (pln :mxw-gens-ss ss)
     ss))
 
-(defmethod watch-by-type [:web-mx.css/css] [slot me newv oldv _]
-  (when (not= oldv unbound)
-    (let [dom (tag-dom (mget me :tag))]
-      (gstyle/setStyle dom (name slot) (kw$ newv)))))
-
-(defn jso-map
+(defn js-obj->map
   "Uses the Google Closure object module to get the keys and values of any JavaScript Object
   and put them into a ClojureScript map"
   [obj]
   (walk/keywordize-keys (zipmap (gobj/getKeys obj) (gobj/getValues obj))))
 
-(defn evt-mx [e]
-  ;; deprecated. "md" for "model" is better
-  (dom-tag (.-target e)))
-
-(defn evt-md [e]
+(defn evt-md
+  "Returns the w/mx proxy that generated the DOM target of an HTML event."
+  [e]
   (dom-tag (.-target e)))
 
 (defn target-value [evt]
   (form/getValue (.-target evt)))
+
+(defn input-editing-start [dom initial-value]
+  (form/setValue dom initial-value)
+  (focus/focusInputField dom)
+  ;; a lost bit of sound U/X: select all text when starting edit of a populated field...
+  (selection/setStart dom 0)
+  (selection/setEnd dom (count initial-value)))

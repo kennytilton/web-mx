@@ -6,11 +6,11 @@
     ;[cljs-time.coerce :refer [from-long to-string] :as tmc]
 
 
-    [tiltontec.matrix.api :refer [mget]]
+    [tiltontec.matrix.api :refer [tag-dom-create mget]]
 
     [goog.dom :as dom]
     [tiltontec.web-mx.base :refer [ *web-mx-trace*]]
-    [tiltontec.web-mx.html :refer [tag-dom-create ]]
+
 
     ;; [tiltontec.web-mx.mxintro.rxtrak :as app] ;; Intro app for Lisp-NYC, 2018
 
@@ -36,6 +36,6 @@
 
   (set! (.-innerHTML root) nil)
   (dom/appendChild root app-dom)
-  (when-let [route-starter (mget app-matrix :router-starter)]
+  (when-let [rs (mget app-matrix :router-starter)]
     ;; (prn :starting-router)
-    (route-starter)))
+    (rs)))

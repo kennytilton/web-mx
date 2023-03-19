@@ -1,9 +1,7 @@
 (ns tiltontec.web-mx.api
   (:refer-clojure :exclude [map meta time])
   (:require [clojure.walk :as walk]
-            [cljs.pprint :as pp]
             [clojure.string :as str]
-            [clojure.set :as set]
 
             [goog.object :as gobj]
             [goog.dom.forms :as form]
@@ -82,7 +80,7 @@
              (str/join ";"
                (for [[k v] s
                      :when v]
-                 (pp/cl-format nil "~a:~a" (name k) (kw$ v))))
+                 (str (name k) ":" (kw$ v))))
 
              (= :web-mx.css/css (mx-type s))
              (style-string (select-keys @s (:css-keys @s)))

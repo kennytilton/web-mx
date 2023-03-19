@@ -6,7 +6,8 @@
     ;[cljs-time.coerce :refer [from-long to-string] :as tmc]
 
 
-    [tiltontec.matrix.api :refer [tag-dom-create mget]]
+    [tiltontec.matrix.api :refer [ mget]]
+    [tiltontec.web-mx.api :refer [tag-dom-create ]]
 
     [goog.dom :as dom]
     [tiltontec.web-mx.base :refer [ *web-mx-trace*]]

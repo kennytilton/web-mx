@@ -8,7 +8,6 @@
       fm-navig mget mget? fasc fm! mset! backdoor-reset!]]
     [tiltontec.web-mx.base :refer [tag? kw$ tag-dom]]
     [goog.style :as gstyle]
-    [cljs.pprint :as pp]
     [clojure.string :as str]))
 
 (defn make-css-inline
@@ -32,7 +31,7 @@
              (str/join ";"
                (for [[k v] s
                      :when v]
-                 (pp/cl-format nil "~a:~a" (name k) (kw$ v))))
+                 (str (name k) ":" (kw$ v))))
 
              (= :web-mx.css/css (mx-type s))
              (style-string (select-keys @s (:css-keys @s)))

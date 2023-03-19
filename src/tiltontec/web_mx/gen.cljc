@@ -7,9 +7,6 @@
     #?(:cljs
        [goog.dom.forms :as form]
        )
-    #?(:clj  [clojure.pprint :refer :all]
-       :cljs [cljs.pprint :refer [pprint cl-format]])
-
     [tiltontec.matrix.api :refer [md-ref? unbound make mget]]
     [tiltontec.cell.poly :refer [md-quiesce md-quiesce-self] :as cw]))
 

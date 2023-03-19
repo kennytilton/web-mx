@@ -1,27 +1,19 @@
 (ns tiltontec.web-mx.html
   (:require
     [clojure.string :as str]
-
     [clojure.set :as set]
-    [cljs.pprint :as pp]
-
     [tiltontec.cell.poly :refer [watch watch-by-type
                                  md-quiesce md-quiesce-self] :as cw]
     [tiltontec.matrix.api :refer
      [minfo md-ref? unbound make mget
       the-kids mdv! any-ref? rmap-meta-setf
       fm-navig mget mget? fasc fm! mset! backdoor-reset!]]
-
     [tiltontec.web-mx.base :refer [kw$ attr-val$ tag-dom *web-mx-trace*]]
     [tiltontec.web-mx.style
      :refer [style-string] :as tagcss]
-
     [goog.dom :as dom]
     [goog.dom.classlist :as classlist]
-    [goog.html.sanitizer.HtmlSanitizer :as sanitizer]
-    [goog.editor.focus :as focus]
-    [goog.dom.selection :as selection]
-    [goog.dom.forms :as form]))
+    [goog.html.sanitizer.HtmlSanitizer :as sanitizer]))
 
 (defn tagfo [me]
   (if (string? me)

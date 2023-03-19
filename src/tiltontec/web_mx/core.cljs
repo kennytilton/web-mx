@@ -1,35 +1,16 @@
 (ns tiltontec.web-mx.core
   (:require
-    [clojure.string :as str]
-
-    ;[taoensso.tufte :as tufte :refer [defnp p profiled profile]]
-    ;[cljs-time.coerce :refer [from-long to-string] :as tmc]
-
-
     [tiltontec.matrix.api :refer [ mget]]
     [tiltontec.web-mx.api :refer [tag-dom-create ]]
-
     [goog.dom :as dom]
     [tiltontec.web-mx.base :refer [ *web-mx-trace*]]
-
-
-    ;; [tiltontec.web-mx.mxintro.rxtrak :as app] ;; Intro app for Lisp-NYC, 2018
-
-    ;;[tiltontec.example.gloss :as app]
-    ;;[tiltontec.example.testing :as app]
-    ;;[tiltontec.example.todomvc :as app]
-    ;;[tiltontec.example.gentle-intro :as app]
-    [tiltontec.example.simpleclock :as app] ;; use ticktock.html to get css
-    ;;[tiltontec.example.pipeline.core :as app] ;; use pipeline.html to get css
-    ;;[tiltontec.example.startwatch :as app] ;; use startwatch.html to get css
-    ;[tiltontec.example.flux-challenge :as app]
-    )
+    [tiltontec.example.simpleclock :as app])
   (:import [goog.date UtcDateTime]))
 
 (enable-console-print!)
 ;(tufte/add-basic-println-handler! {})
 
-(let [root (dom/getElement "tagroot")
+(let [root (dom/getElement "app")
       app-matrix (app/matrix-build!)
       app-dom (binding [*web-mx-trace* nil]                  ;; <-- set to nil if console too noisy
                 (tag-dom-create
@@ -38,5 +19,5 @@
   (set! (.-innerHTML root) nil)
   (dom/appendChild root app-dom)
   (when-let [rs (mget app-matrix :router-starter)]
-    ;; (prn :starting-router)
+    ;; (prn :starting-router rs)
     (rs)))

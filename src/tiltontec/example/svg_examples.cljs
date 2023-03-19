@@ -99,6 +99,8 @@
 
 (defn make-svg-test []
   (div
+    (basic-shapes-fewer)
+    #_
     (make-svg :svg (merge {:height 100} {:viewBox "0 0 40 10"})
       (assoc {:name :includer}
         :include-other? (cI true))
@@ -203,7 +205,7 @@
                             ;(make-svg-test)
                             #_(three-circles)
                             #_(radial-gradient)
-                            ;(basic-shapes)
+                            (basic-shapes)
                             ;(use-blue)
                             (dyno-kids))))))))
 

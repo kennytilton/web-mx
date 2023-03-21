@@ -7,7 +7,7 @@
     #?(:cljs
        [goog.dom.forms :as form]
        )
-    [tiltontec.matrix.api :refer [md-ref? unbound make mget]]
+    [tiltontec.matrix.api :refer [md-ref? mx-type minfo unbound make mget]]
     [tiltontec.cell.poly :refer [md-quiesce md-quiesce-self] :as cw]))
 
 (defn tagfo [me]
@@ -44,6 +44,19 @@
                 val)
     :else (str val)))
 
+(defn dom-quiesce [me]
+  ;; todo: worry about leaks
+  (when-let [style (:style @me)]
+    (when (md-ref? style)
+      (md-quiesce style)))
+
+  (doseq [k (mget me :kids)]
+    (when (md-ref? k)
+      (md-quiesce k)))
+
+  (swap! tag-by-id dissoc (mget me :id))
+  (md-quiesce-self me))
+
 ;;; --- TAG --------------------------------------------------
 
 (defn make-tag [tag attrs aux cFkids]
@@ -62,20 +75,13 @@
     (swap! tag-by-id assoc tag-id mx-tag)
     mx-tag))
 
+(defmethod md-quiesce :web-mx.base/tag [me]
+  (dom-quiesce me))
+
 ;;; --- SVG --------------------------------------------------
 
-(defmethod md-quiesce [:web-mx.base/svg] [me]
-  ;; todo: worry about leaks
-  (when-let [style (:style @me)]
-    (when (md-ref? style)
-      (md-quiesce style)))
-
-  (doseq [k (:kids @me)]
-    (when (md-ref? k)
-      (md-quiesce k)))
-
-  (swap! tag-by-id dissoc (mget me :id))
-  (md-quiesce-self me))
+(defmethod md-quiesce :web-mx.base/svg [me]
+  (dom-quiesce me))
 
 ;;; --- event conveniences -------------------
 

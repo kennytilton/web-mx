@@ -8,14 +8,11 @@
 (defonce js-intervals (atom nil))
 
 (defn js-interval-register [interval]
-  ;(prn :registering!! interval)
   (swap! js-intervals conj interval)
   interval)
 
 (defn ^:before-load teardown []
-  ;(prn :bef-teardown!!!!!!!)
   (doseq [i @js-intervals]
-    ;(prn :clearing!!!!!!!! i)
     (js/clearInterval i))
   (reset! js-intervals nil))
 
@@ -32,14 +29,11 @@
     kw))
 
 (defn attr-val$ [val]
-  ;(prn :attr-val$-sees val (keyword? val))
   (cond
     (string? val) val
     (keyword? val) (name val)
     (coll? val) (str/join " " (map attr-val$ val))
-    (fn? val) (do
-                (prn "attr-val$ raw!!!!")
-                val)
+    (fn? val) val
     :else (str val)))
 
 (defn mxwprn [& bits]

@@ -41,20 +41,30 @@
     (kw$ c)))
 
 (defn tag-properties [mx]
-  (let [beef (remove nil?
-               (for [k (:attr-keys @mx)]
-                 (when-let [v (when-not (some #{k} [:list])
-                                ;; :list gets set via setAttribute; cannot be set as property
-                                (when-not (contains? @mx k)
-                                  (prn :so-sign-of-attr-key k :in @mx)
-                                  (assert (contains? @mx k)))
-                                (mget mx k))]
-                   [(kw$ k) (case k
-                              :style (tagcss/style-string v)
-                              :class (class-to-class-string v)
-                              (kw$ v))])))]
-    (apply js-obj
-      (apply concat beef))))
+  (let [dbg false]
+    (when dbg (prn :tag-props (minfo mx) (:attr-keys @mx)))
+    (let [beef (remove nil?
+                 (for [k (:attr-keys @mx)]
+                   (let [v (when-not (some #{k} [:list])
+                             ;; :list gets set via setAttribute; cannot be set as property
+                             (when-not (contains? @mx k)
+                               (prn :so-sign-of-attr-key k :in @mx)
+                               (assert (contains? @mx k)))
+                             (mget mx k))]
+                     (when dbg
+                       (prn :tag-props-kv!! (minfo mx) k v)
+                       (prn :tag-props-c (get (:cz (meta mx)) k))
+                       (prn :tag-cells-flushed (:cells-flushed (meta mx)))
+                       (prn :tag-props-get-mx-k k (get @mx k)))
+                     (when v
+                       [(kw$ k) (case k
+                                  :style (let [ss (tagcss/style-string v)]
+                                           (when dbg (prn :tag-ss!!! (minfo mx) ss :from v))
+                                           ss)
+                                  :class (class-to-class-string v)
+                                  (kw$ v))]))))]
+      (apply js-obj
+        (apply concat beef)))))
 
 (defn svg-dom-create [me dbg]
   (cond
@@ -128,9 +138,9 @@
     ;; oldv unbound means initial build and this incremental add/remove
     ;; is needed only when kids change post initial creation
     (mxtrc :kids :watchtagkids!!!!! (tagfo me)
-        :counts-new-old (count newv) (count oldv)
-        :same-kids (= oldv newv)
-        :same-kid-set (= (set newv) (set oldv)))
+      :counts-new-old (count newv) (count oldv)
+      :same-kids (= oldv newv)
+      :same-kid-set (= (set newv) (set oldv)))
     (do                                                     ;; p ::watch-kids
       (let [pdom (tag-dom me)
             lost (clojure.set/difference (set oldv) (set newv))
@@ -306,7 +316,7 @@
   "Search up the matrix from node 'where' looking for element with class"
   [where class]
   (fm-navig #(when-let [its-class (mget? % :class)]
-           (str/includes? (or (class-to-class-string its-class) "makebetter") (kw$ class)))
+               (str/includes? (or (class-to-class-string its-class) "makebetter") (kw$ class)))
     where :me? false :up? true))
 
 (defn mxu-find-tag

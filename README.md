@@ -6,7 +6,9 @@ Web/MX: Web programming powered by the [Matrix](https://github.com/kennytilton/m
 
 ### Overview
 
-Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_, without a separate store. Here is an in-depth yet succinct ["quick start"](https://kennytilton.github.io/web-mx-quickstart/#/). It is strongly recommended to newcomers and tire-kickers.
+Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_, without a separate store, without yadda-yadda-yadda. 
+
+Here is an in-depth yet succinct ["quick start"](https://kennytilton.github.io/web-mx-quickstart/#/). It is strongly recommended to newcomers and tire-kickers.
 
 > Related work: [Web/JX](https://github.com/kennytilton/matrix/tree/main/js/matrix) drives this [AskHN "Who's Hiring?" browser](https://kennytilton.github.io/whoishiring/). Work on React/MX and RN/MX has reached POC, but we have shifted focus to [Flutter/MX](https://github.com/kennytilton/flutter-mx/blob/main/README.md). 
 

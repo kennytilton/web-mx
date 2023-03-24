@@ -18,11 +18,9 @@ To run the current example, just:
 ```bash
 git clone https://github.com/kennytilton/web-mx.git
 cd web-mx
-clojure -M -m figwheel.main --build quick-start --repl
+clojure -M -m figwheel.main --build intro-clock --repl
 ```
-After a minute or so the `quick-start` example should appear in your browser at `http://localhost:9500/quick-start.html`, leaving a CLJS REPL in the original terminal.
-
-Other examples are `ticktock`, `todomvc`, and `rxtrak`.
+After a minute or so the `quick-start` example should appear in your browser at `http://localhost:9500/intro-clock.html`, leaving a CLJS REPL in the original terminal.
 
 ### Other Working Examples
 More working examples, including two versions of the TodoMVC classic can be found in the [Web/MX Sampler](https://github.com/kennytilton/web-mx-sampler). See also the [CLJS version](https://github.com/kennytilton/matrix/tree/main/cljc/whoshiring) of the aforementioned AskHN Who's Hiring browser.

@@ -201,12 +201,11 @@
                         (div
                           (wall-clock)
                           (div {:style {:background-color "cyan"}}
-                            (span (str "Hi, Mom! " (rand-int 9999)))
                             ;(make-svg-test)
                             #_(three-circles)
-                            #_(radial-gradient)
+                            (radial-gradient)
                             (basic-shapes)
-                            ;(use-blue)
+                            (use-blue)
                             (dyno-kids))))))))
 
 (defn main []

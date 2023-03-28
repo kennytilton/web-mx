@@ -24,10 +24,12 @@
         :content (cF (if-let [tick (mget me :now)]
                        ;; Reading :now via mget also transparently subscribes
                        ;; so each time the interval mset!'s :now, this content gets rebuilt.
-                       (-> tick
+                       (do
+                         (prn :BAM-tick!!! tick :tyt (type tick))
+                         (-> tick
                            .toTimeString
                            (str/split " ")
-                           first)
+                           first))
                        "*checking*"))}
        {:now
         ;; we /could/ initialize :now to (js/Date.), but this lets us demonstrate

@@ -8,7 +8,7 @@
      [minfo md-ref? unbound make mget mxtrc
       the-kids mdv! any-ref? rmap-meta-setf
       fm-navig mget mget? fasc fm! mset! backdoor-reset!]]
-    [tiltontec.web-mx.base :refer [kw$ attr-val$ tag-dom *web-mx-trace*]]
+    [tiltontec.web-mx.base :refer [kw$ attr-val$ tag? tag-dom *web-mx-trace*]]
     [tiltontec.web-mx.style
      :refer [style-string] :as tagcss]
     [goog.dom :as dom]
@@ -106,28 +106,28 @@
                     (when tag                               ;; tolerate nils
                       (dom/appendChild frag (tag-dom-create tag))))
                   frag)
-     (= "svg" (mget me :tag)) (svg-dom-create me dbg)
-     :default
-     (do
-       ;(pln :tagdomcre (mget me :tag) :attrs (:attr-keys @me))
-       (let [dom (apply dom/createDom (mget me :tag)
-                   (tag-properties me)
-                   (concat
-                     (map #(tag-dom-create % dbg) (mget? me :kids))
-                     (when-let [c (mget? me :content)]
-                       [(tag-dom-create c)])))]
-         (rmap-meta-setf [:dom-x me] dom)
-         (when (some #{:list} (:attr-keys @me))
-           ;; if offered as property to createDom we get:
-           ;; Cannot set property "list" of #<HTMLInputElement> which has only a getter
-           ;; which is misleading: we /can/ set the attribute.
-           (when-let [list-id (mget? me :list)]
-             (.setAttribute dom "list" (attr-val$ list-id))))
-         (doseq [attr-key (:attr-keys @me)]
-           (when (str/includes? (name attr-key) "-")
-             (when-let [attr-val (mget me attr-key)]
-               (.setAttribute dom (name attr-key) (attr-val$ attr-val)))))
-         dom)))))
+     (tag? me) (cond
+                 (= "svg" (mget me :tag)) (svg-dom-create me dbg)
+                 :default
+                 (let [dom (apply dom/createDom (mget me :tag)
+                             (tag-properties me)
+                             (concat
+                               (map #(tag-dom-create % dbg) (mget? me :kids))
+                               (when-let [c (mget? me :content)]
+                                 [(tag-dom-create c)])))]
+                   (rmap-meta-setf [:dom-x me] dom)
+                   (when (some #{:list} (:attr-keys @me))
+                     ;; if offered as property to createDom we get:
+                     ;; Cannot set property "list" of #<HTMLInputElement> which has only a getter
+                     ;; which is misleading: we /can/ set the attribute.
+                     (when-let [list-id (mget? me :list)]
+                       (.setAttribute dom "list" (attr-val$ list-id))))
+                   (doseq [attr-key (:attr-keys @me)]
+                     (when (str/includes? (name attr-key) "-")
+                       (when-let [attr-val (mget me attr-key)]
+                         (.setAttribute dom (name attr-key) (attr-val$ attr-val)))))
+                   dom))
+     :default (recur (str me) dbg))))
 
 (defn tag [me]
   (mget? me :tag))
@@ -298,7 +298,7 @@
               (.setAttribute dom (name slot) newv))))
 
         #_#_(+inline-css+ slot)
-                (throw (js/Error. (str "tiltontec.web-mx obs sees oldskool style: " slot)))))))
+                (throw (js/Error. (str "tag obs sees oldskool style: " slot)))))))
 
 (defmethod watch-by-type [:web-mx.base/svg] [slot me newv oldv _]
   (when (not= oldv unbound)

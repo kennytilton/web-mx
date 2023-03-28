@@ -1,5 +1,6 @@
 {:deps    {org.slf4j/slf4j-nop             {:mvn/version "1.7.30"}
            com.bhauman/figwheel-main       {:mvn/version "0.2.18"}
+           org.clojure/core.async {:mvn/version "1.6.673"}
            com.tiltontec/matrix            {:mvn/version "5.0.0-SNAPSHOT"}}
  :aliases {:fig {:main-opts ["-m" "figwheel.main"]}}
  :paths   ["src" "target" "resources"]}

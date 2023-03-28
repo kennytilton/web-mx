@@ -26,12 +26,12 @@
                  nil)
     ;; where we specify string content to eg button we get an
     ;; automatic span for the string that has no ID. Hopefully where
-    ;; dom-tiltontec.web-mx is requested they will be OK with us tracking the nearest ascendant.
+    ;; dom-tag is requested they will be OK with us tracking the nearest ascendant.
     (= "" (.-id dom)) (do (println :no-id-try-pa (.-parentNode dom))
                           (dom-tag (.-parentNode dom)))
     :default (let [tag (get @tag-by-id (.-id dom))]
-               (assert tag (str "dom-tiltontec.web-mx did not find js for id " (.-id dom)
-                             " of dom " dom))
+               (assert tag (str "dom-tag> dict tag-by-id has no entry for id <" (.-id dom)
+                             "> of dom " dom))
                tag)))
 
 (defn attr-val$ [val]
@@ -74,6 +74,10 @@
                    (vec (apply concat (seq aux)))))]
     (swap! tag-by-id assoc tag-id mx-tag)
     mx-tag))
+
+(defn tag? [md]
+  (and md (md-ref? md)
+    (= :web-mx.base/tag (mx-type md))))
 
 (defmethod md-quiesce :web-mx.base/tag [me]
   (dom-quiesce me))

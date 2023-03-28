@@ -44,6 +44,7 @@
 (defn manual-clock []
   (div {:class [:intro :ticktock]}
     (h3 "The time is now....")
+    (span :quick #_ ":quickstart" #_ (str :quickstart))
     (div {:class   "intro-clock"
           :content (cF (if-let [now (mget me :now)]         ;; mget, the standard MX getter, can be used from any code,
                          (-> now .toTimeString              ;; but transparently establishes a dependency, or "subscribes",

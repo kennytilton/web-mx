@@ -1,5 +1,5 @@
 (ns tiltontec.web-mx.api
-  (:refer-clojure :exclude [map meta time])
+  (:refer-clojure :exclude [meta time])
   (:require [clojure.walk :as walk]
             [clojure.string :as str]
 
@@ -15,7 +15,8 @@
                                          md-quiesce md-quiesce-self] :as cw]
             [tiltontec.web-mx.base :refer [tag? kw$ tag-dom] :as wbase]
             [tiltontec.web-mx.html :as html]
-            [tiltontec.web-mx.gen :refer [make-tag dom-tag +tag-sid+ tag-by-id]]
+            [tiltontec.web-mx.gen :refer [make-tag  +tag-sid+ tag-by-id]
+             :as gen]
             [goog.dom :as dom]
             [goog.dom.classlist :as classlist]
             [goog.html.sanitizer.HtmlSanitizer :as sanitizer]
@@ -28,6 +29,9 @@
   ([me] (html/tag-dom-create me false))
   ([me dbg]
    (html/tag-dom-create me dbg)))
+
+(defn dom-tag [dom]
+  (gen/dom-tag dom))
 
 (defn make-svg
   ([svg]
@@ -97,6 +101,13 @@
   and put them into a ClojureScript map"
   [obj]
   (walk/keywordize-keys (zipmap (gobj/getKeys obj) (gobj/getValues obj))))
+
+(defn jso-select-keys
+  ([obj]
+   (jso-select-keys (gobj/getKeys obj)))
+  ([obj keyseq]
+   (walk/keywordize-keys (zipmap keyseq
+                           (map #(gobj/get obj (name %)) keyseq)))))
 
 (defn evt-md
   "Returns the w/mx proxy that generated the DOM target of an HTML event."

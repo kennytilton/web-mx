@@ -13,8 +13,6 @@
             [tiltontec.web-mx.html :refer [tag-dom-create]]))
 
 (defn main [mx-builder]
-  (println "[main]: loading")
-  ;; (prn :html!!!! (.-outerHTML (tag-dom-create (span "Hi mom"))))
   (let [root (gdom/getElement "app")
         ;; ^^^ "app" must be ID of DIV defined in index.html
         app-matrix (mx-builder)

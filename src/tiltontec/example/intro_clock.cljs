@@ -18,7 +18,6 @@
     {:class   :pushbutton
      :onclick #(let [me (evt-md %)                          ; evt-md derives the MX model from the event; we then navigate
                      the-clock (fmu :the-clock me)]         ; the family up from me (fmu) to find the model named :the-clock
-                 (prn :ra!!! (jso-select-keys %))
                  (mset! the-clock :now (js/Date.)))}        ; and reset its property :now, propagating fully to the DAG
     "Refresh"))                                             ; before returning.
 

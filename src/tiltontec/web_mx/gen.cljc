@@ -75,10 +75,6 @@
     (swap! tag-by-id assoc tag-id mx-tag)
     mx-tag))
 
-(defn tag? [md]
-  (and md (md-ref? md)
-    (= :web-mx.base/tag (mx-type md))))
-
 (defmethod md-quiesce :web-mx.base/tag [me]
   (dom-quiesce me))
 

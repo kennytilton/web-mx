@@ -24,12 +24,10 @@
         :content (cF (if-let [tick (mget me :now)]
                        ;; Reading :now via mget also transparently subscribes
                        ;; so each time the interval mset!'s :now, this content gets rebuilt.
-                       (do
-                         (prn :BAM-tick!!! tick :tyt (type tick))
-                         (-> tick
-                           .toTimeString
-                           (str/split " ")
-                           first))
+                       (-> tick
+                         .toTimeString
+                         (str/split " ")
+                         first)
                        "*checking*"))}
        {:now
         ;; we /could/ initialize :now to (js/Date.), but this lets us demonstrate
@@ -100,7 +98,7 @@
                        (h2 "The time is now....")
                        (clock)
                        (color-input "57a8a4")
-                       (p "Click for more:")
+                       (p "Click numbers to see more of them:")
                        (div {:style   {:display        :flex
                                        :flex-direction :row
                                        :flex-wrap      :wrap

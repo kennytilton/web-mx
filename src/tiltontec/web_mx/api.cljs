@@ -102,12 +102,8 @@
   [obj]
   (walk/keywordize-keys (zipmap (gobj/getKeys obj) (gobj/getValues obj))))
 
-(defn jso-select-keys
-  ([obj]
-   (jso-select-keys (gobj/getKeys obj)))
-  ([obj keyseq]
-   (walk/keywordize-keys (zipmap keyseq
-                           (map #(gobj/get obj (name %)) keyseq)))))
+(defn jso-select-keys [& params]
+  (apply wbase/jso-select-keys params))
 
 (defn evt-md
   "Returns the w/mx proxy that generated the DOM target of an HTML event."

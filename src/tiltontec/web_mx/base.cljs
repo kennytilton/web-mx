@@ -5,7 +5,8 @@
     [goog.dom :as gdom]
     [goog.object :as gobj]
     [tiltontec.matrix.api
-     :refer [mget fasc fm! make mset! backdoor-reset! mx-type]]))
+     :refer [mget fasc fm! make mset! backdoor-reset! mx-type
+             md-ref?]]))
 
 (defonce js-intervals (atom nil))
 
@@ -20,8 +21,13 @@
 
 (def ^:dynamic *web-mx-trace* false)
 
-(defn tag? [me]
-  (= (mx-type me) :web-mx.base/tag))
+(defn tag? [md]
+  (and md (md-ref? md)
+    (= :web-mx.base/tag (mx-type md))))
+
+(defn svg? [md]
+  (and md (md-ref? md)
+    (= :web-mx.base/svg (mx-type md))))
 
 (defn kw$ [kw]
   ;; use this wherever we might want to allow a keyword instead of an
@@ -62,7 +68,7 @@
 
 (defn jso-select-keys
   ([obj]
-   (jso-select-keys (gobj/getKeys obj)))
+   (jso-select-keys obj (gobj/getKeys obj)))
   ([obj keyseq]
    (walk/keywordize-keys (zipmap keyseq
                            (map #(gobj/get obj (name %)) keyseq)))))

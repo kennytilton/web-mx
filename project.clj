@@ -1,5 +1,5 @@
-(defproject com.tiltontec/web-mx "2.0.0-SNAPSHOT"
-  :description "A Web un-Framework powered by Matrix(tm)"
+(defproject com.tiltontec/web-mx "2.0.1-SNAPSHOT"
+  :description "A Web Un-Framework, powered by Matrix(tm)"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :url "https://github.com/kennytilton/web-mx/"
@@ -7,7 +7,7 @@
                  [org.clojure/clojurescript "1.11.60"]
                  [org.slf4j/slf4j-nop       "1.7.30"]
                  [org.clojure/core.async "1.6.673"]
-                 [com.tiltontec/matrix "5.0.0-SNAPSHOT"]]
+                 [com.tiltontec/matrix "5.0.1-SNAPSHOT"]]
   :profiles
   {:dev
    {:dependencies [[org.clojure/clojurescript "1.11.60"]

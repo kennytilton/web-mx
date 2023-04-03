@@ -202,7 +202,7 @@
                           (wall-clock)
                           (div {:style {:background-color "cyan"}}
                             ;(make-svg-test)
-                            #_(three-circles)
+                            ;(three-circles)
                             (radial-gradient)
                             (basic-shapes)
                             (use-blue)

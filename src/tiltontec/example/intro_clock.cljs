@@ -7,7 +7,8 @@
              fasc fmu fm! minfo]]
     [tiltontec.web-mx.api
      :refer [evt-md target-value img section h1 h2 h3 input footer p a
-             span i label ul li div button code pre]]
+             span i label ul li div button code pre
+             jso-select-keys]]
     [tiltontec.example.util :as exu]))
 
 ;;; --- intro clock starter code -----------------------------------
@@ -17,6 +18,7 @@
     {:class   :pushbutton
      :onclick #(let [me (evt-md %)                          ; evt-md derives the MX model from the event; we then navigate
                      the-clock (fmu :the-clock me)]         ; the family up from me (fmu) to find the model named :the-clock
+                 (prn :ra!!! (jso-select-keys %))
                  (mset! the-clock :now (js/Date.)))}        ; and reset its property :now, propagating fully to the DAG
     "Refresh"))                                             ; before returning.
 
@@ -44,7 +46,6 @@
 (defn manual-clock []
   (div {:class [:intro :ticktock]}
     (h3 "The time is now....")
-    (span :quick #_ ":quickstart" #_ (str :quickstart))
     (div {:class   "intro-clock"
           :content (cF (if-let [now (mget me :now)]         ;; mget, the standard MX getter, can be used from any code,
                          (-> now .toTimeString              ;; but transparently establishes a dependency, or "subscribes",

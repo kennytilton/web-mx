@@ -2,10 +2,6 @@
 
 Web/MX: Web programming powered by the [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager.
 
-Release: [![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/web-mx.svg)](https://clojars.org/com.tiltontec/web-mx)
-
-WIP: [![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/web-mx.svg?include_prereleases)](https://clojars.org/com.tiltontec/web-mx)
-
 ### Overview
 
 Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_, without a separate store, without yadda-yadda-yadda. 
@@ -13,6 +9,10 @@ Optimally efficient, fine grained, truly reactive DOM programming in CLJS, witho
 Here is an in-depth yet succinct ["quick start"](https://kennytilton.github.io/web-mx-quickstart/#/). It is strongly recommended to newcomers and tire-kickers.
 
 > Related work: [Web/JX](https://github.com/kennytilton/matrix/tree/main/js/matrix) drives this [AskHN "Who's Hiring?" browser](https://kennytilton.github.io/whoishiring/). Work on React/MX and RN/MX has reached POC, but we have shifted focus to [Flutter/MX](https://github.com/kennytilton/flutter-mx/blob/main/README.md). 
+
+Release: [![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/web-mx.svg)](https://clojars.org/com.tiltontec/web-mx)
+
+WIP: [![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/web-mx.svg?include_prereleases)](https://clojars.org/com.tiltontec/web-mx)
 
 ### Just Run It
 

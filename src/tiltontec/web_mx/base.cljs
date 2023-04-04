@@ -6,7 +6,7 @@
     [goog.object :as gobj]
     [tiltontec.matrix.api
      :refer [mget fasc fm! make mset! backdoor-reset! mx-type
-             md-ref?]]))
+             rmap-meta-setf md-ref?]]))
 
 (defonce js-intervals (atom nil))
 
@@ -56,7 +56,8 @@
   (let [id (mget me :id)
         dom-x (:dom-x (meta me))
         dom (or (:dom-cache @me)
-                (backdoor-reset! me :dom-cache (gdom/getElement (str id))))
+              (rmap-meta-setf [:dom-cache me] (gdom/getElement (str id)))
+                #_ (backdoor-reset! me :dom-cache (gdom/getElement (str id))))
         ]
     (when (nil? dom) (mxwprn :id-not-in-dom-or-cache id))
     (when (nil? dom-x) (mxwprn :no-dom-x (meta me)))

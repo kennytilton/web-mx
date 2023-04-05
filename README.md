@@ -2,14 +2,11 @@
 
 Web/MX: Web programming powered by the [Matrix](https://github.com/kennytilton/matrix/blob/main/cljc/matrix/README.md) state manager.
 
-<<<<<<< HEAD
 Release: [![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/web-mx.svg)](https://clojars.org/com.tiltontec/web-mx)
 
 
 WIP: [![Clojars Project](https://img.shields.io/clojars/v/com.tiltontec/web-mx.svg?include_prereleases)](https://clojars.org/com.tiltontec/web-mx)
 
-=======
->>>>>>> ec65036403664bfbeda45cde1140e4fd05c47f7b
 ### Overview
 
 Optimally efficient, fine grained, truly reactive DOM programming in CLJS, without React, without _virtual dom_, without a separate store, without yadda-yadda-yadda. 

@@ -7,7 +7,7 @@
     [tiltontec.matrix.api :refer
      [minfo md-ref? unbound make mget mxtrc
       the-kids mdv! any-ref? rmap-meta-setf
-      fm-navig mget mget? fasc fm! mset! backdoor-reset!]]
+      fm-navig mget mget? fasc fm! mset!]]
     [tiltontec.web-mx.base :refer [kw$ attr-val$ tag? svg? tag-dom *web-mx-trace*]]
     [tiltontec.web-mx.style
      :refer [style-string] :as tagcss]

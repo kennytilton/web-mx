@@ -5,7 +5,7 @@
     [tiltontec.matrix.api :refer
      [minfo md-ref? unbound make mget mget?
       the-kids mdv! any-ref? rmap-meta-setf mx-type
-      fm-navig mget mget? fasc fm! mset! backdoor-reset!]]
+      fm-navig mget mget? fasc fm! mset!]]
     [tiltontec.web-mx.base :refer [tag? kw$ tag-dom]]
     [goog.style :as gstyle]
     [clojure.string :as str]))

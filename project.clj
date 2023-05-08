@@ -7,6 +7,7 @@
                  [org.clojure/clojurescript "1.11.60"]
                  [org.slf4j/slf4j-nop       "1.7.30"]
                  [org.clojure/core.async "1.6.673"]
+                 [com.taoensso/tufte "2.4.5"]
                  [com.tiltontec/matrix "5.0.1-SNAPSHOT"]]
   :profiles
   {:dev

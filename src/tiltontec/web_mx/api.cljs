@@ -10,7 +10,7 @@
             [tiltontec.matrix.api :refer
              [minfo md-ref? unbound make mget mget?
               the-kids mdv! any-ref? rmap-meta-setf mx-type
-              fm-navig mget mget? fasc fm! mset! backdoor-reset!]]
+              fm-navig mget mget? fasc fm! mset!]]
             [tiltontec.cell.poly :refer [watch watch-by-type
                                          md-quiesce md-quiesce-self] :as cw]
             [tiltontec.web-mx.base :refer [tag? kw$ tag-dom] :as wbase]

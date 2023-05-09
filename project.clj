@@ -3,7 +3,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :url "https://github.com/kennytilton/web-mx/"
-  :dependencies [[org.clojure/clojure "1.11.1"]
+  :dependenmcies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.11.60"]
                  [org.slf4j/slf4j-nop       "1.7.30"]
                  [org.clojure/core.async "1.6.673"]

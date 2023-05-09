@@ -6,6 +6,7 @@
             [goog.object :as gobj]
             [goog.dom.forms :as form]
             [goog.style :as gstyle]
+            [cognitect.transit :as trx]
 
             [tiltontec.matrix.api :refer
              [minfo md-ref? unbound make mget mget?
@@ -24,6 +25,13 @@
             [goog.dom.selection :as selection]
             [goog.dom.forms :as form])
   (:require-macros [tiltontec.web-mx.api]))
+
+
+(defn map-to-json [map]
+  (trx/write (trx/writer :json) map))
+
+(defn json-to-map [json]
+  (trx/read (trx/reader :json) json))
 
 (defn tag-dom-create
   ([me] (html/tag-dom-create me false))

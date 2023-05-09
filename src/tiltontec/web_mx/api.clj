@@ -1,7 +1,70 @@
 (ns tiltontec.web-mx.api
   (:refer-clojure :exclude [map meta time filter set symbol use])
   (:require
-    [tiltontec.web-mx.gen :refer [make-tag deftags defsvgs]]))
+    [tiltontec.web-mx.gen :refer [make-tag]]))
+
+(defmacro deftag [tag]
+  (let [kids (gensym "kids")
+        vargs (gensym "vargs")
+        tag-name (gensym "web-mx-name")]
+    `(defmacro ~tag [& ~vargs]
+(let [~tag-name (str '~tag)]
+  (cond
+    (nil? ~vargs)
+    `(tiltontec.web-mx.gen/make-tag ~~tag-name {} {} nil)
+
+    (map? (first ~vargs))
+    (cond
+      (map? (second ~vargs))
+      `(tiltontec.web-mx.gen/make-tag ~~tag-name ~(first ~vargs) ~(second ~vargs)
+         ~(when-let [~kids (seq (nthrest ~vargs 2))]
+            `(tiltontec.model.core/cFkids ~@~kids)))
+
+      :default `(tiltontec.web-mx.gen/make-tag
+                  ~~tag-name ~(first ~vargs)
+                  {}
+                  ~(when-let [~kids (seq (nthrest ~vargs 1))]
+                     `(tiltontec.model.core/cFkids ~@~kids))))
+
+    :default `(tiltontec.web-mx.gen/make-tag
+                ~~tag-name {} {}
+                (tiltontec.model.core/cFkids ~@~vargs)))))))
+
+
+(defmacro defsvg [svg]
+  (let [kids (gensym "kids")
+        vargs (gensym "vargs")
+        svg-name (gensym "web-mx-name")]
+    `(defmacro ~svg [& ~vargs]
+       (let [~svg-name (str '~svg)]
+         (cond
+           (nil? ~vargs)
+           `(tiltontec.web-mx.api/make-svg ~~svg-name {} {} nil)
+
+           (map? (first ~vargs))
+           (cond
+             (map? (second ~vargs))
+             `(tiltontec.web-mx.api/make-svg ~~svg-name ~(first ~vargs) ~(second ~vargs)
+                ~(when-let [~kids (seq (nthrest ~vargs 2))]
+                   `(tiltontec.model.core/cFkids ~@~kids)))
+
+             :default `(tiltontec.web-mx.api/make-svg
+                         ~~svg-name ~(first ~vargs)
+                         {}
+                         ~(when-let [~kids (seq (nthrest ~vargs 1))]
+                            `(tiltontec.model.core/cFkids ~@~kids))))
+
+           :default `(tiltontec.web-mx.api/make-svg
+                       ~~svg-name {} {}
+                       (tiltontec.model.core/cFkids ~@~vargs)))))))
+
+(defmacro deftags [& tags]
+  `(do ~@(for [tag tags]
+           `(tiltontec.web-mx.api/deftag ~tag))))
+
+(defmacro defsvgs [& svgs]
+  `(do ~@(for [svg svgs]
+           `(tiltontec.web-mx.api/defsvg ~svg))))
 
 (deftags a abbr acronym address applet area article aside audio b base basefont bdi bdo bgsound big blink
   blockquote body br button canvas caption center cite code col colgroup command content

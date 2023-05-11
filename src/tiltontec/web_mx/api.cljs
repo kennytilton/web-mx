@@ -1,4 +1,5 @@
 (ns tiltontec.web-mx.api
+  (:require-macros [tiltontec.web-mx.api])
   (:refer-clojure :exclude [meta time])
   (:require [clojure.walk :as walk]
             [clojure.string :as str]
@@ -23,8 +24,7 @@
             [goog.html.sanitizer.HtmlSanitizer :as sanitizer]
             [goog.editor.focus :as focus]
             [goog.dom.selection :as selection]
-            [goog.dom.forms :as form])
-  (:require-macros [tiltontec.web-mx.api]))
+            [goog.dom.forms :as form]))
 
 
 (defn map-to-json [map]

@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as str]
     [tiltontec.matrix.api
-     :refer [make cF cF+ cFn cFonce cI cf-freeze
+     :refer [prx make cF cF+ cFn cFonce cI cf-freeze
              mpar mget mset! mswap! mset! with-cc
              fasc fmu fm! minfo]]
     [tiltontec.web-mx.api
@@ -18,6 +18,9 @@
     {:class   :pushbutton
      :onclick #(let [me (evt-md %)                          ; evt-md derives the MX model from the event; we then navigate
                      the-clock (fmu :the-clock me)]         ; the family up from me (fmu) to find the model named :the-clock
+                 (prx :tgt (.-target %))
+                 (prx :tgt-id (.-id (.-target %)))
+                 (prx :evt-md (evt-md %))
                  (mset! the-clock :now (js/Date.)))}        ; and reset its property :now, propagating fully to the DAG
     "Refresh"))                                             ; before returning.
 

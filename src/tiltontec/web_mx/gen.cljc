@@ -1,14 +1,14 @@
 (ns tiltontec.web-mx.gen
-  #_ #?(:cljs
-     (:require-macros [tiltontec.web-mx.gen
-                       :refer [deftag deftags defsvg defsvgs]]))
+  #_#?(:cljs
+       (:require-macros [tiltontec.web-mx.gen
+                         :refer [deftag deftags defsvg defsvgs]]))
   (:refer-clojure :exclude [map meta time])
   (:require
     [clojure.string :as str]
     #?(:cljs
        [goog.dom.forms :as form]
        )
-    [tiltontec.matrix.api :refer [md-ref? mx-type minfo unbound make mget]]
+    [tiltontec.matrix.api :refer [prx md-ref? mx-type minfo unbound make mget]]
     [tiltontec.cell.poly :refer [md-quiesce md-quiesce-self] :as cw]))
 
 (defn tagfo [me]
@@ -22,17 +22,24 @@
 (def tag-by-id (atom {}))
 
 (defn dom-tag [dom]
+  (prn :dom-tag-entry dom (when dom (.-id dom)))
   (cond
-    (nil? dom) (do                                          ;; (println :outthetop!!!)
-                 nil)
+    (nil? dom)
+    (do                                                     ;; (println :outthetop!!!)
+      nil)
     ;; where we specify string content to eg button we get an
     ;; automatic span for the string that has no ID. Hopefully where
     ;; dom-tag is requested they will be OK with us tracking the nearest ascendant.
-    (= "" (.-id dom)) (dom-tag (.-parentNode dom))
-    :default (let [tag (get @tag-by-id (.-id dom))]
-               (assert tag (str "dom-tag> dict tag-by-id has no entry for id <" (.-id dom)
-                             "> of dom " dom))
-               tag)))
+    (= "" (.-id dom))
+    (do (dom-tag (.-parentNode dom)))
+    :else (do
+            (prx :else (.-id dom))
+            (prx :keys (keys @tag-by-id))
+            (prx :b15 (get @tag-by-id "button-15"))
+            (let [tag (get @tag-by-id (.-id dom))]
+              (assert tag (str "dom-tag> dict tag-by-id has no entry for id <" (.-id dom)
+                            "> of dom " dom))
+              tag))))
 
 (defn attr-val$ [val]
   (cond

@@ -2,6 +2,8 @@
            com.bhauman/figwheel-main       {:mvn/version "0.2.18"}
            ; [com.taoensso/tufte "2.4.5"]
            org.clojure/core.async {:mvn/version "1.6.673"}
-           com.tiltontec/matrix            {:mvn/version "5.0.1-SNAPSHOT"}}
+           funcool/bide                    {:mvn/version "1.7.0"}
+           com.tiltontec/matrix            {:mvn/version "5.0.1-SNAPSHOT"}
+           com.tiltontec/mxxhr             {:mvn/version "2.0.0-SNAPSHOT"}}
  :aliases {:fig {:main-opts ["-m" "figwheel.main"]}}
  :paths   ["src" "target" "resources"]}

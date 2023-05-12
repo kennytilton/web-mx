@@ -22,7 +22,6 @@
 (def tag-by-id (atom {}))
 
 (defn dom-tag [dom]
-  (prn :dom-tag-entry dom (when dom (.-id dom)))
   (cond
     (nil? dom)
     (do                                                     ;; (println :outthetop!!!)
@@ -33,9 +32,6 @@
     (= "" (.-id dom))
     (do (dom-tag (.-parentNode dom)))
     :else (do
-            (prx :else (.-id dom))
-            (prx :keys (keys @tag-by-id))
-            (prx :b15 (get @tag-by-id "button-15"))
             (let [tag (get @tag-by-id (.-id dom))]
               (assert tag (str "dom-tag> dict tag-by-id has no entry for id <" (.-id dom)
                             "> of dom " dom))
@@ -56,11 +52,9 @@
   (when-let [style (:style @me)]
     (when (md-ref? style)
       (md-quiesce style)))
-
   (doseq [k (mget me :kids)]
     (when (md-ref? k)
       (md-quiesce k)))
-
   (swap! tag-by-id dissoc (mget me :id))
   (md-quiesce-self me))
 

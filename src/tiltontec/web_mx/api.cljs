@@ -39,7 +39,6 @@
    (html/tag-dom-create me dbg)))
 
 (defn dom-tag [dom]
-  (prn :api-dom-tag-sees-dom dom)
   (gen/dom-tag dom))
 
 (defn make-svg
